@@ -15,7 +15,7 @@
   .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
   .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
   .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
-  main { max-width:600px; margin:0 auto; padding:40px 24px; }
+  main { max-width:700px; margin:0 auto; padding:40px 24px; }
   .page-title { font-family:'Playfair Display',serif; font-size:32px; margin-bottom:32px; }
   .card { background:white; border-radius:24px; padding:32px; margin-bottom:24px; border:1.5px solid var(--border); box-shadow:0 4px 24px var(--shadow); }
   .card-title { font-size:18px; font-weight:800; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
@@ -29,8 +29,12 @@
   .btn-secondary:hover { background:var(--mint-light); }
   .flash-ok { background:var(--mint); color:var(--green-dark); padding:12px 18px; border-radius:14px; margin-bottom:20px; font-weight:700; font-size:14px; }
 
+  /* Two column layout */
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+  .form-row .form-group { margin-bottom:0; }
+
   /* Weight progress */
-  .progress-section { margin-top:16px; }
+  .progress-section { margin-top:24px; }
   .weight-diff {
     display:flex; align-items:center; justify-content:space-between;
     background:var(--mint-light); border-radius:16px; padding:16px 20px; margin-bottom:16px;
@@ -39,18 +43,17 @@
   .weight-label { font-size:11px; color:var(--text-light); font-weight:700; text-transform:uppercase; }
   .weight-num { font-size:24px; font-weight:800; color:var(--text); }
   .weight-arrow { font-size:24px; color:var(--green); }
-  .progress-bar { background:var(--mint-light); border-radius:20px; height:16px; overflow:hidden; margin-bottom:8px; }
-  .progress-fill { height:100%; border-radius:20px; background:linear-gradient(90deg,var(--green),var(--green-soft)); transition:width .8s ease; }
-  .progress-label { font-size:13px; color:var(--text-soft); font-weight:600; }
 
   /* BMI hint */
   .hint-box { background:var(--mint-light); border-radius:16px; padding:16px; font-size:13px; color:var(--text-soft); line-height:1.6; margin-top:16px; }
   .hint-box strong { color:var(--green-dark); }
 
-  .bju-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+  .bju-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-top:12px; }
   .bju-item { background:var(--mint-light); border-radius:12px; padding:12px; text-align:center; }
   .bju-label { font-size:11px; color:var(--text-light); font-weight:700; }
   .bju-value { font-size:18px; font-weight:800; color:var(--green-dark); }
+
+  .info-box { background:var(--mint-light); border-radius:12px; padding:12px; font-size:12px; color:var(--text-soft); margin-top:12px; line-height:1.5; }
 </style>
 </head>
 <body>
@@ -73,66 +76,98 @@
   <div class="card">
     <div class="card-title">⚖️ {{ t.weight_goal }}</div>
     <form method="POST">
-      <!-- Основные параметры -->
-      <div class="form-group">
-        <label>{{ t.current_weight }}</label>
-        <input type="number" name="current_weight" step="0.1" min="30" max="300"
-               value="{{ current_user.current_weight or '' }}" placeholder="70.5" required>
+      <!-- Основные параметры в две колонки -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ t.current_weight }}</label>
+          <input type="number" name="current_weight" step="0.1" min="30" max="300"
+                 value="{{ current_user.current_weight or '' }}" placeholder="70.5" required>
+        </div>
+
+        <div class="form-group">
+          <label>{{ t.goal_weight }}</label>
+          <input type="number" name="goal_weight" step="0.1" min="30" max="300"
+                 value="{{ current_user.goal_weight or '' }}" placeholder="65.0" required>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>{{ t.goal_weight }}</label>
-        <input type="number" name="goal_weight" step="0.1" min="30" max="300"
-               value="{{ current_user.goal_weight or '' }}" placeholder="65.0" required>
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ t.height }}</label>
+          <input type="number" name="height" step="1" min="100" max="250"
+                 value="{{ current_user.height or '' }}" placeholder="173" required>
+        </div>
+
+        <div class="form-group">
+          <label>Возраст</label>
+          <input type="number" name="age" min="14" max="100" 
+                 value="{{ current_user.age or 25 }}" placeholder="25" required>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>{{ t.height }}</label>
-        <input type="number" name="height" step="1" min="100" max="250"
-               value="{{ current_user.height or '' }}" placeholder="170" required>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Пол</label>
+          <select name="gender" required onchange="updateCalculation()">
+            <option value="">Выбери...</option>
+            <option value="male">👨 Мужчина</option>
+            <option value="female">👩 Женщина</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Уровень активности</label>
+          <select name="activity" required onchange="updateCalculation()">
+            <option value="">Выбери...</option>
+            <option value="sedentary">📍 Сидячий образ жизни (1.2)</option>
+            <option value="light">🚶 Лёгкая активность (1.375)</option>
+            <option value="moderate">🏃 Умеренная активность (1.55)</option>
+            <option value="active">💪 Активный образ жизни (1.725)</option>
+            <option value="very_active">🏋️ Очень активный (1.9)</option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Возраст</label>
-        <input type="number" name="age" min="14" max="90" 
-               value="{{ current_user.age or 25 }}" placeholder="25">
+      <div class="info-box">
+        <strong>📍 Калькулятор использует Harris-Benedict формулу</strong><br>
+        Точность расчёта ≈ 90%. Если результаты не совпадают с реальностью, корректируй вручную.
       </div>
 
       <!-- Калории -->
-      <div class="form-group">
+      <div class="form-group" style="margin-top:20px;">
         <label>{{ t.daily_goal }} ({{ t.kcal }})</label>
         <input type="number" name="daily_calorie_goal" min="500" max="10000" step="50"
-               value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000">
+               value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000" required>
       </div>
 
       <!-- БЖУ -->
       <div class="form-group">
         <label>🥩 {{ t.protein }} (г в день)</label>
-        <input type="number" name="protein_goal" min="10" max="500" step="5"
-               value="{{ current_user.protein_goal or 150 }}" placeholder="150">
+        <input type="number" name="protein_goal" min="10" max="500" step="1"
+               value="{{ current_user.protein_goal or 150 }}" placeholder="150" required>
       </div>
 
       <div class="form-group">
         <label>🥑 {{ t.fat }} (г в день)</label>
-        <input type="number" name="fat_goal" min="10" max="300" step="5"
-               value="{{ current_user.fat_goal or 70 }}" placeholder="70">
+        <input type="number" name="fat_goal" min="10" max="300" step="1"
+               value="{{ current_user.fat_goal or 70 }}" placeholder="70" required>
       </div>
 
       <div class="form-group">
         <label>🍞 {{ t.carbs }} (г в день)</label>
-        <input type="number" name="carbs_goal" min="10" max="700" step="5"
-               value="{{ current_user.carbs_goal or 250 }}" placeholder="250">
+        <input type="number" name="carbs_goal" min="10" max="700" step="1"
+               value="{{ current_user.carbs_goal or 250 }}" placeholder="250" required>
       </div>
 
       <!-- Вода -->
       <div class="form-group">
         <label>💧 Норма воды (стаканов в день)</label>
         <input type="number" name="water_goal" min="1" max="20" step="1"
-               value="{{ current_user.water_goal or 8 }}" placeholder="8">
+               value="{{ current_user.water_goal or 8 }}" placeholder="8" required>
       </div>
 
       <!-- Кнопки -->
-      <button type="button" onclick="calculate()" class="btn-secondary">
+      <button type="button" onclick="calculateAll()" class="btn-secondary">
         🧮 Рассчитать автоматически
       </button>
 
@@ -169,15 +204,15 @@
       {% if current_user.height and current_user.current_weight %}
       {% set bmi = current_user.current_weight / ((current_user.height / 100) ** 2) %}
       <div class="hint-box">
-        <strong>Ваш ИМТ: {{ bmi|round(1) }}</strong><br>
+        <strong>📊 Ваш ИМТ: {{ bmi|round(1) }}</strong><br>
         {% if bmi < 18.5 %}
-          Ниже нормы (< 18.5). Рекомендуется набрать вес.
+          Недостаточный вес (< 18.5). Рекомендуется набрать вес. 📈
         {% elif bmi < 25 %}
           Норма (18.5–24.9). Отличный результат! 🌿
         {% elif bmi < 30 %}
-          Избыточный вес (25–29.9). Небольшая работа предстоит.
+          Избыточный вес (25–29.9). Рекомендуется небольшой дефицит калорий. 💪
         {% else %}
-          Ожирение (> 30). Рекомендуется проконсультироваться с врачом.
+          Ожирение (> 30). Рекомендуется консультация с врачом. 🏥
         {% endif %}
       </div>
       {% endif %}
@@ -185,7 +220,7 @@
       <!-- Текущие БЖУ -->
       {% if current_user.daily_calorie_goal %}
       <div style="margin-top:20px;">
-        <div style="font-size:13px; font-weight:700; color:var(--text-soft); margin-bottom:10px;">Ваши дневные нормы:</div>
+        <div style="font-size:13px; font-weight:700; color:var(--text-soft); margin-bottom:10px;">📋 Твои дневные нормы:</div>
         <div class="bju-grid">
           <div class="bju-item">
             <div class="bju-label">Калории</div>
@@ -217,32 +252,44 @@
 </main>
 
 <script>
-function calculate() {
+function getActivityCoefficient() {
+    const activity = document.querySelector('[name=activity]').value;
+    const coefficients = {
+        'sedentary': 1.2,
+        'light': 1.375,
+        'moderate': 1.55,
+        'active': 1.725,
+        'very_active': 1.9
+    };
+    return coefficients[activity] || 1.55;
+}
+
+function calculateAll() {
     const weight = parseFloat(document.querySelector('[name=current_weight]').value);
     const goal = parseFloat(document.querySelector('[name=goal_weight]').value);
     const height = parseFloat(document.querySelector('[name=height]').value);
     const age = parseFloat(document.querySelector('[name=age]').value);
+    const gender = document.querySelector('[name=gender]').value;
+    const activity = document.querySelector('[name=activity]').value;
 
-    if (!weight || !height || !age) {
-        alert('❌ Введи вес, рост и возраст!');
+    if (!weight || !height || !age || !gender || !activity) {
+        alert('❌ Заполни все поля: вес, рост, возраст, пол и активность!');
         return;
     }
 
-    // Harris-Benedict формула для расчёта БМР (Basal Metabolic Rate)
-    // Для мужчин: 88.362 + (13.397 × вес) + (4.799 × рост) - (5.677 × возраст)
-    // Для женщин: 447.593 + (9.247 × вес) + (3.098 × рост) - (4.330 × возраст)
-    
+    // Harris-Benedict формула для расчёта BMR
     let bmr;
-    const gender = 'male'; // можно сделать выбор, пока оставляем по умолчанию
     
     if (gender === 'male') {
+        // Мужчины: BMR = 88.362 + (13.397 × вес) + (4.799 × рост) - (5.677 × возраст)
         bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
     } else {
+        // Женщины: BMR = 447.593 + (9.247 × вес) + (3.098 × рост) - (4.330 × возраст)
         bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
     }
 
-    // Коэффициент активности (средняя активность)
-    let calories = bmr * 1.55;
+    // TDEE = BMR × коэффициент активности
+    let calories = bmr * getActivityCoefficient();
     
     // Корректировка для похудения/набора
     if (goal && goal < weight) {
@@ -254,14 +301,11 @@ function calculate() {
     
     calories = Math.round(calories / 50) * 50; // округляем до 50
 
-    // ПРАВИЛЬНЫЙ расчёт БЖУ
-    // Белки: 30% от калорий, 1г белка = 4 ккал
-    // Жиры: 25% от калорий, 1г жира = 9 ккал
-    // Углеводы: остаток от калорий, 1г углеводов = 4 ккал
-    
-    const protein = Math.round((calories * 0.30) / 4); // 30% от калорий делим на 4
-    const fat = Math.round((calories * 0.25) / 9);     // 25% от калорий делим на 9
-    const carbs = Math.round((calories * 0.45) / 4);   // 45% от калорий делим на 4
+    // ПРАВИЛЬНЫЙ расчёт БЖУ (macronutrient ratios)
+    // Стандартный баланс: 30% белки, 25% жиры, 45% углеводы
+    const protein = Math.round((calories * 0.30) / 4); // 1г белка = 4 ккал
+    const fat = Math.round((calories * 0.25) / 9);     // 1г жира = 9 ккал
+    const carbs = Math.round((calories * 0.45) / 4);   // 1г углеводов = 4 ккал
 
     // Вода (примерно 30мл на 1кг веса = 1 стакан на 250мл)
     const water = Math.round((weight * 30) / 250);
@@ -273,15 +317,26 @@ function calculate() {
     document.querySelector('[name=carbs_goal]').value = carbs;
     document.querySelector('[name=water_goal]').value = water;
 
-    alert(`✅ Рассчитано на основе Harris-Benedict формулы!
+    const genderText = gender === 'male' ? 'мужчина' : 'женщина';
+    
+    alert(`✅ Расчёт завершён!
 
-🔥 Калории: ${calories} ккал/день
-🥩 Белки: ${protein}г/день
-🥑 Жиры: ${fat}г/день
-🍞 Углеводы: ${carbs}г/день
+🧬 Метаболизм (BMR): ${Math.round(bmr)} ккал/день
+🔥 Дневная норма (TDEE): ${calories} ккал/день
+
+🥩 Белки: ${protein}г/день (${Math.round(protein * 4)} ккал)
+🥑 Жиры: ${fat}г/день (${Math.round(fat * 9)} ккал)
+🍞 Углеводы: ${carbs}г/день (${Math.round(carbs * 4)} ккал)
 💧 Вода: ${water} стаканов/день
 
-Не забудь нажать "Сохранить"!`);
+Профиль: ${genderText}, ${age} лет
+Активность: ${document.querySelector('[name=activity]').options[document.querySelector('[name=activity]').selectedIndex].text}
+
+📌 Не забудь нажать "Сохранить"!`);
+}
+
+function updateCalculation() {
+    // Если нужно, можно добавить автоматический расчёт при изменении пола/активности
 }
 </script>
 
