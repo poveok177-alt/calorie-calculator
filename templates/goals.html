@@ -299,7 +299,7 @@ function calculateAll() {
         calories += 300; // профицит 300 ккал для набора
     }
     
-    calories = Math.round(calories / 50) * 50; // округляем до 50
+    calories = Math.round(calories); // обычное округление
 
     // ПРАВИЛЬНЫЙ расчёт БЖУ (macronutrient ratios)
     // Стандартный баланс: 30% белки, 25% жиры, 45% углеводы
@@ -307,15 +307,20 @@ function calculateAll() {
     let protein;
 
     if (goal < weight) {
-        protein = Math.round(weight * 2.2);
+        protein = weight * 1.8;   // похудение
     } else if (goal > weight) {
-        protein = Math.round(weight * 2);
+        protein = weight * 1.7;   // набор
     } else {
-        protein = Math.round(weight * 1.8);
+        protein = weight * 1.6;   // поддержание
     }
 
+// ограничение сверху (без фанатизма)
+protein = Math.min(protein, 150);
+protein = Math.round(protein);
+
     // Жиры 0.9 г на кг
-    const fat = Math.round(weight * 0.9);
+    let fat = weight * 0.9;
+    fat = Math.round(fat);
 
     // Углеводы = остаток калорий
 const carbs = Math.round((calories - (protein * 4 + fat * 9)) / 4);
