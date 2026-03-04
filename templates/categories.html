@@ -17,7 +17,17 @@
   .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
 
   main { max-width:1100px; margin:0 auto; padding:32px 24px; display:grid; grid-template-columns:220px 1fr; gap:24px; }
-  @media(max-width:700px) { main{grid-template-columns:1fr;} }
+  @media(max-width:700px) {
+    main { grid-template-columns:1fr; padding:12px; }
+    .cat-sidebar { position:static; display:flex; flex-wrap:wrap; gap:6px; padding:12px; }
+    .cat-btn { width:auto; padding:8px 12px; font-size:13px; }
+    .foods-grid { grid-template-columns:1fr 1fr; gap:10px; }
+    .food-card { padding:14px; }
+    .food-cal { font-size:18px; }
+  }
+  @media(max-width:400px) {
+    .foods-grid { grid-template-columns:1fr; }
+  }
 
   /* SIDEBAR CATEGORIES */
   .cat-sidebar { background:white; border-radius:20px; padding:20px; border:1.5px solid var(--border); height:fit-content; box-shadow:0 4px 20px var(--shadow); position:sticky; top:84px; }
