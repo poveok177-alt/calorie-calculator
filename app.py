@@ -140,13 +140,31 @@ translations = {
         'today': 'Сегодня',
         'delete': 'Удалить',
         'clear': 'Очистить',
-        'all': 'Всё',
+        'all': 'Все',
         'grams': 'г',
+        'kcal': 'ккал',
+        'g': 'г',
         'recent': 'Недавние',
         'favorites': 'Избранные',
         'favorites_icon': '⭐',
         'supplements': 'Витамины',
         'sports_nutrition': 'Спортпит',
+        'save': 'Сохранить',
+        'daily_goal': 'Дневная цель',
+        'weight_goal': 'Цель по весу',
+        'current_weight': 'Текущий вес (кг)',
+        'goal_weight': 'Целевой вес (кг)',
+        'height': 'Рост (см)',
+        'water': 'Вода',
+        'month_history': 'История за 30 дней',
+        'bju_counter': 'Счётчик БЖУ',
+        'no_ads': 'Без рекламы',
+        'premium_desc': 'Раскройте весь потенциал здорового питания',
+        'trial_btn': '🎁 7 дней бесплатно за 11 ₽',
+        'buy_btn': 'Получить Премиум 🌿',
+        'per_month': 'в месяц',
+        'free_badge': 'Бесплатно',
+        'premium_badge': '⭐ Премиум',
     },
     'en': {
         'app_name': 'CaloriMint',
@@ -174,11 +192,29 @@ translations = {
         'clear': 'Clear',
         'all': 'All',
         'grams': 'g',
+        'kcal': 'kcal',
+        'g': 'g',
         'recent': 'Recent',
         'favorites': 'Favorites',
         'favorites_icon': '⭐',
         'supplements': 'Supplements',
         'sports_nutrition': 'Sports Nutrition',
+        'save': 'Save',
+        'daily_goal': 'Daily goal',
+        'weight_goal': 'Weight goal',
+        'current_weight': 'Current weight (kg)',
+        'goal_weight': 'Target weight (kg)',
+        'height': 'Height (cm)',
+        'water': 'Water',
+        'month_history': '30-day history',
+        'bju_counter': 'Macros tracker',
+        'no_ads': 'Ad-free',
+        'premium_desc': 'Unlock the full potential of healthy eating',
+        'trial_btn': '🎁 7 days trial for 11 ₽',
+        'buy_btn': 'Get Premium 🌿',
+        'per_month': 'per month',
+        'free_badge': 'Free',
+        'premium_badge': '⭐ Premium',
     },
     'uk': {
         'app_name': 'CaloriMint',
@@ -206,11 +242,29 @@ translations = {
         'clear': 'Очистити',
         'all': 'Все',
         'grams': 'г',
+        'kcal': 'ккал',
+        'g': 'г',
         'recent': 'Недавні',
         'favorites': 'Улюблені',
         'favorites_icon': '⭐',
         'supplements': 'Добавки',
         'sports_nutrition': 'Спортивне харчування',
+        'save': 'Зберегти',
+        'daily_goal': 'Денна норма',
+        'weight_goal': 'Ціль по вазі',
+        'current_weight': 'Поточна вага (кг)',
+        'goal_weight': 'Цільова вага (кг)',
+        'height': 'Зріст (см)',
+        'water': 'Вода',
+        'month_history': 'Історія за 30 днів',
+        'bju_counter': 'Лічильник БЖВ',
+        'no_ads': 'Без реклами',
+        'premium_desc': 'Розкрийте повний потенціал здорового харчування',
+        'trial_btn': '🎁 7 днів пробно за 11 ₽',
+        'buy_btn': 'Отримати Преміум 🌿',
+        'per_month': 'на місяць',
+        'free_badge': 'Безкоштовно',
+        'premium_badge': '⭐ Преміум',
     },
     'kk': {
         'app_name': 'CaloriMint',
@@ -223,10 +277,10 @@ translations = {
         'register': 'Тіркелу',
         'logout': 'Шығу',
         'profile': 'Профиль',
-        'search': 'Өндіктерді іздеу...',
+        'search': 'Өнімдерді іздеу...',
         'add': 'Қосу',
         'calories': 'Калориялар',
-        'protein': 'Ақуыл',
+        'protein': 'Ақуыз',
         'fat': 'Май',
         'carbs': 'Көмірсулар',
         'breakfast': 'Таңғы ас',
@@ -238,13 +292,32 @@ translations = {
         'clear': 'Тазарту',
         'all': 'Барлығы',
         'grams': 'г',
+        'kcal': 'ккал',
+        'g': 'г',
         'recent': 'Соңғы',
         'favorites': 'Таңдамалар',
         'favorites_icon': '⭐',
-        'supplements': 'Қосымшалар',
+        'supplements': 'Қоспалар',
         'sports_nutrition': 'Спорт тамағы',
+        'save': 'Сақтау',
+        'daily_goal': 'Күнделікті норма',
+        'weight_goal': 'Салмақ мақсаты',
+        'current_weight': 'Қазіргі салмақ (кг)',
+        'goal_weight': 'Мақсатты салмақ (кг)',
+        'height': 'Бой (см)',
+        'water': 'Су',
+        'month_history': '30 күндік тарих',
+        'bju_counter': 'БМУ есептегіш',
+        'no_ads': 'Жарнамасыз',
+        'premium_desc': 'Дұрыс тамақтанудың толық мүмкіндігін ашыңыз',
+        'trial_btn': '🎁 7 күн 11 ₽ үшін',
+        'buy_btn': 'Премиум алу 🌿',
+        'per_month': 'айына',
+        'free_badge': 'Тегін',
+        'premium_badge': '⭐ Премиум',
     }
 }
+
 
 # ===================== МАРШРУТЫ =====================
 
@@ -542,7 +615,6 @@ def categories():
 
     from food_data import food_data
 
-    # Строим словарь категория -> список продуктов
     cats = {}
     for idx, food in enumerate(food_data):
         cat = food.get('category', 'other')
@@ -558,20 +630,19 @@ def categories():
             'category': cat,
         })
 
-    # Локализованные названия категорий
     cat_labels = {
-        'fruits':           '🍎 Фрукты',
-        'vegetables':       '🥦 Овощи',
-        'meat':             '🥩 Мясо',
-        'dairy':            '🥛 Молочное',
-        'grains':           '🌾 Злаки',
-        'nuts':             '🌰 Орехи',
-        'fish':             '🐟 Рыба',
-        'sweets':           '🍫 Сладкое',
-        'drinks':           '🥤 Напитки',
-        'supplements':      '💊 Витамины',
-        'sports_nutrition': '💪 Спортпит',
-        'other':            '🍽 Прочее',
+        'fruits':           '🍎 ' + {'ru':'Фрукты','en':'Fruits','uk':'Фрукти','kk':'Жемістер'}.get(lang,'Fruits'),
+        'vegetables':       '🥦 ' + {'ru':'Овощи','en':'Vegetables','uk':'Овочі','kk':'Көкөністер'}.get(lang,'Vegetables'),
+        'meat':             '🥩 ' + {'ru':'Мясо','en':'Meat','uk':'Мʼясо','kk':'Ет'}.get(lang,'Meat'),
+        'dairy':            '🥛 ' + {'ru':'Молочное','en':'Dairy','uk':'Молочне','kk':'Сүт өнімдері'}.get(lang,'Dairy'),
+        'grains':           '🌾 ' + {'ru':'Злаки','en':'Grains','uk':'Злаки','kk':'Астық'}.get(lang,'Grains'),
+        'nuts':             '🌰 ' + {'ru':'Орехи','en':'Nuts','uk':'Горіхи','kk':'Жаңғақтар'}.get(lang,'Nuts'),
+        'fish':             '🐟 ' + {'ru':'Рыба','en':'Fish','uk':'Риба','kk':'Балық'}.get(lang,'Fish'),
+        'sweets':           '🍫 ' + {'ru':'Сладкое','en':'Sweets','uk':'Солодке','kk':'Тәттілер'}.get(lang,'Sweets'),
+        'drinks':           '🥤 ' + {'ru':'Напитки','en':'Drinks','uk':'Напої','kk':'Сусындар'}.get(lang,'Drinks'),
+        'supplements':      '💊 ' + {'ru':'Витамины','en':'Supplements','uk':'Добавки','kk':'Қоспалар'}.get(lang,'Supplements'),
+        'sports_nutrition': '💪 ' + {'ru':'Спортпит','en':'Sports Nutrition','uk':'Спортхарч','kk':'Спорт тамағы'}.get(lang,'Sports Nutrition'),
+        'other':            '🍽 ' + {'ru':'Прочее','en':'Other','uk':'Інше','kk':'Басқа'}.get(lang,'Other'),
     }
 
     category_keys = [k for k in cat_labels if k in cats]
@@ -650,7 +721,29 @@ def logout():
 def premium():
     lang = current_user.language or 'ru'
     t = translations.get(lang, translations['ru'])
-    return render_template('premium.html', t=t, lang=lang)
+    from datetime import datetime
+    trial_available = not current_user.trial_used and not current_user.is_premium
+    trial_active = (current_user.trial_ends and current_user.trial_ends > datetime.utcnow())
+    return render_template('premium.html', t=t, lang=lang,
+                           trial_available=trial_available, trial_active=trial_active)
+
+@app.route('/start-trial', methods=['GET', 'POST'])
+@login_required
+def start_trial():
+    from datetime import datetime, timedelta
+    if current_user.trial_used or current_user.is_premium:
+        return redirect(url_for('premium'))
+    # Помечаем пробный период — активируется после оплаты 11 руб.
+    # Здесь заглушка — активируем сразу (после интеграции ЮKassa заменить)
+    current_user.trial_used = True
+    current_user.is_premium = True
+    current_user.trial_ends = datetime.utcnow() + timedelta(days=7)
+    db.session.commit()
+    lang = current_user.language or 'ru'
+    t = translations.get(lang, translations['ru'])
+    return render_template('premium.html', t=t, lang=lang,
+                           trial_available=False, trial_active=True,
+                           trial_success=True)
 
 @app.route('/language', methods=['POST'])
 def set_language():
