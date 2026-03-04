@@ -66,121 +66,166 @@
   <div class="card">
     <div class="card-title">⚖️ {{ t.weight_goal }}</div>
     <form method="POST">
-      <div class="form-group">
-        <label>{{ t.current_weight }}</label>
-        <input type="number" name="current_weight" step="0.1" min="30" max="300"
-               value="{{ current_user.current_weight or '' }}" placeholder="70.5">
-      </div>
-      <div class="form-group">
-        <label>{{ t.goal_weight }}</label>
-        <input type="number" name="goal_weight" step="0.1" min="30" max="300"
-               value="{{ current_user.goal_weight or '' }}" placeholder="65.0">
-      </div>
-      <div class="form-group">
-        <label>{{ t.height }}</label>
-        <input type="number" name="height" step="1" min="100" max="250"
-               value="{{ current_user.height or '' }}" placeholder="170">
-      </div>
-      <div class="form-group">
-        <label>{{ t.daily_goal }} ({{ t.kcal }})</label>
-        <input type="number" name="daily_calorie_goal" min="500" max="10000" step="50"
-               value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000">
-      </div>
-      <div class="form-group">
-        <label>💧 Норма воды (стаканов в день)</label>
-        <input type="number" name="water_goal" min="1" max="20" step="1"
-               value="{{ current_user.water_goal or 8 }}" placeholder="8">
-      </div>
-      <div class="form-group">
-        <label>🥩 Норма белков (г в день)</label>
-        <input type="number" name="protein_goal" min="10" max="500" step="5"
-               value="{{ current_user.protein_goal or 150 }}" placeholder="150">
-      </div>
-      <div class="form-group">
-        <label>🥑 Норма жиров (г в день)</label>
-        <input type="number" name="fat_goal" min="10" max="300" step="5"
-               value="{{ current_user.fat_goal or 70 }}" placeholder="70">
-      </div>
-      <div class="form-group">
-        <label>🍞 Норма углеводов (г в день)</label>
-        <input type="number" name="carbs_goal" min="10" max="700" step="5"
-               value="{{ current_user.carbs_goal or 250 }}" placeholder="250">
-      </div>
-      <button type="button" onclick="calculate()" style="background:var(--mint); color:var(--green-dark); border:none; border-radius:20px; padding:12px 24px; font-size:14px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; margin-bottom:12px; width:100%;">🧮 Рассчитать автоматически</button>
-      <button type="submit" class="btn-save">💾 {{ t.save }}</button>
-    </form>
+<div class="form-group">
+  <label>{{ t.current_weight }}</label>
+  <input type="number" name="current_weight" step="0.1" min="30" max="300"
+         value="{{ current_user.current_weight or '' }}" placeholder="70.5">
+</div>
 
-    {% if current_user.current_weight and current_user.goal_weight %}
-    <div class="progress-section">
-      {% set diff = (current_user.current_weight - current_user.goal_weight)|abs %}
-      <div class="weight-diff">
-        <div class="weight-val">
-          <div class="weight-label">Сейчас</div>
-          <div class="weight-num">{{ current_user.current_weight }} кг</div>
-        </div>
-        <div class="weight-arrow">→</div>
-        <div class="weight-val">
-          <div class="weight-label">Цель</div>
-          <div class="weight-num">{{ current_user.goal_weight }} кг</div>
-        </div>
-      </div>
-      <div style="font-size:14px; color:var(--text-soft); margin-bottom:10px; font-weight:600;">
-        {% if current_user.current_weight > current_user.goal_weight %}
-          До цели: {{ diff|round(1) }} кг похудеть 💪
-        {% elif current_user.current_weight < current_user.goal_weight %}
-          До цели: {{ diff|round(1) }} кг набрать 🌱
-        {% else %}
-          🎉 Цель достигнута!
-        {% endif %}
-      </div>
-    </div>
+<div class="form-group">
+  <label>{{ t.goal_weight }}</label>
+  <input type="number" name="goal_weight" step="0.1" min="30" max="300"
+         value="{{ current_user.goal_weight or '' }}" placeholder="65.0">
+</div>
 
-    {% if current_user.height %}
-    {% set bmi = current_user.current_weight / ((current_user.height / 100) ** 2) %}
-    <div class="hint-box">
-      <strong>Ваш ИМТ: {{ bmi|round(1) }}</strong><br>
-      {% if bmi < 18.5 %}Ниже нормы (< 18.5). Рекомендуется набрать вес.
-      {% elif bmi < 25 %}Норма (18.5–24.9). Отличный результат! 🌿
-      {% elif bmi < 30 %}Избыточный вес (25–29.9). Небольшая работа предстоит.
-      {% else %}Ожирение (> 30). Рекомендуется проконсультироваться с врачом.{% endif %}
+<div class="form-group">
+  <label>{{ t.height }}</label>
+  <input type="number" name="height" step="1" min="100" max="250"
+         value="{{ current_user.height or '' }}" placeholder="170">
+</div>
+
+<div class="form-group">
+  <label>Возраст</label>
+  <input type="number" name="age" min="14" max="90" placeholder="25">
+</div>
+
+<div class="form-group">
+  <label>Пол</label>
+  <select name="gender" style="width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:14px;">
+    <option value="male">Мужчина</option>
+    <option value="female">Женщина</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label>{{ t.daily_goal }} ({{ t.kcal }})</label>
+  <input type="number" name="daily_calorie_goal" min="500" max="10000" step="1"
+         value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000">
+</div>
+
+<div class="form-group">
+  <label>💧 Норма воды (стаканов в день)</label>
+  <input type="number" name="water_goal" min="1" max="20" step="1"
+         value="{{ current_user.water_goal or 8 }}" placeholder="8">
+</div>
+
+<div class="form-group">
+  <label>🥩 Норма белков (г в день)</label>
+  <input type="number" name="protein_goal" min="10" max="500" step="5"
+         value="{{ current_user.protein_goal or 150 }}" placeholder="150">
+</div>
+
+<div class="form-group">
+  <label>🥑 Норма жиров (г в день)</label>
+  <input type="number" name="fat_goal" min="10" max="300" step="5"
+         value="{{ current_user.fat_goal or 70 }}" placeholder="70">
+</div>
+
+<div class="form-group">
+  <label>🍞 Норма углеводов (г в день)</label>
+  <input type="number" name="carbs_goal" min="10" max="700" step="5"
+         value="{{ current_user.carbs_goal or 250 }}" placeholder="250">
+</div>
+
+<button type="button" onclick="calculate()" style="background:var(--mint); color:var(--green-dark); border:none; border-radius:20px; padding:12px 24px; font-size:14px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; margin-bottom:12px; width:100%;">
+🧮 Рассчитать автоматически
+</button>
+
+<button type="submit" class="btn-save">💾 {{ t.save }}</button>
+</form>
+
+{% if current_user.current_weight and current_user.goal_weight %}
+<div class="progress-section">
+  {% set diff = (current_user.current_weight - current_user.goal_weight)|abs %}
+  <div class="weight-diff">
+    <div class="weight-val">
+      <div class="weight-label">Сейчас</div>
+      <div class="weight-num">{{ current_user.current_weight }} кг</div>
     </div>
-    {% endif %}
+    <div class="weight-arrow">→</div>
+    <div class="weight-val">
+      <div class="weight-label">Цель</div>
+      <div class="weight-num">{{ current_user.goal_weight }} кг</div>
+    </div>
+  </div>
+
+  <div style="font-size:14px; color:var(--text-soft); margin-bottom:10px; font-weight:600;">
+    {% if current_user.current_weight > current_user.goal_weight %}
+      До цели: {{ diff|round(1) }} кг похудеть 💪
+    {% elif current_user.current_weight < current_user.goal_weight %}
+      До цели: {{ diff|round(1) }} кг набрать 🌱
+    {% else %}
+      🎉 Цель достигнута!
     {% endif %}
   </div>
+</div>
+
+{% if current_user.height %}
+{% set bmi = current_user.current_weight / ((current_user.height / 100) ** 2) %}
+<div class="hint-box">
+  <strong>Ваш ИМТ: {{ bmi|round(1) }}</strong><br>
+  {% if bmi < 18.5 %}
+    Ниже нормы (< 18.5). Рекомендуется набрать вес.
+  {% elif bmi < 25 %}
+    Норма (18.5–24.9). Отличный результат! 🌿
+  {% elif bmi < 30 %}
+    Избыточный вес (25–29.9). Небольшая работа предстоит.
+  {% else %}
+    Ожирение (> 30). Рекомендуется проконсультироваться с врачом.
+  {% endif %}
+</div>
+{% endif %}
+{% endif %}
+
+  </div>
 </main>
+
 <script>
-  function calculate() {
-      const weight = parseFloat(document.querySelector('[name=current_weight]').value);
-      const goal = parseFloat(document.querySelector('[name=goal_weight]').value);
-      const height = parseFloat(document.querySelector('[name=height]').value);
+function calculate() {
+    const weight = parseFloat(document.querySelector('[name=current_weight]').value);
+    const goal = parseFloat(document.querySelector('[name=goal_weight]').value);
+    const height = parseFloat(document.querySelector('[name=height]').value);
+    const age = parseFloat(document.querySelector('[name=age]').value);
+    const gender = document.querySelector('[name=gender]').value;
 
-      if (!weight || !height) {
-          alert('Введи вес и рост!');
-          return;
-      }
+    if (!weight || !height || !age) {
+        alert('Введи вес, рост и возраст!');
+        return;
+    }
 
-      const bmr = 10 * weight + 6.25 * height - 5 * 25 + 5;
-      const calories = Math.round(bmr * 1.55);
+    let bmr;
 
-      const protein = Math.round(calories * 0.30 / 4);
-      const fat = Math.round(calories * 0.25 / 9);
-      const carbs = Math.round(calories * 0.45 / 4);
+    if (gender === "male") {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
 
-      let finalCalories = calories;
-      if (goal && goal < weight) finalCalories = calories - 300;
-      if (goal && goal > weight) finalCalories = calories + 300;
+    let calories = Math.round((bmr * 1.4) / 50) * 50;
 
-      document.querySelector('[name=daily_calorie_goal]').value = finalCalories;
-      document.querySelector('[name=protein_goal]').value = protein;
-      document.querySelector('[name=fat_goal]').value = fat;
-      document.querySelector('[name=carbs_goal]').value = carbs;
+    if (goal && goal < weight) calories -= 400;
+    if (goal && goal > weight) calories += 300;
 
-      const water = Math.round((weight * 30) / 250);
-      document.querySelector('[name=water_goal]').value = water;
+    const protein = Math.round((calories * 0.30 / 4) / 5) * 5;
+    const fat = Math.round((calories * 0.25 / 9) / 5) * 5;
+    const carbs = Math.round((calories * 0.45 / 4) / 5) * 5;
 
-      alert(`✅ Рассчитано!\nКалории: ${finalCalories} ккал\nБелки: ${protein}г\nЖиры: ${fat}г\nУглеводы: ${carbs}г\nВода: ${water} стаканов`);
-  }
+    document.querySelector('[name=daily_calorie_goal]').value = calories;
+    document.querySelector('[name=protein_goal]').value = protein;
+    document.querySelector('[name=fat_goal]').value = fat;
+    document.querySelector('[name=carbs_goal]').value = carbs;
+
+    const water = Math.round((weight * 30) / 250);
+    document.querySelector('[name=water_goal]').value = water;
+
+    alert(`✅ Рассчитано!
+Калории: ${calories} ккал
+Белки: ${protein}г
+Жиры: ${fat}г
+Углеводы: ${carbs}г
+Вода: ${water} стаканов`);
+}
 </script>
-</body>
+
 </body>
 </html>
