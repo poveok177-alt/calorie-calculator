@@ -82,65 +82,6 @@
   .bju-label { font-size: 11px; opacity: 0.85; }
   .bju-value { font-size: 18px; font-weight: 800; margin-top: 4px; }
 
-  /* ПОИСК И ТАБЫ */
-  .search-section {
-    background: white; border-radius: 20px; padding: 24px;
-    border: 1.5px solid var(--border); box-shadow: 0 4px 20px var(--shadow);
-    margin-bottom: 24px;
-  }
-  .search-input {
-    width: 100%; padding: 14px 18px;
-    border: 2px solid var(--border); border-radius: 16px;
-    font-size: 15px; background: var(--mint-light); outline: none;
-    transition: all 0.25s; margin-bottom: 16px;
-  }
-  .search-input:focus {
-    border-color: var(--green); background: white;
-    box-shadow: 0 0 0 4px rgba(76,175,131,0.12);
-  }
-  .category-btn {
-    padding: 8px 14px; border: 2px solid var(--border);
-    border-radius: 20px; background: white; color: var(--text-soft);
-    cursor: pointer; font-size: 13px; font-weight: 600;
-    transition: all 0.2s; font-family: 'Nunito', sans-serif;
-  }
-  .category-btn:hover {
-    border-color: var(--green); color: var(--green-dark);
-    background: var(--mint-light);
-  }
-  .category-btn.active {
-    background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white; border-color: var(--green);
-  }
-  .search-tabs {
-    display: flex; gap: 8px; border-bottom: 2px solid var(--border);
-  }
-  .search-tab {
-    padding: 10px 16px; border: none; background: none;
-    cursor: pointer; font-size: 14px; font-weight: 600;
-    color: var(--text-soft); border-bottom: 3px solid transparent;
-    transition: all 0.2s; font-family: 'Nunito', sans-serif;
-  }
-  .search-tab.active {
-    color: var(--green-dark); border-bottom-color: var(--green);
-  }
-  .search-tab:hover { color: var(--green-dark); }
-  .search-results {
-    max-height: 300px; overflow-y: auto; margin-top: 12px;
-  }
-  .search-result {
-    padding: 12px; border-radius: 12px; cursor: pointer;
-    transition: all 0.2s; display: flex; justify-content: space-between;
-    align-items: center; margin-bottom: 8px;
-  }
-  .search-result:hover { background: var(--mint-light); }
-  .search-result-name { font-weight: 600; font-size: 14px; }
-  .search-result-cal { font-size: 12px; color: var(--text-light); }
-  .fav-star {
-    cursor: pointer; font-size: 18px; transition: all 0.2s;
-  }
-  .fav-star.filled { color: #ffc107; }
-
   /* ПРИЁМЫ ПИЩИ */
   .meals-container { margin-top: 32px; }
   .meal-section {
@@ -153,11 +94,68 @@
     padding-bottom: 12px; border-bottom: 2px solid var(--mint-light);
   }
   .meal-icon { font-size: 24px; }
-  .meal-title { font-weight: 800; font-size: 16px; color: var(--text); }
-  .meal-cal {
-    margin-left: auto; font-size: 18px; font-weight: 800;
-    color: var(--green-dark);
+  .meal-title { font-weight: 800; font-size: 16px; color: var(--text); flex: 1; }
+  .meal-cal { font-size: 18px; font-weight: 800; color: var(--green-dark); }
+  .meal-actions {
+    display: flex; gap: 8px; margin-left: 16px;
   }
+  .meal-btn {
+    padding: 6px 12px; background: none; border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700;
+    color: var(--text-soft); transition: all 0.2s;
+  }
+  .meal-btn:hover {
+    border-color: var(--green); color: var(--green-dark);
+    background: var(--mint-light);
+  }
+  .meal-btn.danger {
+    color: #e53935; border-color: #ffcdd2;
+  }
+  .meal-btn.danger:hover {
+    border-color: #e53935; background: #ffebee;
+  }
+  
+  .meal-categories {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap: 6px; margin: 12px 0;
+  }
+  .meal-category-btn {
+    padding: 8px; border: 1px solid var(--border);
+    border-radius: 10px; background: white; color: var(--text-soft);
+    cursor: pointer; font-size: 12px; font-weight: 600;
+    transition: all 0.2s; font-family: 'Nunito', sans-serif;
+  }
+  .meal-category-btn:hover {
+    border-color: var(--green); background: var(--mint-light);
+  }
+  .meal-category-btn.active {
+    background: var(--mint); color: var(--green-dark); border-color: var(--green);
+  }
+  
+  .meal-search {
+    margin-bottom: 12px;
+  }
+  .meal-search-input {
+    width: 100%; padding: 10px 14px;
+    border: 2px solid var(--border); border-radius: 12px;
+    font-size: 13px; background: var(--mint-light); outline: none;
+  }
+  .meal-search-input:focus {
+    border-color: var(--green); background: white;
+  }
+  
+  .meal-product-list {
+    max-height: 180px; overflow-y: auto; margin-bottom: 12px;
+  }
+  .meal-product {
+    padding: 8px 12px; background: var(--mint-light); border-radius: 10px;
+    margin-bottom: 4px; cursor: pointer; transition: all 0.2s;
+    font-size: 12px; font-weight: 600; color: var(--green-dark);
+  }
+  .meal-product:hover {
+    background: var(--border); transform: translateX(4px);
+  }
+  
   .meal-entry {
     display: flex; align-items: center; gap: 12px; padding: 12px 0;
     border-bottom: 1px solid var(--mint-light); justify-content: space-between;
@@ -216,12 +214,6 @@
     font-size: 13px; color: var(--text-soft); margin: 16px 0;
     padding: 12px; background: var(--mint-light); border-radius: 12px;
   }
-  .meal-select {
-    width: 100%; padding: 12px 16px;
-    border: 2px solid var(--border); border-radius: 14px;
-    font-size: 14px; font-family: 'Nunito', sans-serif;
-    outline: none; cursor: pointer;
-  }
   .modal-buttons {
     display: flex; gap: 12px; margin-top: 20px;
   }
@@ -238,20 +230,11 @@
     font-family: 'Nunito', sans-serif; cursor: pointer;
   }
 
-  .meal-empty-add {
-    display: block; width: 100%; padding: 12px; margin-top: 12px;
-    background: var(--mint-light); border: 2px solid var(--border);
-    border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;
-    color: var(--green-dark); transition: all 0.2s;
-  }
-  .meal-empty-add:hover { background: var(--border); }
-
   @media(max-width: 600px) {
     main { padding: 20px 12px; }
     .progress-card { padding: 20px; }
     .progress-number { font-size: 36px; }
-    .bju-chip { padding: 8px; }
-    .modal-content { max-width: 90%; }
+    .meal-categories { grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); }
   }
 </style>
 </head>
@@ -301,52 +284,46 @@
     </div>
   </div>
 
-  <!-- ПОИСК И КАТЕГОРИИ -->
-  <div class="search-section">
-    <input type="text" id="search-input" class="search-input"
-           placeholder="{{ t.search_placeholder }}" autocomplete="off">
-    
-    <!-- КАТЕГОРИИ -->
-    <div style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
-      <button class="category-btn active" onclick="filterByCategory('')">Все</button>
-      <button class="category-btn" onclick="filterByCategory('fruits')">🍎 {{ t.fruits }}</button>
-      <button class="category-btn" onclick="filterByCategory('vegetables')">🥦 {{ t.vegetables }}</button>
-      <button class="category-btn" onclick="filterByCategory('meat')">🥩 {{ t.meat }}</button>
-      <button class="category-btn" onclick="filterByCategory('dairy')">🥛 {{ t.dairy }}</button>
-      <button class="category-btn" onclick="filterByCategory('grains')">🌾 {{ t.grains }}</button>
-      <button class="category-btn" onclick="filterByCategory('nuts')">🌰 {{ t.nuts }}</button>
-      <button class="category-btn" onclick="filterByCategory('fish')">🐟 {{ t.fish }}</button>
-      <button class="category-btn" onclick="filterByCategory('sweets')">🍫 {{ t.sweets }}</button>
-      <button class="category-btn" onclick="filterByCategory('drinks')">🥤 {{ t.drinks }}</button>
-      <button class="category-btn" onclick="filterByCategory('supplements')">💊 {{ t.supplements }}</button>
-      <button class="category-btn" onclick="filterByCategory('sports_nutrition')">💪 {{ t.sports_nutrition }}</button>
-    </div>
-    
-    <div class="search-tabs">
-      <button class="search-tab active" onclick="switchTab('search')">🔍 {{ t.search_placeholder }}</button>
-      <button class="search-tab" onclick="switchTab('recent')">⏰ {{ t.recent }}</button>
-      <button class="search-tab" onclick="switchTab('favorites')">⭐ {{ t.favorites }}</button>
-    </div>
-
-    <!-- Поиск -->
-    <div id="search-tab" class="search-results"></div>
-    
-    <!-- Недавние -->
-    <div id="recent-tab" class="search-results" style="display: none;"></div>
-    
-    <!-- Избранные -->
-    <div id="favorites-tab" class="search-results" style="display: none;"></div>
-  </div>
-
-  <!-- ПРИЁМЫ ПИЩИ -->
+  <!-- ПРИЁМЫ ПИЩИ С КАТЕГОРИЯМИ -->
   <div class="meals-container">
     <!-- ЗАВТРАК -->
     <div class="meal-section">
       <div class="meal-header">
         <span class="meal-icon">🌅</span>
         <span class="meal-title">{{ t.breakfast }}</span>
-        <span class="meal-cal">{{ meal_totals.get('breakfast', 0)|int }} {{ t.kcal }}</span>
+        <span class="meal-cal">{{ meal_totals.get('breakfast', 0)|int }}</span>
+        <div class="meal-actions">
+          <button class="meal-btn" onclick="clearMeal('breakfast')">Очистить</button>
+          <button class="meal-btn danger" onclick="clearAll()">Всё</button>
+        </div>
       </div>
+      
+      <!-- Категории -->
+      <div class="meal-categories">
+        <button class="meal-category-btn active" onclick="filterMealCategory('breakfast', '', event)">Все</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'fruits', event)">🍎</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'vegetables', event)">🥦</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'meat', event)">🥩</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'dairy', event)">🥛</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'grains', event)">🌾</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'nuts', event)">🌰</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'fish', event)">🐟</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'sweets', event)">🍫</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'drinks', event)">🥤</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'supplements', event)">💊</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'sports_nutrition', event)">💪</button>
+      </div>
+      
+      <!-- Поиск -->
+      <div class="meal-search">
+        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
+               onkeyup="searchMealProducts('breakfast', this.value)">
+      </div>
+      
+      <!-- Список продуктов для добавления -->
+      <div class="meal-product-list" id="breakfast-products"></div>
+      
+      <!-- Добавленные продукты -->
       <div id="breakfast-entries">
         {% if meals.breakfast %}
           {% for entry in meals.breakfast %}
@@ -355,18 +332,17 @@
               <div class="entry-dot entry-breakfast"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
-                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+                <div class="entry-grams">{{ entry.grams|int }}г</div>
               </div>
             </div>
-            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <div class="entry-cal">{{ entry.calories|int }}</div>
             <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">{{ t.breakfast }} — пусто</div>
+          <div class="meal-empty">Пусто</div>
         {% endif %}
       </div>
-      <button class="meal-empty-add" onclick="setDefaultMeal('breakfast')">+ {{ t.add_food }}</button>
     </div>
 
     <!-- ОБЕД -->
@@ -374,8 +350,34 @@
       <div class="meal-header">
         <span class="meal-icon">☀️</span>
         <span class="meal-title">{{ t.lunch }}</span>
-        <span class="meal-cal">{{ meal_totals.get('lunch', 0)|int }} {{ t.kcal }}</span>
+        <span class="meal-cal">{{ meal_totals.get('lunch', 0)|int }}</span>
+        <div class="meal-actions">
+          <button class="meal-btn" onclick="clearMeal('lunch')">Очистить</button>
+        </div>
       </div>
+      
+      <div class="meal-categories">
+        <button class="meal-category-btn active" onclick="filterMealCategory('lunch', '', event)">Все</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'fruits', event)">🍎</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'vegetables', event)">🥦</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'meat', event)">🥩</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'dairy', event)">🥛</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'grains', event)">🌾</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'nuts', event)">🌰</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'fish', event)">🐟</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'sweets', event)">🍫</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'drinks', event)">🥤</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'supplements', event)">💊</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'sports_nutrition', event)">💪</button>
+      </div>
+      
+      <div class="meal-search">
+        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
+               onkeyup="searchMealProducts('lunch', this.value)">
+      </div>
+      
+      <div class="meal-product-list" id="lunch-products"></div>
+      
       <div id="lunch-entries">
         {% if meals.lunch %}
           {% for entry in meals.lunch %}
@@ -384,18 +386,17 @@
               <div class="entry-dot entry-lunch"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
-                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+                <div class="entry-grams">{{ entry.grams|int }}г</div>
               </div>
             </div>
-            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <div class="entry-cal">{{ entry.calories|int }}</div>
             <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">{{ t.lunch }} — пусто</div>
+          <div class="meal-empty">Пусто</div>
         {% endif %}
       </div>
-      <button class="meal-empty-add" onclick="setDefaultMeal('lunch')">+ {{ t.add_food }}</button>
     </div>
 
     <!-- УЖИН -->
@@ -403,8 +404,34 @@
       <div class="meal-header">
         <span class="meal-icon">🌙</span>
         <span class="meal-title">{{ t.dinner }}</span>
-        <span class="meal-cal">{{ meal_totals.get('dinner', 0)|int }} {{ t.kcal }}</span>
+        <span class="meal-cal">{{ meal_totals.get('dinner', 0)|int }}</span>
+        <div class="meal-actions">
+          <button class="meal-btn" onclick="clearMeal('dinner')">Очистить</button>
+        </div>
       </div>
+      
+      <div class="meal-categories">
+        <button class="meal-category-btn active" onclick="filterMealCategory('dinner', '', event)">Все</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'fruits', event)">🍎</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'vegetables', event)">🥦</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'meat', event)">🥩</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'dairy', event)">🥛</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'grains', event)">🌾</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'nuts', event)">🌰</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'fish', event)">🐟</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'sweets', event)">🍫</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'drinks', event)">🥤</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'supplements', event)">💊</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'sports_nutrition', event)">💪</button>
+      </div>
+      
+      <div class="meal-search">
+        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
+               onkeyup="searchMealProducts('dinner', this.value)">
+      </div>
+      
+      <div class="meal-product-list" id="dinner-products"></div>
+      
       <div id="dinner-entries">
         {% if meals.dinner %}
           {% for entry in meals.dinner %}
@@ -413,18 +440,17 @@
               <div class="entry-dot entry-dinner"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
-                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+                <div class="entry-grams">{{ entry.grams|int }}г</div>
               </div>
             </div>
-            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <div class="entry-cal">{{ entry.calories|int }}</div>
             <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">{{ t.dinner }} — пусто</div>
+          <div class="meal-empty">Пусто</div>
         {% endif %}
       </div>
-      <button class="meal-empty-add" onclick="setDefaultMeal('dinner')">+ {{ t.add_food }}</button>
     </div>
 
     <!-- ПЕРЕКУС -->
@@ -432,8 +458,34 @@
       <div class="meal-header">
         <span class="meal-icon">🍿</span>
         <span class="meal-title">{{ t.snack }}</span>
-        <span class="meal-cal">{{ meal_totals.get('snack', 0)|int }} {{ t.kcal }}</span>
+        <span class="meal-cal">{{ meal_totals.get('snack', 0)|int }}</span>
+        <div class="meal-actions">
+          <button class="meal-btn" onclick="clearMeal('snack')">Очистить</button>
+        </div>
       </div>
+      
+      <div class="meal-categories">
+        <button class="meal-category-btn active" onclick="filterMealCategory('snack', '', event)">Все</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'fruits', event)">🍎</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'vegetables', event)">🥦</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'meat', event)">🥩</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'dairy', event)">🥛</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'grains', event)">🌾</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'nuts', event)">🌰</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'fish', event)">🐟</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'sweets', event)">🍫</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'drinks', event)">🥤</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'supplements', event)">💊</button>
+        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'sports_nutrition', event)">💪</button>
+      </div>
+      
+      <div class="meal-search">
+        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
+               onkeyup="searchMealProducts('snack', this.value)">
+      </div>
+      
+      <div class="meal-product-list" id="snack-products"></div>
+      
       <div id="snack-entries">
         {% if meals.snack %}
           {% for entry in meals.snack %}
@@ -442,47 +494,36 @@
               <div class="entry-dot entry-snack"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
-                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+                <div class="entry-grams">{{ entry.grams|int }}г</div>
               </div>
             </div>
-            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <div class="entry-cal">{{ entry.calories|int }}</div>
             <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">{{ t.snack }} — пусто</div>
+          <div class="meal-empty">Пусто</div>
         {% endif %}
       </div>
-      <button class="meal-empty-add" onclick="setDefaultMeal('snack')">+ {{ t.add_food }}</button>
     </div>
   </div>
 
 </main>
 
-<!-- МОДАЛЬ ДЛЯ ГРАММОВКИ -->
+<!-- МОДАЛЬ -->
 <div id="modal-overlay" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-title" id="modal-title"></div>
     
     <div class="form-group">
-      <label class="form-label">{{ t.grams }} (по умолчанию 100)</label>
+      <label class="form-label">Граммов (по умолчанию 100)</label>
       <input type="number" id="modal-grams" class="form-input" value="100" min="1" max="9999">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">{{ t.breakfast }}</label>
-      <select id="modal-meal" class="meal-select">
-        <option value="breakfast">{{ t.breakfast }}</option>
-        <option value="lunch">{{ t.lunch }}</option>
-        <option value="dinner">{{ t.dinner }}</option>
-        <option value="snack">{{ t.snack }}</option>
-      </select>
     </div>
 
     <div class="modal-preview" id="modal-preview"></div>
 
     <div class="modal-buttons">
-      <button class="btn-confirm" onclick="confirmAdd()">✓ {{ t.add_food }}</button>
+      <button class="btn-confirm" onclick="confirmAdd()">✓ Добавить</button>
       <button class="btn-cancel" onclick="closeModal()">✕</button>
     </div>
   </div>
@@ -490,157 +531,64 @@
 
 <script>
 const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
-let currentFood = null;
-let defaultMeal = 'snack';
 let modalFood = null;
-let currentCategory = '';  // НОВОЕ: фильтр по категории
+let currentMeal = null;
 
-function switchTab(tab) {
-  document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.search-results').forEach(r => r.style.display = 'none');
-  
+function filterMealCategory(meal, category, event) {
+  event.target.parentElement.querySelectorAll('.meal-category-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
   event.target.classList.add('active');
   
-  if (tab === 'search') {
-    document.getElementById('search-tab').style.display = 'block';
-  } else if (tab === 'recent') {
-    document.getElementById('recent-tab').style.display = 'block';
-    loadRecent();
-  } else if (tab === 'favorites') {
-    document.getElementById('favorites-tab').style.display = 'block';
-    loadFavorites();
+  loadMealCategory(meal, category);
+}
+
+async function loadMealCategory(meal, category) {
+  const res = await fetch('/api/search?q=');
+  let foods = await res.json();
+  
+  if (category) {
+    foods = foods.filter(f => f.category === category);
   }
-}
-
-function filterByCategory(cat) {
-  // НОВОЕ: обновляем активную кнопку категории
-  document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
   
-  currentCategory = cat;
-  document.getElementById('search-input').dispatchEvent(new Event('input'));
+  let html = '';
+  for (const food of foods) {
+    html += `<div class="meal-product" onclick="openMealModal(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.calories}, ${food.protein}, ${food.fat}, ${food.carbs}, '${meal}')">
+      ${food.name} • ${food.calories} ккал
+    </div>`;
+  }
+  
+  document.getElementById(meal + '-products').innerHTML = html;
 }
 
-document.getElementById('search-input').addEventListener('input', async (e) => {
-  const q = e.target.value.toLowerCase().trim();
-  if (!q && !currentCategory) {
-    document.getElementById('search-tab').innerHTML = '';
+async function searchMealProducts(meal, query) {
+  const container = document.getElementById(meal + '-products');
+  if (!query.trim()) {
+    container.innerHTML = '';
     return;
   }
-  const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-  const foods = await res.json();
   
-  // НОВОЕ: фильтруем по категории если выбрана
-  let filtered = foods;
-  if (currentCategory) {
-    filtered = foods.filter(f => f.category === currentCategory);
-  }
-  
-  let html = '';
-  for (const f of filtered) {
-    const fav = await isFavorite(f.id);
-    html += `
-      <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
-        <div>
-          <div class="search-result-name">${f.name}</div>
-          <div class="search-result-cal">${f.calories} ккал/100г · Б:${f.protein}г Ж:${f.fat}г У:${f.carbs}г</div>
-        </div>
-        <span class="fav-star ${fav ? 'filled' : ''}" onclick="event.stopPropagation(); toggleFavorite(${f.id})">⭐</span>
-      </div>
-    `;
-  }
-  document.getElementById('search-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Ничего не найдено</div>';
-});
-
-async function loadRecent() {
-  const res = await fetch('/api/recent');
+  const res = await fetch('/api/search?q=' + encodeURIComponent(query));
   const foods = await res.json();
   
   let html = '';
-  for (const f of foods) {
-    html += `
-      <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
-        <div>
-          <div class="search-result-name">${f.name}</div>
-          <div class="search-result-cal">${f.calories} ккал/100г</div>
-        </div>
-      </div>
-    `;
+  for (const food of foods) {
+    html += `<div class="meal-product" onclick="openMealModal(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.calories}, ${food.protein}, ${food.fat}, ${food.carbs}, '${meal}')">
+      ${food.name} • ${food.calories} ккал
+    </div>`;
   }
-  document.getElementById('recent-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Нет недавних продуктов</div>';
+  container.innerHTML = html;
 }
 
-async function loadFavorites() {
-  const res = await fetch('/api/favorites');
-  const foods = await res.json();
-  
-  let html = '';
-  for (const f of foods) {
-    html += `
-      <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
-        <div>
-          <div class="search-result-name">⭐ ${f.name}</div>
-          <div class="search-result-cal">${f.calories} ккал/100г</div>
-        </div>
-        <span style="cursor: pointer;" onclick="event.stopPropagation(); unfavorite(${f.id})">✕</span>
-      </div>
-    `;
-  }
-  document.getElementById('favorites-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Нет избранных</div>';
-}
-
-async function isFavorite(foodId) {
-  const res = await fetch('/api/favorites');
-  const favs = await res.json();
-  return favs.some(f => f.id === foodId);
-}
-
-async function toggleFavorite(foodId) {
-  const isFav = await isFavorite(foodId);
-  if (isFav) {
-    await fetch('/api/favorites', {
-      method: 'DELETE',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({food_id: foodId})
-    });
-  } else {
-    await fetch('/api/favorites', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({food_id: foodId})
-    });
-  }
-  // Перезагрузить
-  const input = document.getElementById('search-input');
-  if (input.value) {
-    input.dispatchEvent(new Event('input'));
-  }
-}
-
-async function unfavorite(foodId) {
-  await fetch('/api/favorites', {
-    method: 'DELETE',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({food_id: foodId})
-  });
-  loadFavorites();
-}
-
-function setDefaultMeal(meal) {
-  defaultMeal = meal;
-  document.getElementById('modal-meal').value = meal;
-  document.getElementById('search-input').focus();
-}
-
-function openModal(id, name, cal, protein, fat, carbs) {
+function openMealModal(id, name, cal, protein, fat, carbs, meal) {
   if (!isAuth) {
     alert('Войдите в аккаунт');
     return;
   }
+  currentMeal = meal;
   modalFood = { id, name, cal, protein, fat, carbs };
   document.getElementById('modal-title').textContent = name;
   document.getElementById('modal-grams').value = '100';
-  document.getElementById('modal-meal').value = defaultMeal;
   document.getElementById('modal-overlay').classList.add('show');
   updateModalPreview();
 }
@@ -648,6 +596,7 @@ function openModal(id, name, cal, protein, fat, carbs) {
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
   modalFood = null;
+  currentMeal = null;
 }
 
 function updateModalPreview() {
@@ -661,9 +610,8 @@ function updateModalPreview() {
 document.getElementById('modal-grams')?.addEventListener('input', updateModalPreview);
 
 async function confirmAdd() {
-  if (!modalFood) return;
+  if (!modalFood || !currentMeal) return;
   const grams = parseFloat(document.getElementById('modal-grams').value) || 100;
-  const mealType = document.getElementById('modal-meal').value;
   
   const res = await fetch('/api/add-entry', {
     method: 'POST',
@@ -671,7 +619,7 @@ async function confirmAdd() {
     body: JSON.stringify({
       food_id: modalFood.id,
       grams: grams,
-      meal_type: mealType
+      meal_type: currentMeal
     })
   });
   const data = await res.json();
@@ -682,8 +630,25 @@ async function confirmAdd() {
 }
 
 async function deleteEntry(entryId) {
-  if (!confirm('Удалить этот продукт?')) return;
+  if (!confirm('Удалить?')) return;
   const res = await fetch(`/api/remove-entry/${entryId}`, {method: 'DELETE'});
+  if ((await res.json()).success) {
+    location.reload();
+  }
+}
+
+async function clearMeal(meal) {
+  if (!confirm(`Очистить "${meal}"?`)) return;
+  const entries = document.querySelectorAll(`#${meal}-entries .meal-entry`);
+  for (const entry of entries) {
+    const btn = entry.querySelector('.entry-delete');
+    if (btn) btn.click();
+  }
+}
+
+async function clearAll() {
+  if (!confirm('Очистить ВСЕ приёмы пищи за сегодня?')) return;
+  const res = await fetch('/api/clear-day', {method: 'DELETE'});
   if ((await res.json()).success) {
     location.reload();
   }
