@@ -329,29 +329,28 @@ FOODS = [
     {"name_ru": "Рыба копчёная", "name_en": "Smoked fish", "name_uk": "Копчена риба", "name_kk": "Ысталған балық", "calories": 172, "protein": 22.0, "fat": 9.0, "carbs": 0, "category": "fish"},
 
     # === ВИТАМИНЫ И ДОБАВКИ ===
-    {\"name_ru\": \"Витамин C\", \"name_en\": \"Vitamin C\", \"name_uk\": \"Вітамін С\", \"name_kk\": \"С Витамині\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Витамин D3\", \"name_en\": \"Vitamin D3\", \"name_uk\": \"Вітамін D3\", \"name_kk\": \"D3 Витамині\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Витамин B12\", \"name_en\": \"Vitamin B12\", \"name_uk\": \"Вітамін B12\", \"name_kk\": \"B12 Витамині\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Омега-3\", \"name_en\": \"Omega-3\", \"name_uk\": \"Омега-3\", \"name_kk\": \"Омега-3\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Мультивитамины\", \"name_en\": \"Multivitamins\", \"name_uk\": \"Мультивітаміни\", \"name_kk\": \"Көп витаминдер\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Магний\", \"name_en\": \"Magnesium\", \"name_uk\": \"Магній\", \"name_kk\": \"Магний\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Кальций\", \"name_en\": \"Calcium\", \"name_uk\": \"Кальцій\", \"name_kk\": \"Кальций\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Железо\", \"name_en\": \"Iron\", \"name_uk\": \"Залізо\", \"name_kk\": \"Темір\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Цинк\", \"name_en\": \"Zinc\", \"name_uk\": \"Цинк\", \"name_kk\": \"Цинк\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
-    {\"name_ru\": \"Пробиотики\", \"name_en\": \"Probiotics\", \"name_uk\": \"Пробіотики\", \"name_kk\": \"Пробиотиктер\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"supplements\"},
+    {"name_ru": "Витамин C", "name_en": "Vitamin C", "name_uk": "Вітамін С", "name_kk": "С Витамині", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Витамин D3", "name_en": "Vitamin D3", "name_uk": "Вітамін D3", "name_kk": "D3 Витамині", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Витамин B12", "name_en": "Vitamin B12", "name_uk": "Вітамін B12", "name_kk": "B12 Витамині", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Омега-3", "name_en": "Omega-3", "name_uk": "Омега-3", "name_kk": "Омега-3", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Мультивитамины", "name_en": "Multivitamins", "name_uk": "Мультивітаміни", "name_kk": "Көп витаминдер", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Магний", "name_en": "Magnesium", "name_uk": "Магній", "name_kk": "Магний", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Кальций", "name_en": "Calcium", "name_uk": "Кальцій", "name_kk": "Кальций", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Железо", "name_en": "Iron", "name_uk": "Залізо", "name_kk": "Темір", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Цинк", "name_en": "Zinc", "name_uk": "Цинк", "name_kk": "Цинк", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
+    {"name_ru": "Пробиотики", "name_en": "Probiotics", "name_uk": "Пробіотики", "name_kk": "Пробиотиктер", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "supplements"},
 
     # === СПОРТИВНОЕ ПИТАНИЕ ===
-    {\"name_ru\": \"Протеиновый коктейль\", \"name_en\": \"Protein shake\", \"name_uk\": \"Протеїновий коктейль\", \"name_kk\": \"Протеин итеу\", \"calories\": 120, \"protein\": 25, \"fat\": 1.5, \"carbs\": 3, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Изолят сывороточного белка\", \"name_en\": \"Whey protein isolate\", \"name_uk\": \"Ізолят сироваткового білка\", \"name_kk\": \"Сүт ысты білкі\", \"calories\": 110, \"protein\": 25, \"fat\": 0.5, \"carbs\": 2, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Казеин\", \"name_en\": \"Casein\", \"name_uk\": \"Казеїн\", \"name_kk\": \"Казеин\", \"calories\": 130, \"protein\": 24, \"fat\": 2, \"carbs\": 4, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"BCAA\", \"name_en\": \"BCAA\", \"name_uk\": \"BCAA\", \"name_kk\": \"BCAA\", \"calories\": 15, \"protein\": 3, \"fat\": 0, \"carbs\": 1, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Креатин\", \"name_en\": \"Creatine\", \"name_uk\": \"Креатин\", \"name_kk\": \"Креатин\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"L-карнитин\", \"name_en\": \"L-carnitine\", \"name_uk\": \"L-карнітин\", \"name_kk\": \"L-карнитин\", \"calories\": 0, \"protein\": 0, \"fat\": 0, \"carbs\": 0, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Гейнер\", \"name_en\": \"Mass gainer\", \"name_uk\": \"Гейнер\", \"name_kk\": \"Гейнер\", \"calories\": 380, \"protein\": 15, \"fat\": 5, \"carbs\": 65, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Протеиновый батончик\", \"name_en\": \"Protein bar\", \"name_uk\": \"Протеїновий батончик\", \"name_kk\": \"Протеин батоны\", \"calories\": 200, \"protein\": 20, \"fat\": 6, \"carbs\": 15, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Протеиновые чипсы\", \"name_en\": \"Protein chips\", \"name_uk\": \"Протеїнові чіпси\", \"name_kk\": \"Протеин чипсі\", \"calories\": 150, \"protein\": 18, \"fat\": 4, \"carbs\": 8, \"category\": \"sports_nutrition\"},
-    {\"name_ru\": \"Энергетический гель\", \"name_en\": \"Energy gel\", \"name_uk\": \"Енергетичний гель\", \"name_kk\": \"Энергия гель\", \"calories\": 100, \"protein\": 0, \"fat\": 0, \"carbs\": 25, \"category\": \"sports_nutrition\"},
-
-]\n
+    {"name_ru": "Протеиновый коктейль", "name_en": "Protein shake", "name_uk": "Протеїновий коктейль", "name_kk": "Протеин коктейлі", "calories": 120, "protein": 25, "fat": 1.5, "carbs": 3, "category": "sports_nutrition"},
+    {"name_ru": "Изолят сывороточного белка", "name_en": "Whey protein isolate", "name_uk": "Ізолят сироваткового білка", "name_kk": "Сүт ысты білкі", "calories": 110, "protein": 25, "fat": 0.5, "carbs": 2, "category": "sports_nutrition"},
+    {"name_ru": "Казеин", "name_en": "Casein", "name_uk": "Казеїн", "name_kk": "Казеин", "calories": 130, "protein": 24, "fat": 2, "carbs": 4, "category": "sports_nutrition"},
+    {"name_ru": "BCAA", "name_en": "BCAA", "name_uk": "BCAA", "name_kk": "BCAA", "calories": 15, "protein": 3, "fat": 0, "carbs": 1, "category": "sports_nutrition"},
+    {"name_ru": "Креатин", "name_en": "Creatine", "name_uk": "Креатин", "name_kk": "Креатин", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "sports_nutrition"},
+    {"name_ru": "L-карнитин", "name_en": "L-carnitine", "name_uk": "L-карнітин", "name_kk": "L-карнитин", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "category": "sports_nutrition"},
+    {"name_ru": "Гейнер", "name_en": "Mass gainer", "name_uk": "Гейнер", "name_kk": "Гейнер", "calories": 380, "protein": 15, "fat": 5, "carbs": 65, "category": "sports_nutrition"},
+    {"name_ru": "Протеиновый батончик", "name_en": "Protein bar", "name_uk": "Протеїновий батончик", "name_kk": "Протеин батоны", "calories": 200, "protein": 20, "fat": 6, "carbs": 15, "category": "sports_nutrition"},
+    {"name_ru": "Протеиновые чипсы", "name_en": "Protein chips", "name_uk": "Протеїнові чіпси", "name_kk": "Протеин чипсі", "calories": 150, "protein": 18, "fat": 4, "carbs": 8, "category": "sports_nutrition"},
+    {"name_ru": "Энергетический гель", "name_en": "Energy gel", "name_uk": "Енергетичний гель", "name_kk": "Энергия гель", "calories": 100, "protein": 0, "fat": 0, "carbs": 25, "category": "sports_nutrition"},
+]
 
 food_data = FOODS

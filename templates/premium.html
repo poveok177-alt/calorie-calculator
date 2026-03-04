@@ -6,77 +6,44 @@
 <title>{{ t.app_name }} — {{ t.premium }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83;
-    --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9;
-    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd;
-    --shadow:rgba(76,175,131,0.12);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh;
-    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%),
-                     radial-gradient(circle at 80% 80%,rgba(181,234,215,.2) 0%,transparent 50%); }
-  nav { background:rgba(255,255,255,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border);
-    padding:0 24px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow); }
-  .nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
-  .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
-  .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
-
-  .hero {
-    text-align:center; padding:60px 24px 40px;
-    background:linear-gradient(160deg, #e8f8f2 0%, #f9fdf9 100%);
-  }
-  .hero-icon { font-size:64px; display:block; margin-bottom:16px;
-    animation:float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-  .hero h1 { font-family:'Playfair Display',serif; font-size:42px; color:var(--text); margin-bottom:12px; }
-  .hero p { font-size:17px; color:var(--text-soft); max-width:500px; margin:0 auto 40px; line-height:1.6; }
-
-  .cards { max-width:900px; margin:0 auto; padding:0 24px 60px; display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-  @media(max-width:640px) { .cards{grid-template-columns:1fr;} }
-  .feature-card {
-    background:white; border-radius:24px; padding:32px; border:1.5px solid var(--border);
-    box-shadow:0 4px 24px var(--shadow); transition:all .25s;
-  }
-  .feature-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(76,175,131,.18); }
-  .feature-icon { font-size:40px; margin-bottom:16px; display:block; }
-  .feature-title { font-family:'Playfair Display',serif; font-size:20px; color:var(--text); margin-bottom:10px; }
-  .feature-desc { font-size:14px; color:var(--text-soft); line-height:1.6; }
-  .free-badge { background:var(--mint); color:var(--green-dark); font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px; }
-  .premium-badge { background:linear-gradient(135deg,#2d8a63,#4caf83); color:white; font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px; }
-
-  .pricing { max-width:480px; margin:0 auto 60px; padding:0 24px; text-align:center; }
-  .price-card {
-    background:linear-gradient(135deg,#2d8a63,#4caf83,#6dc49a);
-    border-radius:32px; padding:48px 40px; color:white;
-    position:relative; overflow:hidden;
-    box-shadow:0 16px 60px rgba(76,175,131,.3);
-  }
-  .price-card::before { content:'🌿'; position:absolute; font-size:120px; right:-20px; top:-20px; opacity:.15; }
-  .price-card::after { content:'🍃'; position:absolute; font-size:80px; left:-10px; bottom:-10px; opacity:.15; }
-  .price-label { font-size:14px; opacity:.85; font-weight:600; margin-bottom:8px; }
-  .price-amount { font-size:56px; font-weight:800; line-height:1; }
-  .price-period { font-size:16px; opacity:.8; margin-bottom:24px; }
-  .price-features { text-align:left; margin:24px 0; }
-  .price-feature { font-size:15px; padding:8px 0; opacity:.95; }
-  .price-feature::before { content:'✓  '; font-weight:800; }
-  .btn-buy {
-    display:inline-block; background:white; color:var(--green-dark);
-    text-decoration:none; border-radius:24px; padding:16px 40px;
-    font-weight:800; font-size:16px; transition:all .2s; margin-top:8px;
-    position:relative;
-  }
-  .btn-buy:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.2); }
-  .payment-note { font-size:12px; opacity:.7; margin-top:16px; }
-
-  /* Payment section */
-  .payment-section { max-width:700px; margin:0 auto 60px; padding:0 24px; }
-  .payment-title { font-family:'Playfair Display',serif; font-size:24px; text-align:center; margin-bottom:24px; }
-  .payment-card { background:white; border-radius:24px; padding:32px; border:1.5px solid var(--border); margin-bottom:20px; }
-  .payment-card h3 { font-size:17px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-  .payment-card p { font-size:14px; color:var(--text-soft); line-height:1.7; }
-  .payment-card code { background:var(--mint-light); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--green-dark); font-weight:700; }
+  :root{--mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;--green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;--text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;--border:#c8eedd;--shadow:rgba(76,175,131,.12);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(181,234,215,.2) 0%,transparent 50%);}
+  nav{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px var(--shadow);}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--green-dark);text-decoration:none;}
+  .nav-link{padding:8px 14px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;color:var(--text-soft);transition:all .2s;}
+  .nav-link:hover{background:var(--mint-light);color:var(--green-dark);}
+  .hero{text-align:center;padding:60px 24px 40px;background:linear-gradient(160deg,#e8f8f2 0%,#f9fdf9 100%);}
+  .hero-icon{font-size:64px;display:block;margin-bottom:16px;animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .hero h1{font-family:'Playfair Display',serif;font-size:42px;color:var(--text);margin-bottom:12px;}
+  .hero p{font-size:17px;color:var(--text-soft);max-width:500px;margin:0 auto 40px;line-height:1.6;}
+  .cards{max-width:900px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:640px){.cards{grid-template-columns:1fr;}}
+  .feature-card{background:white;border-radius:24px;padding:32px;border:1.5px solid var(--border);box-shadow:0 4px 24px var(--shadow);transition:all .25s;}
+  .feature-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(76,175,131,.18);}
+  .feature-icon{font-size:40px;margin-bottom:16px;display:block;}
+  .feature-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--text);margin-bottom:10px;}
+  .feature-desc{font-size:14px;color:var(--text-soft);line-height:1.6;}
+  .free-badge{background:var(--mint);color:var(--green-dark);font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;}
+  .premium-badge{background:linear-gradient(135deg,#2d8a63,#4caf83);color:white;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;}
+  .pricing{max-width:480px;margin:0 auto 60px;padding:0 24px;text-align:center;}
+  .price-card{background:linear-gradient(135deg,#2d8a63,#4caf83,#6dc49a);border-radius:32px;padding:48px 40px;color:white;position:relative;overflow:hidden;box-shadow:0 16px 60px rgba(76,175,131,.3);}
+  .price-card::before{content:'🌿';position:absolute;font-size:120px;right:-20px;top:-20px;opacity:.15;}
+  .price-amount{font-size:56px;font-weight:800;line-height:1;}
+  .price-period{font-size:16px;opacity:.8;margin-bottom:24px;}
+  .price-features{text-align:left;margin:24px 0;}
+  .price-feature{font-size:15px;padding:8px 0;opacity:.95;}
+  .price-feature::before{content:'✓  ';font-weight:800;}
+  .btn-buy{display:inline-block;background:white;color:var(--green-dark);text-decoration:none;border-radius:24px;padding:16px 40px;font-weight:800;font-size:16px;transition:all .2s;margin-top:8px;position:relative;}
+  .btn-buy:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.2);}
+  .payment-section{max-width:700px;margin:0 auto 60px;padding:0 24px;}
+  .payment-title{font-family:'Playfair Display',serif;font-size:24px;text-align:center;margin-bottom:24px;}
+  .payment-card{background:white;border-radius:24px;padding:32px;border:1.5px solid var(--border);margin-bottom:20px;}
+  .payment-card h3{font-size:17px;font-weight:700;margin-bottom:12px;}
+  .payment-card p{font-size:14px;color:var(--text-soft);line-height:1.7;}
+  .payment-card code{background:var(--mint-light);padding:2px 8px;border-radius:6px;font-size:13px;color:var(--green-dark);font-weight:700;}
 </style>
 </head>
 <body>
@@ -98,59 +65,58 @@
     <span class="free-badge">Бесплатно</span>
     <span class="feature-icon">🔍</span>
     <div class="feature-title">Поиск продуктов</div>
-    <div class="feature-desc">100+ продуктов с умным поиском — находит даже с опечатками. Поиск по категориям.</div>
+    <div class="feature-desc">300+ продуктов с умным поиском — находит по любому языку интерфейса.</div>
   </div>
   <div class="feature-card">
     <span class="free-badge">Бесплатно</span>
     <span class="feature-icon">🔥</span>
     <div class="feature-title">Счётчик калорий</div>
-    <div class="feature-desc">Считайте калории за день. Красивый круговой индикатор прогресса к дневной цели.</div>
+    <div class="feature-desc">Считайте калории за день по приёмам пищи. Прогресс к дневной цели.</div>
   </div>
   <div class="feature-card">
     <span class="premium-badge">⭐ Премиум</span>
     <span class="feature-icon">📅</span>
     <div class="feature-title">{{ t.month_history }}</div>
-    <div class="feature-desc">Полная история питания за последние 30 дней. Смотрите на своё питание в разрезе недель.</div>
+    <div class="feature-desc">Полная история питания за последние 30 дней.</div>
   </div>
   <div class="feature-card">
     <span class="premium-badge">⭐ Премиум</span>
     <span class="feature-icon">📊</span>
     <div class="feature-title">{{ t.bju_counter }}</div>
-    <div class="feature-desc">Отслеживайте белки, жиры и углеводы — ключевые макронутриенты для здоровья и формы.</div>
+    <div class="feature-desc">Белки, жиры и углеводы — ключевые макронутриенты для здоровья.</div>
   </div>
   <div class="feature-card">
     <span class="premium-badge">⭐ Премиум</span>
     <span class="feature-icon">🎯</span>
     <div class="feature-title">{{ t.weight_goal }}</div>
-    <div class="feature-desc">Поставьте цель по весу, укажите рост — и отслеживайте прогресс к своей мечте.</div>
+    <div class="feature-desc">Поставьте цель по весу, укажите рост и отслеживайте прогресс.</div>
   </div>
   <div class="feature-card">
     <span class="premium-badge">⭐ Премиум</span>
     <span class="feature-icon">✨</span>
     <div class="feature-title">{{ t.no_ads }}</div>
-    <div class="feature-desc">Чистый интерфейс без отвлекающей рекламы. Только вы и ваши цели.</div>
+    <div class="feature-desc">Чистый интерфейс без рекламы. Только вы и ваши цели.</div>
   </div>
 </div>
 
 <div class="pricing">
   <div class="price-card">
-    <div class="price-label">Премиум подписка</div>
+    <div style="font-size:14px;opacity:.85;margin-bottom:8px;">Премиум подписка</div>
     <div class="price-amount">199<span style="font-size:24px">₽</span></div>
     <div class="price-period">в месяц</div>
     <div class="price-features">
-      <div class="price-feature">История питания за 30 дней</div>
+      <div class="price-feature">История за 30 дней</div>
       <div class="price-feature">Счётчик БЖУ</div>
-      <div class="price-feature">Цель по весу и прогресс</div>
+      <div class="price-feature">Цель по весу</div>
       <div class="price-feature">Без рекламы</div>
     </div>
-    <!-- Кнопка оплаты — замените ссылку на реальную после настройки -->
     {% if trial_available %}
-    <a href="/start-trial" class="btn-buy" style="background:linear-gradient(135deg,#ffb74d,#ff9800); color:white; margin-bottom:12px; display:block; text-align:center;">
-      🎁 Попробовать 7 дней за 1 ₽
+    <a href="/start-trial" class="btn-buy" style="background:linear-gradient(135deg,#ffb74d,#ff9800);color:white;display:block;text-align:center;margin-bottom:12px;">
+      🎁 7 дней за 1 ₽
     </a>
     {% endif %}
     <a href="#payment-info" class="btn-buy">Получить Премиум 🌿</a>
-    <div class="payment-note">Безопасная оплата · Отмена в любой момент</div>
+    <div style="font-size:12px;opacity:.7;margin-top:16px;">Безопасная оплата · Отмена в любой момент</div>
   </div>
 </div>
 
@@ -158,33 +124,21 @@
   <div class="payment-title">💳 Как подключить оплату</div>
   <div class="payment-card">
     <h3>🇷🇺 ЮKassa (для России)</h3>
-    <p>
-      1. Зарегистрируйтесь на <code>yookassa.ru</code><br>
-      2. Подключите свой магазин (нужен ИП или самозанятость)<br>
-      3. Получите <code>shop_id</code> и <code>secret_key</code><br>
-      4. Установите: <code>pip install yookassa</code><br>
-      5. Добавьте маршрут /buy-premium в app.py (инструкция в README)
-    </p>
+    <p>1. Зарегистрируйтесь на <code>yookassa.ru</code><br>
+    2. Получите <code>shop_id</code> и <code>secret_key</code><br>
+    3. Добавьте в <code>.env</code> файл</p>
   </div>
   <div class="payment-card">
-    <h3>🌍 Stripe (для всего мира)</h3>
-    <p>
-      1. Зарегистрируйтесь на <code>stripe.com</code><br>
-      2. Получите API ключи в Dashboard<br>
-      3. Установите: <code>pip install stripe</code><br>
-      4. Создайте продукт и цену в Stripe Dashboard<br>
-      5. Используйте Stripe Checkout — самый простой вариант
-    </p>
+    <h3>🌍 Stripe (международный)</h3>
+    <p>1. Зарегистрируйтесь на <code>stripe.com</code><br>
+    2. Установите: <code>pip install stripe</code><br>
+    3. Используйте Stripe Checkout</p>
   </div>
   <div class="payment-card">
-    <h3>🚀 Быстрый старт без регистрации ИП</h3>
-    <p>
-      Для начала можно использовать <code>Tribute</code> (tribute.tinkoff.ru) или <code>Boosty</code> — 
-      там не нужен ИП, просто создай страницу подписки и вставь ссылку вместо кнопки выше. 
-      После получения оплаты — вручную меняй <code>is_premium = True</code> в базе через скрипт.
-    </p>
+    <h3>🚀 Быстрый старт без ИП</h3>
+    <p>Используйте <code>Tribute</code> (tribute.tinkoff.ru) или <code>Boosty</code> —
+    не нужен ИП, создайте страницу подписки и вставьте ссылку вместо кнопки выше.</p>
   </div>
 </div>
-
 </body>
 </html>

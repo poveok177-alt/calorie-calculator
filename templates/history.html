@@ -1,50 +1,50 @@
 <!DOCTYPE html>
 <html lang="{{ lang }}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ t.app_name }} — {{ t.history }}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root { --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83; --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9; --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd; --shadow:rgba(76,175,131,.12); }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh;
-      background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%); }
-    nav { background:rgba(255,255,255,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow); }
-    .nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
-    .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
-    .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
-    .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
-    main { max-width:800px; margin:0 auto; padding:40px 24px; }
-    .page-title { font-family:'Playfair Display',serif; font-size:32px; margin-bottom:8px; }
-    .page-sub { color:var(--text-soft); font-size:15px; margin-bottom:32px; }
-    .day-card { background:white; border-radius:20px; padding:24px; margin-bottom:20px; border:1.5px solid var(--border); box-shadow:0 4px 20px var(--shadow); }
-    .day-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--mint-light); }
-    .day-date { font-weight:800; font-size:16px; color:var(--text); }
-    .day-stats { display:flex; gap:16px; font-size:13px; color:var(--text-soft); font-weight:600; }
-    .day-cal { color:var(--green-dark); font-weight:800; font-size:18px; }
-    .entry-row { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid var(--mint-light); }
-    .entry-row:last-child { border-bottom:none; }
-    .entry-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
-    .entry-dot.breakfast{background:#ffb74d} .entry-dot.lunch{background:#81c784} .entry-dot.dinner{background:#64b5f6} .entry-dot.snack{background:#f06292}
-    .entry-name { flex:1; font-size:14px; font-weight:600; }
-    .entry-grams { font-size:12px; color:var(--text-light); }
-    .entry-cal { font-size:14px; font-weight:700; color:var(--green-dark); }
-    .macros-small { font-size:11px; color:var(--text-light); }
-    .empty { text-align:center; padding:60px; color:var(--text-light); }
-    .empty-icon { font-size:48px; display:block; margin-bottom:16px; }
-    .macro-pills { display:flex; gap:8px; flex-wrap:wrap; }
-    .pill { background:var(--mint-light); color:var(--green-dark); font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px; }
-    .blurred { position:relative; overflow:hidden; }
-    .blurred .day-header, .blurred .entry-row { filter:blur(4px); user-select:none; pointer-events:none; }
-    .blur-overlay {
-      position:absolute; inset:0; z-index:10;
-      background:rgba(232,248,242,0.85);
-      display:flex; align-items:center; justify-content:center;
-      border-radius:20px;
-    }
-    .blur-content { text-align:center; color:#2d4a3e; padding:20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t.app_name }} — {{ t.history }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;--green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;--text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;--border:#c8eedd;--shadow:rgba(76,175,131,.12);}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);}
+  nav{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px var(--shadow);}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--green-dark);text-decoration:none;}
+  .nav-link{padding:8px 14px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;color:var(--text-soft);transition:all .2s;}
+  .nav-link:hover{background:var(--mint-light);color:var(--green-dark);}
+  main{max-width:800px;margin:0 auto;padding:40px 24px;}
+  .page-title{font-family:'Playfair Display',serif;font-size:32px;margin-bottom:8px;}
+  .page-sub{color:var(--text-soft);font-size:15px;margin-bottom:32px;}
+  .day-card{background:white;border-radius:20px;padding:24px;margin-bottom:20px;border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);}
+  .day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--mint-light);}
+  .day-date{font-weight:800;font-size:16px;}
+  .day-cal{color:var(--green-dark);font-weight:800;font-size:18px;}
+  .entry-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--mint-light);}
+  .entry-row:last-child{border-bottom:none;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+  .dot.breakfast{background:#ffb74d}.dot.lunch{background:#81c784}.dot.dinner{background:#64b5f6}.dot.snack{background:#f06292}
+  .entry-name{flex:1;font-size:14px;font-weight:600;}
+  .entry-grams{font-size:12px;color:var(--text-light);}
+  .entry-cal{font-size:14px;font-weight:700;color:var(--green-dark);}
+  .macro-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+  .pill{background:var(--mint-light);color:var(--green-dark);font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;}
+  .empty{text-align:center;padding:60px;color:var(--text-light);}
+  .empty-icon{font-size:48px;display:block;margin-bottom:16px;}
+
+  /* Blur overlay for non-premium */
+  .locked-card{position:relative;overflow:hidden;}
+  .locked-inner{filter:blur(5px);user-select:none;pointer-events:none;}
+  .lock-overlay{
+    position:absolute;inset:0;z-index:10;
+    background:rgba(232,248,242,.88);
+    display:flex;align-items:center;justify-content:center;
+    border-radius:20px;
+  }
+  .lock-content{text-align:center;color:var(--text);padding:24px;}
+  .lock-content a{display:inline-block;margin-top:14px;background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;padding:10px 24px;border-radius:20px;font-weight:800;text-decoration:none;font-size:14px;}
+</style>
 </head>
 <body>
 <nav>
@@ -61,44 +61,51 @@
   <div class="page-sub">История питания за последние 30 дней</div>
 
   {% if days %}
-  {% for date_str, day in days.items() %}
-  <div class="day-card {% if loop.index > 3 %}blurred{% endif %}">
-    {% if loop.index > 3 %}
-    <div class="blur-overlay">
-      <div class="blur-content">
-        <div style="font-size:36px;">🔒</div>
-        <div style="font-size:16px; font-weight:800; margin:8px 0;">История за этот день скрыта</div>
-        <div style="font-size:13px; opacity:0.8; margin-bottom:16px;">Откройте полную историю за 30 дней с Премиум</div>
-        <a href="/premium" style="background:white; color:#2d8a63; padding:10px 24px; border-radius:20px; font-weight:800; text-decoration:none; font-size:14px;">⭐ Получить Премиум</a>
-      </div>
-    </div>
-    {% endif %}
-    <div class="day-header">
-      <div>
-        <div class="day-date">{{ date_str }}</div>
-        <div class="macro-pills" style="margin-top:6px;">
-          <span class="pill">Б: {{ day.total_protein|round(1) }}г</span>
-          <span class="pill">Ж: {{ day.total_fat|round(1) }}г</span>
-          <span class="pill">У: {{ day.total_carbs|round(1) }}г</span>
+    {% for date_str, day in days.items() %}
+    {% set loop_idx = loop.index %}
+    <div class="day-card {% if not is_premium and loop_idx > 3 %}locked-card{% endif %}">
+      {% if not is_premium and loop_idx > 3 %}
+      <div class="lock-overlay">
+        <div class="lock-content">
+          <div style="font-size:36px;">🔒</div>
+          <div style="font-size:16px;font-weight:800;margin:8px 0;">Скрыто</div>
+          <div style="font-size:13px;opacity:.8;margin-bottom:4px;">Полная история — в Премиум</div>
+          <a href="/premium">⭐ Получить Премиум</a>
         </div>
       </div>
-      <div class="day-cal">{{ day.total_cal|int }} {{ t.kcal }}</div>
-    </div>
-    {% for entry in day.entries %}
+      <div class="locked-inner">
+      {% endif %}
+
+      <div class="day-header">
+        <div>
+          <div class="day-date">{{ date_str }}</div>
+          <div class="macro-pills">
+            <span class="pill">Б: {{ day.total_protein|round(1) }}г</span>
+            <span class="pill">Ж: {{ day.total_fat|round(1) }}г</span>
+            <span class="pill">У: {{ day.total_carbs|round(1) }}г</span>
+          </div>
+        </div>
+        <div class="day-cal">{{ day.total_cal|int }} {{ t.kcal }}</div>
+      </div>
+      {% for entry in day.entries %}
       <div class="entry-row">
-        <div class="entry-dot {{ entry.meal_type }}"></div>
+        <div class="dot {{ entry.meal_type }}"></div>
         <div class="entry-name">{{ entry.food_name }}</div>
-        <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+        <div class="entry-grams">{{ entry.grams|int }}{{ t.g }}</div>
         <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
       </div>
       {% endfor %}
+
+      {% if not is_premium and loop_idx > 3 %}
+      </div>
+      {% endif %}
     </div>
     {% endfor %}
   {% else %}
-    <div class="empty">
-      <span class="empty-icon">🌱</span>
-      Пока нет записей за последний месяц.<br>Начните добавлять продукты на главной странице!
-    </div>
+  <div class="empty">
+    <span class="empty-icon">🌱</span>
+    Пока нет записей за последние 30 дней.<br>Начните добавлять продукты на главной странице!
+  </div>
   {% endif %}
 </main>
 </body>
