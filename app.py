@@ -54,6 +54,8 @@ class User(UserMixin, db.Model):
     fat_goal = db.Column(db.Integer, default=70)
     carbs_goal = db.Column(db.Integer, default=250)
     age = db.Column(db.Integer, default=25)
+    gender = db.Column(db.String(10), default='male')
+    activity = db.Column(db.String(20), default='moderate')
 
     # Пробный период
     trial_used = db.Column(db.Boolean, default=False)
@@ -470,6 +472,7 @@ def premium():
     if current_user.is_authenticated and not current_user.trial_used:
         trial_available = True
     return render_template('premium.html', t=t, lang=lang, trial_available=trial_available)
+
 @app.route('/start-trial')
 @login_required
 def start_trial():
@@ -490,6 +493,7 @@ def check_trial():
         if current_user.trial_ends and datetime.utcnow() > current_user.trial_ends:
             current_user.is_premium = False
             db.session.commit()
+
 @app.route('/history')
 @login_required
 def history():
@@ -535,6 +539,8 @@ def goals():
             current_user.goal_weight = float(request.form.get('goal_weight') or 0)
             current_user.height = float(request.form.get('height') or 0)
             current_user.age = int(request.form.get('age') or 25)
+            current_user.gender = request.form.get('gender') or 'male'
+            current_user.activity = request.form.get('activity') or 'moderate'
             current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal') or 2000)
             current_user.water_goal = int(request.form.get('water_goal') or 8)
             current_user.protein_goal = int(request.form.get('protein_goal') or 150)
@@ -549,6 +555,7 @@ def goals():
             print(f"Error saving goals: {e}")
 
     return render_template('goals.html', t=t, lang=lang)
+
 @app.route('/categories')
 def categories():
     t = get_t()
@@ -704,7 +711,9 @@ def init_db():
                 db.session.add(food)
             db.session.commit()
             print(f"✅ Добавлено {len(FOODS)} продуктов в базу данных")
+
 init_db()
+
 @app.route('/api/create-payment', methods=['POST'])
 @login_required
 def create_payment():
@@ -760,6 +769,7 @@ def yookassa_webhook():
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
         return jsonify({'status': 'error'}), 400
+
 if __name__ == '__main__':
     app.run(debug=True)
 # redeploy trigger
