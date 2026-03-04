@@ -5,7 +5,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 import json
 import os
-from yookassa import Client, Payment
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, date
+import json
+import os
+try:
+    from yookassa import Configuration, Payment
+except ImportError:
+    pass
+import uuid
+from dotenv import load_dotenv
+import os
+
 import uuid
 from dotenv import load_dotenv
 import os
