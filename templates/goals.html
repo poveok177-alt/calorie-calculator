@@ -307,18 +307,18 @@ function calculateAll() {
     let protein;
 
     if (goal < weight) {
-        protein = Math.round(weight * 2.2); // похудение
+        protein = Math.round(weight * 2.2);
     } else if (goal > weight) {
-        protein = Math.round(weight * 2);   // набор
+        protein = Math.round(weight * 2);
     } else {
-        protein = Math.round(weight * 1.8); // поддержание
+        protein = Math.round(weight * 1.8);
     }
 
     // Жиры 0.9 г на кг
     const fat = Math.round(weight * 0.9);
 
     // Углеводы = остаток калорий
-    const carbs = Math.round((calories - (protein * 4 + fat * 9)) / 4);
+const carbs = Math.round((calories - (protein * 4 + fat * 9)) / 4);
 
     // Вода (примерно 30мл на 1кг веса = 1 стакан на 250мл)
     const water = Math.round((weight * 30) / 250);
