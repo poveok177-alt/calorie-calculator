@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t.app_name }} — {{ t.categories }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83; --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9; --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd; --shadow:rgba(76,175,131,.12); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh;
+    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%); }
+  nav { background:rgba(255,255,255,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow); }
+  .nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
+  .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
+  .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
+
+  main { max-width:1100px; margin:0 auto; padding:32px 24px; display:grid; grid-template-columns:220px 1fr; gap:24px; }
+  @media(max-width:700px) { main{grid-template-columns:1fr;} }
+
+  /* SIDEBAR CATEGORIES */
+  .cat-sidebar { background:white; border-radius:20px; padding:20px; border:1.5px solid var(--border); height:fit-content; box-shadow:0 4px 20px var(--shadow); position:sticky; top:84px; }
+  .cat-title { font-weight:800; font-size:14px; color:var(--text); margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px; }
+  .cat-btn {
+    display:block; width:100%; text-align:left;
+    padding:10px 14px; border-radius:14px;
+    text-decoration:none; font-size:14px; font-weight:600;
+    color:var(--text-soft); transition:all .2s; margin-bottom:4px;
+    border:none; background:none; cursor:pointer; font-family:'Nunito',sans-serif;
+  }
+  .cat-btn:hover { background:var(--mint-light); color:var(--green-dark); }
+  .cat-btn.active { background:var(--mint); color:var(--green-dark); }
+
+  /* FOOD LIST */
+  .foods-panel { }
+  .foods-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:8px; }
+  .foods-count { font-size:14px; color:var(--text-light); margin-bottom:20px; }
+  .foods-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+  .food-card {
+    background:white; border-radius:18px; padding:20px;
+    border:1.5px solid var(--border); box-shadow:0 3px 16px var(--shadow);
+    transition:all .2s; cursor:pointer;
+  }
+  .food-card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(76,175,131,.18); border-color:var(--green); }
+  .food-name { font-weight:700; font-size:15px; color:var(--text); margin-bottom:8px; }
+  .food-cal { font-size:22px; font-weight:800; color:var(--green-dark); }
+  .food-cal-label { font-size:11px; color:var(--text-light); }
+  .food-macros { display:flex; gap:10px; margin-top:10px; }
+  .macro-chip { background:var(--mint-light); color:var(--green-dark); font-size:11px; font-weight:700; padding:3px 9px; border-radius:10px; }
+  .add-from-cat {
+    display:block; width:100%; margin-top:12px; padding:9px;
+    background:linear-gradient(135deg,var(--green),var(--green-soft));
+    color:white; border:none; border-radius:12px;
+    font-size:13px; font-weight:700; font-family:'Nunito',sans-serif;
+    cursor:pointer; transition:all .2s;
+    text-align:center;
+  }
+  .add-from-cat:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(76,175,131,.25); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">🌿 {{ t.app_name }}</a>
+    <a href="/" class="nav-link">← Поиск</a>
+  </div>
+</nav>
+<main>
+  <!-- SIDEBAR -->
+  <div class="cat-sidebar">
+    <div class="cat-title">{{ t.categories }}</div>
+    {% for cat in category_keys %}
+    <a href="/categories?cat={{ cat }}" class="cat-btn {% if current_cat == cat %}active{% endif %}">
+      {{ t[cat] }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- FOODS -->
+  <div class="foods-panel">
+    <div class="foods-title">{{ t[current_cat] }}</div>
+    <div class="foods-count">{{ foods|length }} продуктов · сортировка по алфавиту</div>
+    <div class="foods-grid">
+      {% for food in foods %}
+      <div class="food-card" onclick="quickAdd({{ food.id }}, '{{ food.name|replace("'", "\\'") }}', {{ food.calories }}, {{ food.protein }}, {{ food.fat }}, {{ food.carbs }})">
+        <div class="food-name">{{ food.name }}</div>
+        <div>
+          <span class="food-cal">{{ food.calories }}</span>
+          <span class="food-cal-label"> {{ t.kcal }} / 100{{ t.g }}</span>
+        </div>
+        <div class="food-macros">
+          <span class="macro-chip">Б {{ food.protein }}г</span>
+          <span class="macro-chip">Ж {{ food.fat }}г</span>
+          <span class="macro-chip">У {{ food.carbs }}г</span>
+        </div>
+        <button class="add-from-cat">+ Добавить</button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+
+<!-- Modal for adding -->
+<div id="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:24px; padding:32px; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.2);">
+    <div style="font-family:'Playfair Display',serif; font-size:20px; margin-bottom:20px;" id="modal-title"></div>
+    <div style="margin-bottom:16px;">
+      <label style="font-size:12px; font-weight:700; color:#5a7a6e; display:block; margin-bottom:6px; text-transform:uppercase;">Количество (граммов)</label>
+      <input type="number" id="modal-grams" value="100" min="1" max="9999" style="width:100%; padding:12px 16px; border:2px solid #c8eedd; border-radius:14px; font-size:15px; font-family:'Nunito',sans-serif; outline:none;">
+    </div>
+    <div id="modal-preview" style="font-size:13px; color:#5a7a6e; margin-bottom:20px;"></div>
+    <div style="display:flex; gap:12px;">
+      <button onclick="confirmAdd()" style="flex:1; padding:12px; background:linear-gradient(135deg,#4caf83,#6dc49a); color:white; border:none; border-radius:14px; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer;">✓ Добавить</button>
+      <button onclick="closeModal()" style="padding:12px 20px; background:none; border:2px solid #c8eedd; border-radius:14px; font-size:14px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer;">✕</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
+let modalFood = null;
+
+function quickAdd(id, name, cal, protein, fat, carbs) {
+  if (!isAuth) {
+    alert('Войдите в аккаунт, чтобы добавлять продукты в дневник');
+    return;
+  }
+  modalFood = { id, name, cal, protein, fat, carbs };
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-overlay').style.display = 'flex';
+  updateModalPreview();
+}
+
+function updateModalPreview() {
+  if (!modalFood) return;
+  const g = parseFloat(document.getElementById('modal-grams').value) || 100;
+  const r = g / 100;
+  document.getElementById('modal-preview').textContent =
+    `🔥 ${Math.round(modalFood.cal*r)} ккал · Б:${(modalFood.protein*r).toFixed(1)}г Ж:${(modalFood.fat*r).toFixed(1)}г У:${(modalFood.carbs*r).toFixed(1)}г`;
+}
+
+document.getElementById('modal-grams').addEventListener('input', updateModalPreview);
+
+async function confirmAdd() {
+  if (!modalFood) return;
+  const grams = parseFloat(document.getElementById('modal-grams').value) || 100;
+  const r = await fetch('/api/add-entry', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({food_id: modalFood.id, grams, meal_type:'other'})
+  });
+  const data = await r.json();
+  if (data.success) {
+    closeModal();
+    alert(`✓ ${modalFood.name} добавлен в дневник!`);
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  modalFood = null;
+}
+
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

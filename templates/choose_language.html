@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaloriMint — Choose Language</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fdf9;
+    background-image:
+      radial-gradient(circle at 15% 85%, rgba(181,234,215,0.5) 0%, transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(181,234,215,0.4) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(208,240,228,0.2) 0%, transparent 60%);
+    padding: 24px;
+  }
+  .container {
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: #2d8a63;
+    margin-bottom: 8px;
+  }
+  .tagline {
+    color: #5a7a6e;
+    font-size: 16px;
+    margin-bottom: 48px;
+    font-weight: 500;
+  }
+  .leaf-deco {
+    font-size: 60px;
+    display: block;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .choose-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2d4a3e;
+    margin-bottom: 32px;
+  }
+  .languages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .lang-card {
+    background: white;
+    border: 2px solid #c8eedd;
+    border-radius: 20px;
+    padding: 28px 20px;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .lang-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #b5ead7, #d0f0e4);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .lang-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 40px rgba(76,175,131,0.2); border-color: #4caf83; }
+  .lang-card:hover::before { opacity: 1; }
+  .lang-flag { font-size: 40px; display: block; margin-bottom: 10px; position: relative; }
+  .lang-name { font-size: 18px; font-weight: 800; color: #2d4a3e; position: relative; }
+  .lang-native { font-size: 13px; color: #5a7a6e; margin-top: 4px; position: relative; }
+  .footer-text {
+    font-size: 13px;
+    color: #8aaa9e;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <span class="leaf-deco">🌿</span>
+  <div class="logo">CaloriMint</div>
+  <div class="tagline">Your body care starts here</div>
+
+  <div class="choose-title">🌍 Выберите язык / Choose language</div>
+
+  <div class="languages">
+    <a href="/set-language/ru" class="lang-card">
+      <span class="lang-flag">🇷🇺</span>
+      <div class="lang-name">Русский</div>
+      <div class="lang-native">Russian</div>
+    </a>
+    <a href="/set-language/en" class="lang-card">
+      <span class="lang-flag">🇬🇧</span>
+      <div class="lang-name">English</div>
+      <div class="lang-native">Английский</div>
+    </a>
+    <a href="/set-language/uk" class="lang-card">
+      <span class="lang-flag">🇺🇦</span>
+      <div class="lang-name">Українська</div>
+      <div class="lang-native">Ukrainian</div>
+    </a>
+    <a href="/set-language/kk" class="lang-card">
+      <span class="lang-flag">🇰🇿</span>
+      <div class="lang-name">Қазақша</div>
+      <div class="lang-native">Kazakh</div>
+    </a>
+  </div>
+
+  <div class="footer-text">
+    🍎 База из 100+ продуктов · Умный поиск · Счётчик калорий<br>
+    Вы можете сменить язык в любое время
+  </div>
+</div>
+</body>
+</html>

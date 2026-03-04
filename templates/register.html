@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ t.register }}{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="card">
+    <div class="deco">🌱</div>
+    <h1 class="page-title">{{ t.register }}</h1>
+    <p class="page-subtitle">{{ t.tagline }}</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}{% for msg in messages %}<div class="flash">{{ msg }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label>{{ t.username }}</label>
+        <input type="text" name="username" required placeholder="Имя пользователя" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>{{ t.email }}</label>
+        <input type="email" name="email" required placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>{{ t.password }}</label>
+        <input type="password" name="password" required placeholder="Минимум 6 символов" autocomplete="new-password" minlength="6">
+      </div>
+      <button type="submit" class="btn-submit">{{ t.register }} 🌿</button>
+    </form>
+
+    <div class="switch-link">
+      {{ t.have_account }} <a href="/login">{{ t.login }}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
