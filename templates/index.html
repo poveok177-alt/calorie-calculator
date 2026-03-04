@@ -35,7 +35,6 @@
   .logo {
     font-family: 'Playfair Display', serif; font-size: 22px;
     font-weight: 600; color: var(--green-dark); text-decoration: none;
-    display: flex; align-items: center; gap: 8px;
   }
   .nav-link {
     padding: 8px 14px; border-radius: 20px; text-decoration: none;
@@ -43,198 +42,75 @@
   }
   .nav-link:hover { background: var(--mint-light); color: var(--green-dark); }
 
-  main {
-    max-width: 800px; margin: 0 auto; padding: 40px 24px;
-  }
-  .page-title {
-    font-family: 'Playfair Display', serif; font-size: 28px;
-    color: var(--text); margin-bottom: 8px;
-  }
-  .page-date {
-    color: var(--text-light); font-size: 14px; margin-bottom: 32px;
-  }
+  main { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  .page-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--text); margin-bottom: 8px; }
+  .page-date { color: var(--text-light); font-size: 14px; margin-bottom: 32px; }
 
-  /* ПРОГРЕСС */
   .progress-card {
     background: linear-gradient(135deg, var(--green), var(--green-soft));
     border-radius: 24px; padding: 32px; color: white; margin-bottom: 32px;
     box-shadow: 0 8px 40px var(--shadow);
   }
-  .progress-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
   .progress-number { font-size: 48px; font-weight: 800; }
-  .progress-bar {
-    height: 12px; border-radius: 6px; background: rgba(255,255,255,0.3);
-    margin: 16px 0 12px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: white; width: 0%; transition: width 0.3s;
-  }
-  .progress-info {
-    display: flex; justify-content: space-between; font-size: 13px; opacity: 0.9;
-  }
-  .bju-summary {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px;
-  }
-  .bju-chip {
-    background: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px;
-    text-align: center;
-  }
-  .bju-label { font-size: 11px; opacity: 0.85; }
+  .progress-bar { height: 12px; border-radius: 6px; background: rgba(255,255,255,0.3); margin: 16px 0 12px; overflow: hidden; }
+  .progress-fill { height: 100%; background: white; width: 0%; transition: width 0.3s; }
+  .progress-info { display: flex; justify-content: space-between; font-size: 13px; opacity: 0.9; }
+  .bju-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .bju-chip { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px; text-align: center; }
   .bju-value { font-size: 18px; font-weight: 800; margin-top: 4px; }
 
-  /* ПРИЁМЫ ПИЩИ */
   .meals-container { margin-top: 32px; }
-  .meal-section {
-    background: white; border-radius: 20px; padding: 20px;
-    border: 1.5px solid var(--border); margin-bottom: 20px;
-    box-shadow: 0 4px 20px var(--shadow);
-  }
-  .meal-header {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
-    padding-bottom: 12px; border-bottom: 2px solid var(--mint-light);
-  }
+  .meal-section { background: white; border-radius: 20px; padding: 20px; border: 1.5px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 20px var(--shadow); }
+  .meal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--mint-light); }
   .meal-icon { font-size: 24px; }
   .meal-title { font-weight: 800; font-size: 16px; color: var(--text); flex: 1; }
   .meal-cal { font-size: 18px; font-weight: 800; color: var(--green-dark); }
-  .meal-actions {
-    display: flex; gap: 8px; margin-left: 16px;
-  }
-  .meal-btn {
-    padding: 6px 12px; background: none; border: 1px solid var(--border);
-    border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700;
-    color: var(--text-soft); transition: all 0.2s;
-  }
-  .meal-btn:hover {
-    border-color: var(--green); color: var(--green-dark);
-    background: var(--mint-light);
-  }
-  .meal-btn.danger {
-    color: #e53935; border-color: #ffcdd2;
-  }
-  .meal-btn.danger:hover {
-    border-color: #e53935; background: #ffebee;
-  }
-  
-  .meal-categories {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-    gap: 6px; margin: 12px 0;
-  }
-  .meal-category-btn {
-    padding: 8px; border: 1px solid var(--border);
-    border-radius: 10px; background: white; color: var(--text-soft);
-    cursor: pointer; font-size: 12px; font-weight: 600;
-    transition: all 0.2s; font-family: 'Nunito', sans-serif;
-  }
-  .meal-category-btn:hover {
-    border-color: var(--green); background: var(--mint-light);
-  }
-  .meal-category-btn.active {
-    background: var(--mint); color: var(--green-dark); border-color: var(--green);
-  }
-  
-  .meal-search {
-    margin-bottom: 12px;
-  }
-  .meal-search-input {
-    width: 100%; padding: 10px 14px;
-    border: 2px solid var(--border); border-radius: 12px;
-    font-size: 13px; background: var(--mint-light); outline: none;
-  }
-  .meal-search-input:focus {
-    border-color: var(--green); background: white;
-  }
-  
-  .meal-product-list {
-    max-height: 180px; overflow-y: auto; margin-bottom: 12px;
-  }
-  .meal-product {
-    padding: 8px 12px; background: var(--mint-light); border-radius: 10px;
-    margin-bottom: 4px; cursor: pointer; transition: all 0.2s;
-    font-size: 12px; font-weight: 600; color: var(--green-dark);
-  }
-  .meal-product:hover {
-    background: var(--border); transform: translateX(4px);
-  }
-  
-  .meal-entry {
-    display: flex; align-items: center; gap: 12px; padding: 12px 0;
-    border-bottom: 1px solid var(--mint-light); justify-content: space-between;
-  }
-  .meal-entry:last-child { border-bottom: none; }
+  .meal-btn { padding: 6px 12px; background: none; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700; color: var(--text-soft); transition: all 0.2s; }
+  .meal-btn:hover { border-color: var(--green); color: var(--green-dark); background: var(--mint-light); }
+  .meal-btn.danger { color: #e53935; }
+  .meal-btn.danger:hover { border-color: #e53935; background: #ffebee; }
+  .meal-btn.add-btn { border-color: var(--green); color: white; background: linear-gradient(135deg, var(--green), var(--green-soft)); font-size: 12px; padding: 8px 14px; }
+  .meal-btn.add-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(76,175,131,0.3); }
+
+  .categories { display: none; grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); gap: 6px; margin-bottom: 12px; }
+  .cat-btn { padding: 8px; border: 1px solid var(--border); border-radius: 10px; background: white; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+  .cat-btn:hover { border-color: var(--green); background: var(--mint-light); }
+  .cat-btn.active { background: var(--mint); color: var(--green-dark); border-color: var(--green); }
+
+  .products-list { display: none; max-height: 200px; overflow-y: auto; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; padding: 8px; background: var(--mint-light); }
+  .product-item { padding: 8px 12px; background: white; border-radius: 8px; margin-bottom: 4px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--green-dark); transition: all 0.2s; }
+  .product-item:hover { background: var(--border); transform: translateX(4px); }
+  .products-empty { padding: 20px; text-align: center; color: var(--text-light); font-size: 13px; }
+
+  .entries { }
+  .entry { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--mint-light); justify-content: space-between; }
+  .entry:last-child { border-bottom: none; }
   .entry-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .entry-breakfast { background: #ffb74d; }
-  .entry-lunch { background: #81c784; }
-  .entry-dinner { background: #64b5f6; }
-  .entry-snack { background: #f06292; }
   .entry-info { flex: 1; }
   .entry-name { font-size: 14px; font-weight: 600; color: var(--text); }
   .entry-grams { font-size: 12px; color: var(--text-light); }
   .entry-cal { font-size: 14px; font-weight: 700; color: var(--green-dark); }
-  .entry-delete {
-    background: none; border: none; cursor: pointer; color: var(--text-light);
-    font-size: 16px; transition: all 0.2s;
-  }
+  .entry-delete { background: none; border: none; cursor: pointer; color: var(--text-light); font-size: 16px; transition: all 0.2s; }
   .entry-delete:hover { color: #e53935; }
-  .meal-empty {
-    text-align: center; padding: 24px; color: var(--text-light);
-    font-size: 13px;
-  }
+  .empty { text-align: center; padding: 24px; color: var(--text-light); font-size: 13px; }
 
-  /* МОДАЛЬ */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
-    z-index: 200; align-items: center; justify-content: center;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; align-items: center; justify-content: center; }
   .modal-overlay.show { display: flex; }
-  .modal-content {
-    background: white; border-radius: 24px; padding: 32px;
-    max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2);
-  }
-  .modal-title {
-    font-family: 'Playfair Display', serif; font-size: 20px;
-    margin-bottom: 20px; color: var(--text);
-  }
-  .form-group {
-    margin-bottom: 16px;
-  }
-  .form-label {
-    font-size: 12px; font-weight: 700; color: var(--text-soft);
-    display: block; margin-bottom: 6px; text-transform: uppercase;
-  }
-  .form-input {
-    width: 100%; padding: 12px 16px;
-    border: 2px solid var(--border); border-radius: 14px;
-    font-size: 15px; font-family: 'Nunito', sans-serif;
-    outline: none; transition: all 0.25s;
-  }
-  .form-input:focus {
-    border-color: var(--green); background: var(--mint-light);
-  }
-  .modal-preview {
-    font-size: 13px; color: var(--text-soft); margin: 16px 0;
-    padding: 12px; background: var(--mint-light); border-radius: 12px;
-  }
-  .modal-buttons {
-    display: flex; gap: 12px; margin-top: 20px;
-  }
-  .btn-confirm {
-    flex: 1; padding: 12px; background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white; border: none; border-radius: 14px;
-    font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
-    cursor: pointer; transition: all 0.2s;
-  }
+  .modal-content { background: white; border-radius: 24px; padding: 32px; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 20px; color: var(--text); }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 700; color: var(--text-soft); display: block; margin-bottom: 6px; text-transform: uppercase; }
+  .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 14px; font-size: 15px; font-family: 'Nunito', sans-serif; outline: none; }
+  .form-input:focus { border-color: var(--green); background: var(--mint-light); }
+  .modal-preview { font-size: 13px; color: var(--text-soft); margin: 16px 0; padding: 12px; background: var(--mint-light); border-radius: 12px; }
+  .modal-buttons { display: flex; gap: 12px; margin-top: 20px; }
+  .btn-confirm { flex: 1; padding: 12px; background: linear-gradient(135deg, var(--green), var(--green-soft)); color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif; cursor: pointer; }
   .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(76,175,131,.3); }
-  .btn-cancel {
-    padding: 12px 20px; background: none; border: 2px solid var(--border);
-    border-radius: 14px; font-size: 14px; font-weight: 700;
-    font-family: 'Nunito', sans-serif; cursor: pointer;
-  }
+  .btn-cancel { padding: 12px 20px; background: none; border: 2px solid var(--border); border-radius: 14px; font-size: 14px; font-weight: 700; font-family: 'Nunito', sans-serif; cursor: pointer; }
 
   @media(max-width: 600px) {
     main { padding: 20px 12px; }
-    .progress-card { padding: 20px; }
-    .progress-number { font-size: 36px; }
-    .meal-categories { grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); }
+    .categories { grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); }
   }
 </style>
 </head>
@@ -256,35 +132,33 @@
   <h1 class="page-title">{{ t.today }}</h1>
   <div class="page-date">{{ now.strftime('%d.%m.%Y') if now else '' }}</div>
 
-  <!-- ПРОГРЕСС -->
   <div class="progress-card">
-    <div class="progress-label">{{ t.consumed }}</div>
+    <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">{{ t.consumed }}</div>
     <div class="progress-number">{{ total_cal|int }}</div>
-    <div style="font-size: 13px; margin-bottom: 12px;">/ {{ daily_goal }} {{ t.kcal }} {{ t.daily_goal }}</div>
+    <div style="font-size: 13px; margin-bottom: 12px;">/ {{ daily_goal }} {{ t.kcal }}</div>
     <div class="progress-bar">
       <div class="progress-fill" style="width: {{ progress_percent }}%"></div>
     </div>
     <div class="progress-info">
-      <span>{{ remaining|int }} {{ t.kcal }} {{ t.remaining }}</span>
+      <span>{{ remaining|int }} {{ t.kcal }} осталось</span>
       <span>{{ (progress_percent|int) }}%</span>
     </div>
     <div class="bju-summary">
       <div class="bju-chip">
-        <div class="bju-label">{{ t.protein }}</div>
+        <div style="font-size: 11px; opacity: 0.85;">{{ t.protein }}</div>
         <div class="bju-value">{{ total_protein }}г</div>
       </div>
       <div class="bju-chip">
-        <div class="bju-label">{{ t.fat }}</div>
+        <div style="font-size: 11px; opacity: 0.85;">{{ t.fat }}</div>
         <div class="bju-value">{{ total_fat }}г</div>
       </div>
       <div class="bju-chip">
-        <div class="bju-label">{{ t.carbs }}</div>
+        <div style="font-size: 11px; opacity: 0.85;">{{ t.carbs }}</div>
         <div class="bju-value">{{ total_carbs }}г</div>
       </div>
     </div>
   </div>
 
-  <!-- ПРИЁМЫ ПИЩИ С КАТЕГОРИЯМИ -->
   <div class="meals-container">
     <!-- ЗАВТРАК -->
     <div class="meal-section">
@@ -292,44 +166,34 @@
         <span class="meal-icon">🌅</span>
         <span class="meal-title">{{ t.breakfast }}</span>
         <span class="meal-cal">{{ meal_totals.get('breakfast', 0)|int }}</span>
-        <div class="meal-actions">
-          <button class="meal-btn" onclick="clearMeal('breakfast')">Очистить</button>
-          <button class="meal-btn danger" onclick="clearAll()">Всё</button>
-        </div>
+        <button class="meal-btn add-btn" onclick="toggleCategoryPanel('breakfast')">➕ Добавить</button>
+        <button class="meal-btn" onclick="clearMeal('breakfast')">Очистить</button>
+        <button class="meal-btn danger" onclick="clearAll()">Всё</button>
       </div>
       
-      <!-- Категории -->
-      <div class="meal-categories">
-        <button class="meal-category-btn active" onclick="filterMealCategory('breakfast', '', event)">Все</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'fruits', event)">🍎</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'vegetables', event)">🥦</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'meat', event)">🥩</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'dairy', event)">🥛</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'grains', event)">🌾</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'nuts', event)">🌰</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'fish', event)">🐟</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'sweets', event)">🍫</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'drinks', event)">🥤</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'supplements', event)">💊</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('breakfast', 'sports_nutrition', event)">💪</button>
+      <div class="categories">
+        <button class="cat-btn active" onclick="loadCategory('breakfast', '', this)">Все</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'fruits', this)">🍎</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'vegetables', this)">🥦</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'meat', this)">🥩</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'dairy', this)">🥛</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'grains', this)">🌾</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'nuts', this)">🌰</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'fish', this)">🐟</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'sweets', this)">🍫</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'drinks', this)">🥤</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'supplements', this)">💊</button>
+        <button class="cat-btn" onclick="loadCategory('breakfast', 'sports_nutrition', this)">💪</button>
       </div>
       
-      <!-- Поиск -->
-      <div class="meal-search">
-        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
-               onkeyup="searchMealProducts('breakfast', this.value)">
-      </div>
+      <div class="products-list" id="breakfast-products"><div class="products-empty">Пусто</div></div>
       
-      <!-- Список продуктов для добавления -->
-      <div class="meal-product-list" id="breakfast-products"></div>
-      
-      <!-- Добавленные продукты -->
-      <div id="breakfast-entries">
+      <div class="entries" id="breakfast-entries">
         {% if meals.breakfast %}
           {% for entry in meals.breakfast %}
-          <div class="meal-entry">
+          <div class="entry">
             <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
-              <div class="entry-dot entry-breakfast"></div>
+              <div class="entry-dot" style="background: #ffb74d;"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
                 <div class="entry-grams">{{ entry.grams|int }}г</div>
@@ -340,7 +204,7 @@
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">Пусто</div>
+          <div class="empty">Пусто</div>
         {% endif %}
       </div>
     </div>
@@ -351,39 +215,33 @@
         <span class="meal-icon">☀️</span>
         <span class="meal-title">{{ t.lunch }}</span>
         <span class="meal-cal">{{ meal_totals.get('lunch', 0)|int }}</span>
-        <div class="meal-actions">
-          <button class="meal-btn" onclick="clearMeal('lunch')">Очистить</button>
-        </div>
+        <button class="meal-btn add-btn" onclick="toggleCategoryPanel('lunch')">➕ Добавить</button>
+        <button class="meal-btn" onclick="clearMeal('lunch')">Очистить</button>
       </div>
       
-      <div class="meal-categories">
-        <button class="meal-category-btn active" onclick="filterMealCategory('lunch', '', event)">Все</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'fruits', event)">🍎</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'vegetables', event)">🥦</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'meat', event)">🥩</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'dairy', event)">🥛</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'grains', event)">🌾</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'nuts', event)">🌰</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'fish', event)">🐟</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'sweets', event)">🍫</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'drinks', event)">🥤</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'supplements', event)">💊</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('lunch', 'sports_nutrition', event)">💪</button>
+      <div class="categories">
+        <button class="cat-btn active" onclick="loadCategory('lunch', '', this)">Все</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'fruits', this)">🍎</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'vegetables', this)">🥦</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'meat', this)">🥩</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'dairy', this)">🥛</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'grains', this)">🌾</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'nuts', this)">🌰</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'fish', this)">🐟</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'sweets', this)">🍫</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'drinks', this)">🥤</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'supplements', this)">💊</button>
+        <button class="cat-btn" onclick="loadCategory('lunch', 'sports_nutrition', this)">💪</button>
       </div>
       
-      <div class="meal-search">
-        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
-               onkeyup="searchMealProducts('lunch', this.value)">
-      </div>
+      <div class="products-list" id="lunch-products"><div class="products-empty">Пусто</div></div>
       
-      <div class="meal-product-list" id="lunch-products"></div>
-      
-      <div id="lunch-entries">
+      <div class="entries" id="lunch-entries">
         {% if meals.lunch %}
           {% for entry in meals.lunch %}
-          <div class="meal-entry">
+          <div class="entry">
             <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
-              <div class="entry-dot entry-lunch"></div>
+              <div class="entry-dot" style="background: #81c784;"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
                 <div class="entry-grams">{{ entry.grams|int }}г</div>
@@ -394,7 +252,7 @@
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">Пусто</div>
+          <div class="empty">Пусто</div>
         {% endif %}
       </div>
     </div>
@@ -405,39 +263,33 @@
         <span class="meal-icon">🌙</span>
         <span class="meal-title">{{ t.dinner }}</span>
         <span class="meal-cal">{{ meal_totals.get('dinner', 0)|int }}</span>
-        <div class="meal-actions">
-          <button class="meal-btn" onclick="clearMeal('dinner')">Очистить</button>
-        </div>
+        <button class="meal-btn add-btn" onclick="toggleCategoryPanel('dinner')">➕ Добавить</button>
+        <button class="meal-btn" onclick="clearMeal('dinner')">Очистить</button>
       </div>
       
-      <div class="meal-categories">
-        <button class="meal-category-btn active" onclick="filterMealCategory('dinner', '', event)">Все</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'fruits', event)">🍎</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'vegetables', event)">🥦</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'meat', event)">🥩</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'dairy', event)">🥛</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'grains', event)">🌾</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'nuts', event)">🌰</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'fish', event)">🐟</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'sweets', event)">🍫</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'drinks', event)">🥤</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'supplements', event)">💊</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('dinner', 'sports_nutrition', event)">💪</button>
+      <div class="categories">
+        <button class="cat-btn active" onclick="loadCategory('dinner', '', this)">Все</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'fruits', this)">🍎</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'vegetables', this)">🥦</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'meat', this)">🥩</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'dairy', this)">🥛</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'grains', this)">🌾</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'nuts', this)">🌰</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'fish', this)">🐟</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'sweets', this)">🍫</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'drinks', this)">🥤</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'supplements', this)">💊</button>
+        <button class="cat-btn" onclick="loadCategory('dinner', 'sports_nutrition', this)">💪</button>
       </div>
       
-      <div class="meal-search">
-        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
-               onkeyup="searchMealProducts('dinner', this.value)">
-      </div>
+      <div class="products-list" id="dinner-products"><div class="products-empty">Пусто</div></div>
       
-      <div class="meal-product-list" id="dinner-products"></div>
-      
-      <div id="dinner-entries">
+      <div class="entries" id="dinner-entries">
         {% if meals.dinner %}
           {% for entry in meals.dinner %}
-          <div class="meal-entry">
+          <div class="entry">
             <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
-              <div class="entry-dot entry-dinner"></div>
+              <div class="entry-dot" style="background: #64b5f6;"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
                 <div class="entry-grams">{{ entry.grams|int }}г</div>
@@ -448,7 +300,7 @@
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">Пусто</div>
+          <div class="empty">Пусто</div>
         {% endif %}
       </div>
     </div>
@@ -459,39 +311,33 @@
         <span class="meal-icon">🍿</span>
         <span class="meal-title">{{ t.snack }}</span>
         <span class="meal-cal">{{ meal_totals.get('snack', 0)|int }}</span>
-        <div class="meal-actions">
-          <button class="meal-btn" onclick="clearMeal('snack')">Очистить</button>
-        </div>
+        <button class="meal-btn add-btn" onclick="toggleCategoryPanel('snack')">➕ Добавить</button>
+        <button class="meal-btn" onclick="clearMeal('snack')">Очистить</button>
       </div>
       
-      <div class="meal-categories">
-        <button class="meal-category-btn active" onclick="filterMealCategory('snack', '', event)">Все</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'fruits', event)">🍎</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'vegetables', event)">🥦</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'meat', event)">🥩</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'dairy', event)">🥛</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'grains', event)">🌾</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'nuts', event)">🌰</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'fish', event)">🐟</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'sweets', event)">🍫</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'drinks', event)">🥤</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'supplements', event)">💊</button>
-        <button class="meal-category-btn" onclick="filterMealCategory('snack', 'sports_nutrition', event)">💪</button>
+      <div class="categories">
+        <button class="cat-btn active" onclick="loadCategory('snack', '', this)">Все</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'fruits', this)">🍎</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'vegetables', this)">🥦</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'meat', this)">🥩</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'dairy', this)">🥛</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'grains', this)">🌾</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'nuts', this)">🌰</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'fish', this)">🐟</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'sweets', this)">🍫</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'drinks', this)">🥤</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'supplements', this)">💊</button>
+        <button class="cat-btn" onclick="loadCategory('snack', 'sports_nutrition', this)">💪</button>
       </div>
       
-      <div class="meal-search">
-        <input type="text" class="meal-search-input" placeholder="Поиск или выбрать выше..." 
-               onkeyup="searchMealProducts('snack', this.value)">
-      </div>
+      <div class="products-list" id="snack-products"><div class="products-empty">Пусто</div></div>
       
-      <div class="meal-product-list" id="snack-products"></div>
-      
-      <div id="snack-entries">
+      <div class="entries" id="snack-entries">
         {% if meals.snack %}
           {% for entry in meals.snack %}
-          <div class="meal-entry">
+          <div class="entry">
             <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
-              <div class="entry-dot entry-snack"></div>
+              <div class="entry-dot" style="background: #f06292;"></div>
               <div class="entry-info">
                 <div class="entry-name">{{ entry.food_name }}</div>
                 <div class="entry-grams">{{ entry.grams|int }}г</div>
@@ -502,7 +348,7 @@
           </div>
           {% endfor %}
         {% else %}
-          <div class="meal-empty">Пусто</div>
+          <div class="empty">Пусто</div>
         {% endif %}
       </div>
     </div>
@@ -514,14 +360,11 @@
 <div id="modal-overlay" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-title" id="modal-title"></div>
-    
     <div class="form-group">
       <label class="form-label">Граммов (по умолчанию 100)</label>
       <input type="number" id="modal-grams" class="form-input" value="100" min="1" max="9999">
     </div>
-
     <div class="modal-preview" id="modal-preview"></div>
-
     <div class="modal-buttons">
       <button class="btn-confirm" onclick="confirmAdd()">✓ Добавить</button>
       <button class="btn-cancel" onclick="closeModal()">✕</button>
@@ -534,17 +377,30 @@ const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
 let modalFood = null;
 let currentMeal = null;
 
-function filterMealCategory(meal, category, event) {
-  event.target.parentElement.querySelectorAll('.meal-category-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  event.target.classList.add('active');
+function toggleCategoryPanel(meal) {
+  const categoriesDiv = document.querySelector(`#breakfast-products`).closest('.meal-section').querySelector('.categories');
+  const mealSection = document.getElementById(meal + '-products').closest('.meal-section');
+  const categories = mealSection.querySelector('.categories');
+  const productsList = mealSection.querySelector('.products-list');
   
-  loadMealCategory(meal, category);
+  if (categories.style.display === 'none') {
+    categories.style.display = 'grid';
+    productsList.style.display = 'block';
+  } else {
+    categories.style.display = 'none';
+    productsList.style.display = 'none';
+  }
+  
+  // Загружаем все продукты по умолчанию
+  const allBtn = categories.querySelector('.cat-btn');
+  if (allBtn) loadCategory(meal, '', allBtn);
 }
 
-async function loadMealCategory(meal, category) {
-  const res = await fetch('/api/search?q=');
+async function loadCategory(meal, category, btn) {
+  btn.parentElement.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  const res = await fetch('/api/all-foods');
   let foods = await res.json();
   
   if (category) {
@@ -552,35 +408,18 @@ async function loadMealCategory(meal, category) {
   }
   
   let html = '';
-  for (const food of foods) {
-    html += `<div class="meal-product" onclick="openMealModal(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.calories}, ${food.protein}, ${food.fat}, ${food.carbs}, '${meal}')">
-      ${food.name} • ${food.calories} ккал
-    </div>`;
+  if (foods.length === 0) {
+    html = '<div class="products-empty">Нет продуктов</div>';
+  } else {
+    for (const food of foods) {
+      html += `<div class="product-item" onclick="openModal(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.calories}, ${food.protein}, ${food.fat}, ${food.carbs}, '${meal}')">${food.name} • ${food.calories} ккал</div>`;
+    }
   }
   
   document.getElementById(meal + '-products').innerHTML = html;
 }
 
-async function searchMealProducts(meal, query) {
-  const container = document.getElementById(meal + '-products');
-  if (!query.trim()) {
-    container.innerHTML = '';
-    return;
-  }
-  
-  const res = await fetch('/api/search?q=' + encodeURIComponent(query));
-  const foods = await res.json();
-  
-  let html = '';
-  for (const food of foods) {
-    html += `<div class="meal-product" onclick="openMealModal(${food.id}, '${food.name.replace(/'/g, "\\'")}', ${food.calories}, ${food.protein}, ${food.fat}, ${food.carbs}, '${meal}')">
-      ${food.name} • ${food.calories} ккал
-    </div>`;
-  }
-  container.innerHTML = html;
-}
-
-function openMealModal(id, name, cal, protein, fat, carbs, meal) {
+function openModal(id, name, cal, protein, fat, carbs, meal) {
   if (!isAuth) {
     alert('Войдите в аккаунт');
     return;
@@ -616,11 +455,7 @@ async function confirmAdd() {
   const res = await fetch('/api/add-entry', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      food_id: modalFood.id,
-      grams: grams,
-      meal_type: currentMeal
-    })
+    body: JSON.stringify({food_id: modalFood.id, grams: grams, meal_type: currentMeal})
   });
   const data = await res.json();
   if (data.success) {
@@ -639,7 +474,7 @@ async function deleteEntry(entryId) {
 
 async function clearMeal(meal) {
   if (!confirm(`Очистить "${meal}"?`)) return;
-  const entries = document.querySelectorAll(`#${meal}-entries .meal-entry`);
+  const entries = document.querySelectorAll(`#${meal}-entries .entry`);
   for (const entry of entries) {
     const btn = entry.querySelector('.entry-delete');
     if (btn) btn.click();
@@ -647,7 +482,7 @@ async function clearMeal(meal) {
 }
 
 async function clearAll() {
-  if (!confirm('Очистить ВСЕ приёмы пищи за сегодня?')) return;
+  if (!confirm('Очистить ВСЕ приёмы?')) return;
   const res = await fetch('/api/clear-day', {method: 'DELETE'});
   if ((await res.json()).success) {
     location.reload();
