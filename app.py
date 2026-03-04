@@ -315,10 +315,8 @@ def search_foods():
 
     results = []
     for idx, food in enumerate(food_data):
-        # Фильтр категории
         if category and food.get('category') != category:
             continue
-        # Фильтр поиска
         if query:
             haystack = ' '.join([
                 food.get('name_ru', ''),
@@ -328,7 +326,6 @@ def search_foods():
             ]).lower()
             if query not in haystack:
                 continue
-
         results.append({
             'id': idx,
             'name_ru': food['name_ru'],
@@ -542,17 +539,58 @@ def goals():
 def categories():
     lang = current_user.language or 'ru'
     t = translations.get(lang, translations['ru'])
-    
+
     from food_data import food_data
-    
+
+    # Строим словарь категория -> список продуктов
     cats = {}
-    for food in food_data:
+    for idx, food in enumerate(food_data):
         cat = food.get('category', 'other')
         if cat not in cats:
             cats[cat] = []
-        cats[cat].append(food)
-    
-    return render_template('categories.html', categories=cats, t=t, lang=lang)
+        cats[cat].append({
+            'id': idx,
+            'name': food['name_ru'],
+            'calories': food['calories'],
+            'protein': food.get('protein', 0),
+            'fat': food.get('fat', 0),
+            'carbs': food.get('carbs', 0),
+            'category': cat,
+        })
+
+    # Локализованные названия категорий
+    cat_labels = {
+        'fruits':           '🍎 Фрукты',
+        'vegetables':       '🥦 Овощи',
+        'meat':             '🥩 Мясо',
+        'dairy':            '🥛 Молочное',
+        'grains':           '🌾 Злаки',
+        'nuts':             '🌰 Орехи',
+        'fish':             '🐟 Рыба',
+        'sweets':           '🍫 Сладкое',
+        'drinks':           '🥤 Напитки',
+        'supplements':      '💊 Витамины',
+        'sports_nutrition': '💪 Спортпит',
+        'other':            '🍽 Прочее',
+    }
+
+    category_keys = [k for k in cat_labels if k in cats]
+    current_cat = request.args.get('cat', category_keys[0] if category_keys else 'fruits')
+    if current_cat not in cats:
+        current_cat = category_keys[0] if category_keys else 'other'
+
+    foods = sorted(cats.get(current_cat, []), key=lambda x: x['name'])
+
+    return render_template(
+        'categories.html',
+        categories=cats,
+        category_keys=category_keys,
+        cat_labels=cat_labels,
+        current_cat=current_cat,
+        foods=foods,
+        t=t,
+        lang=lang,
+    )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

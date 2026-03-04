@@ -319,6 +319,34 @@
   }
   .modal-confirm:hover { transform: translateY(-1px); }
   .modal-confirm:disabled { opacity: 0.6; transform: none; }
+  /* WATER TRACKER */
+  .water-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .water-label {
+    font-size: 12px; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+  }
+  .water-cups {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+  }
+  .water-cup {
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    padding: 2px; border-radius: 6px; transition: all 0.15s; opacity: 0.3;
+    line-height: 1;
+  }
+  .water-cup.filled { opacity: 1; transform: scale(1.1); }
+  .water-cup:hover { opacity: 0.8; transform: scale(1.15); }
+  .water-info {
+    font-size: 12px; color: var(--text-light); font-weight: 700;
+  }
+  @media (max-width: 860px) {
+    .water-section { grid-column: 1/-1; }
+    .water-cups { gap: 4px; }
+    .water-cup { font-size: 22px; }
+  }
 </style>
 </head>
 <body>
@@ -460,6 +488,18 @@
       <div class="total-unit">г из {{ current_user.carbs_goal }}</div>
     </div>
     {% endif %}
+
+    <!-- WATER TRACKER -->
+    {% set water_goal = current_user.water_goal if current_user.is_authenticated else 8 %}
+    <div class="water-section">
+      <div class="water-label">💧 Вода</div>
+      <div class="water-cups" id="waterCups">
+        {% for i in range(water_goal) %}
+        <button class="water-cup" id="cup-{{ i }}" onclick="toggleCup({{ i }})" title="{{ i+1 }} стакан">🥛</button>
+        {% endfor %}
+      </div>
+      <div class="water-info" id="waterInfo">0 / {{ water_goal }} стак.</div>
+    </div>
   </div>
 </main>
 
@@ -649,6 +689,41 @@ async function clearDay() {
   await fetch('/api/clear-day', { method: 'DELETE' });
   location.reload();
 }
+
+// ── WATER TRACKER ──
+const waterGoal = {{ current_user.water_goal if current_user.is_authenticated else 8 }};
+let waterCount = 0;
+
+function toggleCup(idx) {
+  // Нажали на стакан: заполнить все до него включительно, или сбросить если уже заполнен
+  if (waterCount === idx + 1) {
+    waterCount = idx; // убрать последний
+  } else {
+    waterCount = idx + 1;
+  }
+  renderWater();
+  localStorage.setItem('water_' + getTodayKey(), waterCount);
+}
+
+function renderWater() {
+  for (let i = 0; i < waterGoal; i++) {
+    const cup = document.getElementById('cup-' + i);
+    if (cup) cup.classList.toggle('filled', i < waterCount);
+  }
+  const info = document.getElementById('waterInfo');
+  if (info) info.textContent = waterCount + ' / ' + waterGoal + ' стак.';
+}
+
+function getTodayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+// Восстанавливаем из localStorage при загрузке
+(function() {
+  const saved = localStorage.getItem('water_' + getTodayKey());
+  if (saved !== null) { waterCount = parseInt(saved) || 0; renderWater(); }
+})();
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
