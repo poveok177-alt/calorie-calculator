@@ -702,7 +702,19 @@ def api_today_summary():
 
 def init_db():
     with app.app_context():
-        db.create_all()  # Это создаст новые колонки
+        # Проверяем и добавляем недостающие колонки
+        inspector = db.inspect(db.engine)
+        user_columns = [col['name'] for col in inspector.get_columns('user')]
+        
+        with db.engine.connect() as conn:
+            if 'gender' not in user_columns:
+                conn.execute(db.text('ALTER TABLE "user" ADD COLUMN gender VARCHAR(10) DEFAULT \'male\''))
+                conn.commit()
+            if 'activity' not in user_columns:
+                conn.execute(db.text('ALTER TABLE "user" ADD COLUMN activity VARCHAR(20) DEFAULT \'moderate\''))
+                conn.commit()
+        
+        db.create_all()
         
         if Food.query.count() == 0:
             from food_data import FOODS
