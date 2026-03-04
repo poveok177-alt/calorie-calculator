@@ -702,10 +702,9 @@ def api_today_summary():
 
 def init_db():
     with app.app_context():
-        db.create_all()
+        db.create_all()  # Это создаст новые колонки
         
-        # Добавляем продукты если БД пустая
-        if Food.query.count() == 0:  # ← Только если БД совсем пустая
+        if Food.query.count() == 0:
             from food_data import FOODS
             for f in FOODS:
                 food = Food(**f)
