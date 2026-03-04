@@ -2,7 +2,7 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>{{ t.app_name }}</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23b5ead7' width='100' height='100'/><text x='50' y='70' font-size='80' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
@@ -20,10 +20,9 @@
     --text-soft: #5a7a6e;
     --text-light: #8aaa9e;
     --border: #c8eedd;
-    --shadow: rgba(76, 175, 131, 0.12);
-    --shadow-hover: rgba(76, 175, 131, 0.22);
+    --shadow: rgba(76,175,131,0.12);
+    --shadow-hover: rgba(76,175,131,0.22);
     --danger: #e57373;
-    --warning: #ffb74d;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -32,21 +31,22 @@
     background: var(--cream);
     color: var(--text);
     min-height: 100vh;
-    background-image: radial-gradient(circle at 20% 20%, rgba(181, 234, 215, 0.3) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 80%, rgba(181, 234, 215, 0.2) 0%, transparent 50%);
+    background-image: radial-gradient(circle at 20% 20%, rgba(181,234,215,0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(181,234,215,0.2) 0%, transparent 50%);
+    padding-bottom: 60px;
   }
 
   /* NAV */
   nav {
-    background: rgba(255,255,255,0.92);
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 0 24px;
+    padding: 0 16px;
     position: sticky;
     top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 20px var(--shadow);
+    z-index: 200;
+    box-shadow: 0 2px 16px var(--shadow);
   }
   .nav-inner {
     max-width: 1100px;
@@ -54,280 +54,271 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 64px;
-    gap: 16px;
+    height: 60px;
+    gap: 10px;
   }
   .logo {
     font-family: 'Playfair Display', serif;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--green-dark);
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 8px;
-    white-space: nowrap;
+    gap: 6px;
+    flex-shrink: 0;
   }
-  .logo span { font-size: 24px; }
-  .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
   .nav-link {
-    padding: 8px 14px;
+    padding: 7px 12px;
     border-radius: 20px;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-soft);
     transition: all 0.2s;
     white-space: nowrap;
   }
   .nav-link:hover { background: var(--mint-light); color: var(--green-dark); }
-  .nav-link.premium-btn {
-    background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white;
-    padding: 8px 18px;
-  }
-  .nav-link.premium-btn:hover { box-shadow: 0 4px 15px var(--shadow-hover); transform: translateY(-1px); }
-
-  .lang-switcher { display: flex; align-items: center; gap: 4px; }
+  .nav-link.premium-btn { background: linear-gradient(135deg, var(--green), var(--green-soft)); color: white; }
+  .lang-switcher { display: flex; align-items: center; gap: 3px; }
   .lang-btn {
-    background: none;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--text-soft);
-    transition: all 0.2s;
-    font-family: 'Nunito', sans-serif;
+    background: none; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 3px 8px; font-size: 11px; font-weight: 700; cursor: pointer;
+    color: var(--text-soft); transition: all 0.2s; font-family: 'Nunito', sans-serif;
   }
   .lang-btn:hover, .lang-btn.active { background: var(--mint); border-color: var(--green); color: var(--green-dark); }
+  .mobile-menu-btn {
+    display: none; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border: 1.5px solid var(--border);
+    border-radius: 12px; background: none; cursor: pointer; font-size: 20px; color: var(--text-soft);
+  }
+  @media (max-width: 640px) {
+    .nav-links, .lang-switcher { display: none; }
+    .mobile-menu-btn { display: flex; }
+  }
 
-  /* MAIN */
+  /* MOBILE DRAWER */
+  .mobile-drawer { display: none; position: fixed; inset: 0; z-index: 300; }
+  .mobile-drawer.open { display: block; }
+  .drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+  .drawer-panel {
+    position: absolute; top: 0; right: 0; width: 260px; height: 100%;
+    background: white; padding: 20px; display: flex; flex-direction: column;
+    gap: 6px; overflow-y: auto; box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+  }
+  .drawer-close {
+    align-self: flex-end; background: none; border: none;
+    font-size: 22px; cursor: pointer; color: var(--text-soft); margin-bottom: 10px;
+  }
+  .drawer-link {
+    display: block; padding: 12px 16px; border-radius: 14px;
+    text-decoration: none; font-size: 15px; font-weight: 700; color: var(--text-soft); transition: all 0.2s;
+  }
+  .drawer-link:hover { background: var(--mint-light); color: var(--green-dark); }
+  .drawer-link.premium { background: linear-gradient(135deg, var(--green), var(--green-soft)); color: white; }
+  .drawer-langs { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 6px; }
+  .drawer-lang-btn {
+    border: 1.5px solid var(--border); border-radius: 10px; padding: 6px 14px;
+    font-size: 13px; font-weight: 700; cursor: pointer; background: none; font-family: 'Nunito', sans-serif; color: var(--text-soft);
+  }
+  .drawer-lang-btn.active { background: var(--mint); border-color: var(--green); color: var(--green-dark); }
+
+  /* MAIN LAYOUT */
   main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 32px 24px;
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 28px;
+    max-width: 1100px; margin: 0 auto; padding: 20px 16px;
+    display: grid; grid-template-columns: 1fr 330px; gap: 20px; align-items: start;
   }
-  @media (max-width: 820px) {
-    main { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
 
-  /* CARDS */
-  .card {
-    background: white;
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: 0 4px 24px var(--shadow);
-    border: 1px solid var(--border);
+  /* TOTALS CARD */
+  .totals-card {
+    background: white; border-radius: 20px; padding: 22px;
+    box-shadow: 0 4px 24px var(--shadow); border: 1px solid var(--border);
+    position: sticky; top: 76px;
   }
-  .card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: var(--text);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  @media (max-width: 860px) {
+    .totals-card {
+      position: static; order: -1;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 14px 16px;
+    }
+    .totals-title { grid-column: 1/-1; }
+    .total-item { margin-bottom: 0; }
+    .total-value { font-size: 22px; }
   }
-  .card-title .icon { font-size: 24px; }
+  @media (max-width: 480px) {
+    .totals-card { grid-template-columns: repeat(2, 1fr); }
+  }
+  .totals-title {
+    font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .total-item { text-align: center; margin-bottom: 16px; }
+  .total-item:last-child { margin-bottom: 0; }
+  .total-label { font-size: 11px; color: var(--text-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .total-value { font-size: 28px; font-weight: 800; color: var(--green-dark); line-height: 1.1; }
+  .total-unit { font-size: 11px; color: var(--text-light); }
+  .progress-bar { background: var(--mint-light); border-radius: 10px; height: 5px; margin-top: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-soft)); transition: width 0.4s; }
 
-  /* MEAL SECTIONS */
+  /* MEAL SECTION */
   .meal-section {
-    margin-bottom: 28px;
-    background: white;
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: 0 4px 24px var(--shadow);
-    border: 1px solid var(--border);
+    margin-bottom: 16px; background: white; border-radius: 20px;
+    overflow: hidden; box-shadow: 0 4px 24px var(--shadow); border: 1px solid var(--border);
   }
   .meal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px 12px; gap: 8px; flex-wrap: wrap;
   }
   .meal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-family: 'Playfair Display', serif; font-size: 17px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
   }
-  .meal-title .icon { font-size: 24px; }
-  .meal-cal {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--green-dark);
-  }
-  .meal-buttons {
-    display: flex;
-    gap: 6px;
-  }
+  .meal-cal { font-size: 14px; font-weight: 800; color: var(--green-dark); }
   .btn-clear-meal {
-    background: none;
-    border: 1.5px solid var(--border);
-    color: var(--text-soft);
-    border-radius: 12px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
+    background: none; border: 1.5px solid var(--border); color: var(--text-soft);
+    border-radius: 10px; padding: 5px 11px; font-size: 12px; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+    display: flex; align-items: center; gap: 4px;
   }
-  .btn-clear-meal:hover { background: var(--mint-light); border-color: var(--green); color: var(--green-dark); }
+  .btn-clear-meal:hover { background: #fff0f0; border-color: var(--danger); color: var(--danger); }
 
-  /* CATEGORY BUTTONS */
-  .category-buttons {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
+  /* CATEGORY TABS */
+  .category-scroll {
+    padding: 0 18px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; display: flex; gap: 6px;
   }
+  .category-scroll::-webkit-scrollbar { display: none; }
   .cat-btn {
-    background: var(--mint-light);
-    border: 1.5px solid var(--border);
-    color: var(--text-soft);
-    border-radius: 12px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
+    background: var(--mint-light); border: 1.5px solid var(--border); color: var(--text-soft);
+    border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
   }
-  .cat-btn:hover { background: var(--green); color: white; border-color: var(--green); }
+  .cat-btn:hover { background: var(--mint); border-color: var(--green); color: var(--green-dark); }
   .cat-btn.active { background: var(--green); color: white; border-color: var(--green-dark); }
+
+  /* SEARCH */
+  .meal-search-wrap { padding: 0 18px 10px; }
+  .meal-search {
+    width: 100%; padding: 9px 15px; border-radius: 12px;
+    border: 1.5px solid var(--border); font-size: 14px; font-family: 'Nunito', sans-serif;
+    color: var(--text); background: var(--mint-light); outline: none; transition: all 0.2s;
+  }
+  .meal-search:focus { border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(76,175,131,0.1); }
 
   /* PRODUCTS LIST */
   .meal-products {
-    background: var(--mint-light);
-    border-radius: 18px;
-    padding: 16px;
-    margin-bottom: 16px;
-    display: none;
-    max-height: 300px;
-    overflow-y: auto;
+    display: none; margin: 0 18px 10px; background: var(--mint-light);
+    border-radius: 14px; overflow: hidden; max-height: 260px; overflow-y: auto;
   }
   .meal-products.show { display: block; }
   .product-item {
-    padding: 12px;
-    background: white;
-    border-radius: 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s;
-    border: 1.5px solid var(--border);
+    padding: 10px 12px; background: white; margin: 5px; border-radius: 10px;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    transition: all 0.15s; border: 1.5px solid transparent;
   }
-  .product-item:last-child { margin-bottom: 0; }
-  .product-item:hover {
-    background: var(--mint-light);
-    border-color: var(--green);
-    transform: translateX(4px);
+  .product-item:hover { background: var(--mint-light); border-color: var(--green); transform: translateX(2px); }
+  .product-name { font-weight: 700; font-size: 14px; color: var(--text); }
+  .product-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .product-cal-badge {
+    background: var(--mint-medium); color: var(--green-dark); font-weight: 800;
+    font-size: 12px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
   }
-  .product-name { font-weight: 600; font-size: 14px; }
-  .product-cal { font-size: 12px; color: var(--green-dark); font-weight: 700; }
+  .products-empty { text-align: center; padding: 20px; color: var(--text-light); font-size: 13px; }
 
   /* ENTRIES */
-  .meal-entries {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  .meal-entries { padding: 0 18px 14px; display: flex; flex-direction: column; gap: 6px; }
   .entry-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px;
-    background: var(--mint-light);
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    gap: 12px;
+    display: flex; align-items: center; padding: 10px 12px;
+    background: var(--mint-light); border-radius: 12px; border: 1px solid var(--border); gap: 8px;
   }
-  .entry-info { flex: 1; }
-  .entry-name { font-weight: 600; font-size: 14px; color: var(--text); }
-  .entry-sub { font-size: 12px; color: var(--text-light); }
-  .entry-cal { font-weight: 700; color: var(--green-dark); white-space: nowrap; }
+  .entry-info { flex: 1; min-width: 0; }
+  .entry-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .entry-sub { font-size: 11px; color: var(--text-light); }
   .entry-remove {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--danger);
-    font-weight: 700;
-    font-size: 18px;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    background: none; border: none; cursor: pointer; color: var(--text-light);
+    font-size: 15px; width: 26px; height: 26px; display: flex; align-items: center;
+    justify-content: center; border-radius: 8px; transition: all 0.2s; flex-shrink: 0;
   }
-  .entry-remove:hover { transform: scale(1.2); }
+  .entry-remove:hover { background: #fff0f0; color: var(--danger); }
 
-  /* BUTTONS */
-  .btn-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
+  /* CLEAR DAY */
+  .clear-day-wrap { text-align: center; padding: 4px 0 8px; }
+  .btn-clear-day {
+    background: none; border: 1.5px solid var(--danger); color: var(--danger);
+    border-radius: 14px; padding: 10px 24px; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  .btn-add {
+  .btn-clear-day:hover { background: var(--danger); color: white; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 500; align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  @media (min-width: 520px) {
+    .modal-overlay { align-items: center; }
+    .modal-box { border-radius: 24px !important; max-width: 400px !important; }
+  }
+  .modal-box {
+    background: white; border-radius: 24px 24px 0 0; padding: 28px 22px 34px;
+    width: 100%; max-width: 100%; box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+    animation: slideUp 0.22s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-handle {
+    width: 36px; height: 4px; background: var(--border); border-radius: 4px;
+    margin: 0 auto 20px;
+  }
+  .modal-product-name { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--text); margin-bottom: 4px; }
+  .modal-product-meta { font-size: 12px; color: var(--text-light); margin-bottom: 18px; }
+  .modal-label { font-size: 12px; font-weight: 700; color: var(--text-soft); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+  .modal-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .modal-input {
+    flex: 1; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border);
+    font-size: 22px; font-weight: 800; font-family: 'Nunito', sans-serif; color: var(--text);
+    outline: none; text-align: center; transition: all 0.2s; background: var(--mint-light);
+  }
+  .modal-input:focus { border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(76,175,131,0.12); }
+  .modal-unit { font-size: 16px; font-weight: 700; color: var(--text-soft); min-width: 24px; }
+  .modal-quick-btns { display: flex; gap: 7px; margin-bottom: 16px; flex-wrap: wrap; }
+  .modal-quick-btn {
+    background: var(--mint-light); border: 1.5px solid var(--border); border-radius: 20px;
+    padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: 'Nunito', sans-serif; color: var(--text-soft); transition: all 0.2s;
+  }
+  .modal-quick-btn:hover, .modal-quick-btn.selected { background: var(--green); color: white; border-color: var(--green); }
+  .modal-preview {
+    background: var(--mint-light); border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;
+    font-weight: 800; color: var(--green-dark);
+  }
+  .modal-preview-label { font-size: 12px; font-weight: 600; color: var(--text-soft); }
+  .modal-preview-cal { font-size: 20px; }
+  .modal-btn-row { display: flex; gap: 10px; }
+  .modal-cancel {
+    flex: 1; padding: 14px; border-radius: 14px; border: 1.5px solid var(--border);
+    background: none; font-size: 15px; font-weight: 700; color: var(--text-soft);
+    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+  }
+  .modal-cancel:hover { background: var(--mint-light); }
+  .modal-confirm {
+    flex: 2; padding: 14px; border-radius: 14px; border: none;
     background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 11px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    flex: 1;
+    color: white; font-size: 15px; font-weight: 800; cursor: pointer;
+    font-family: 'Nunito', sans-serif; transition: all 0.2s; box-shadow: 0 4px 15px var(--shadow-hover);
   }
-  .btn-add:hover { transform: translateY(-1px); box-shadow: 0 4px 15px var(--shadow-hover); }
-
-  /* TOTALS */
-  .totals-card {
-    background: white;
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: 0 4px 24px var(--shadow);
-    border: 1px solid var(--border);
-    position: sticky;
-    top: 80px;
-  }
-  .total-item {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .total-item:last-child { margin-bottom: 0; }
-  .total-label { font-size: 13px; color: var(--text-soft); font-weight: 600; }
-  .total-value { font-size: 32px; font-weight: 800; color: var(--green-dark); }
-  .total-unit { font-size: 12px; color: var(--text-light); }
-  .progress-bar {
-    background: var(--mint-light);
-    border-radius: 10px;
-    height: 8px;
-    margin-top: 8px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--green);
-    transition: width 0.3s;
-  }
+  .modal-confirm:hover { transform: translateY(-1px); }
+  .modal-confirm:disabled { opacity: 0.6; transform: none; }
 </style>
 </head>
 <body>
@@ -335,81 +326,90 @@
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="logo">
-      <span>🌿</span>
-      <span>CaloriMint</span>
-    </a>
+    <a href="/" class="logo">🌿 CaloriMint</a>
     <div class="nav-links">
       <a href="/history" class="nav-link">{{ t.history }}</a>
       <a href="/goals" class="nav-link">{{ t.goals }}</a>
-      <a href="/categories" class="nav-link">{{ t.categories }}</a>
+      <a href="/categories" class="nav-link">{{ t['categories'] }}</a>
       <a href="/premium" class="nav-link premium-btn">{{ t.premium }}</a>
       <a href="/logout" class="nav-link">{{ t.logout }}</a>
     </div>
     <div class="lang-switcher">
-      {% for lang_code in ['ru', 'en', 'uk', 'kk'] %}
+      {% for lc in ['ru', 'en', 'uk', 'kk'] %}
       <form method="POST" action="/language" style="display:inline;">
-        <input type="hidden" name="lang" value="{{ lang_code }}">
-        <button type="submit" class="lang-btn {% if lang == lang_code %}active{% endif %}">
-          {{ {'ru': 'РУ', 'en': 'EN', 'uk': 'UK', 'kk': 'КК'}[lang_code] }}
-        </button>
+        <input type="hidden" name="lang" value="{{ lc }}">
+        <button type="submit" class="lang-btn {% if lang == lc %}active{% endif %}">{{ {'ru':'РУ','en':'EN','uk':'UK','kk':'КК'}[lc] }}</button>
+      </form>
+      {% endfor %}
+    </div>
+    <button class="mobile-menu-btn" onclick="openDrawer()">☰</button>
+  </div>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-overlay" onclick="closeDrawer()"></div>
+  <div class="drawer-panel">
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <a href="/history" class="drawer-link">📊 {{ t.history }}</a>
+    <a href="/goals" class="drawer-link">🎯 {{ t.goals }}</a>
+    <a href="/categories" class="drawer-link">🗂 {{ t['categories'] }}</a>
+    <a href="/premium" class="drawer-link premium">⭐ {{ t.premium }}</a>
+    <a href="/logout" class="drawer-link">🚪 {{ t.logout }}</a>
+    <div class="drawer-langs">
+      {% for lc in ['ru', 'en', 'uk', 'kk'] %}
+      <form method="POST" action="/language" style="display:inline;">
+        <input type="hidden" name="lang" value="{{ lc }}">
+        <button type="submit" class="drawer-lang-btn {% if lang == lc %}active{% endif %}">{{ {'ru':'РУ','en':'EN','uk':'UK','kk':'КК'}[lc] }}</button>
       </form>
       {% endfor %}
     </div>
   </div>
-</nav>
+</div>
 
 <!-- MAIN -->
 <main>
+  <!-- MEALS -->
   <div>
-    <!-- MEALS -->
     {% for meal_key, meal in meals.items() %}
     <div class="meal-section" id="meal-{{ meal_key }}">
+
       <div class="meal-header">
         <div class="meal-title">
-          <span class="icon">{{ meal.icon }}</span>
+          <span>{{ meal.icon }}</span>
           <span>{{ meal.name }}</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
           <div class="meal-cal">{{ meal.total|int }} ккал</div>
-          <div class="meal-buttons">
-            <button class="btn-clear-meal" onclick="clearMeal('{{ meal_key }}')">🗑 {{ t.clear }}</button>
-          </div>
+          <button class="btn-clear-meal" onclick="clearMeal('{{ meal_key }}')">🗑 Очистить</button>
         </div>
       </div>
 
-      <!-- CATEGORY BUTTONS -->
-      <div class="category-buttons">
-        <button class="cat-btn active" onclick="loadCategory('{{ meal_key }}', '', this)">{{ t.all }}</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'fruits', this)">🍎 Фрукты</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'vegetables', this)">🥦 Овощи</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'meat', this)">🥩 Мясо</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'dairy', this)">🥛 Молочное</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'grains', this)">🌾 Злаки</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'nuts', this)">🌰 Орехи</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'fish', this)">🐟 Рыба</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'sweets', this)">🍫 Сладкое</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'drinks', this)">🥤 Напитки</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'supplements', this)">💊 Витамины</button>
-        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'sports_nutrition', this)">💪 Спортпит</button>
+      <!-- CATEGORY TABS -->
+      <div class="category-scroll" id="cats-{{ meal_key }}">
+        <button class="cat-btn active" onclick="loadCategory('{{ meal_key }}','',this)">Все</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','fruits',this)">🍎 Фрукты</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','vegetables',this)">🥦 Овощи</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','meat',this)">🥩 Мясо</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','dairy',this)">🥛 Молочное</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','grains',this)">🌾 Злаки</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','nuts',this)">🌰 Орехи</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','fish',this)">🐟 Рыба</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','sweets',this)">🍫 Сладкое</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','drinks',this)">🥤 Напитки</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','supplements',this)">💊 Витамины</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','sports_nutrition',this)">💪 Спортпит</button>
       </div>
 
-      <!-- SEARCH INSIDE MEAL -->
-      <div style="margin-bottom: 12px;">
-        <input type="text" 
-               id="search-{{ meal_key }}" 
-               placeholder="🔍 Поиск продукта..." 
-               oninput="searchInMeal('{{ meal_key }}')"
-               style="width:100%; padding: 10px 16px; border-radius: 14px; border: 1.5px solid var(--border); font-size: 14px; font-family: 'Nunito', sans-serif; color: var(--text); background: var(--mint-light); outline: none; transition: all 0.2s;"
-               onfocus="this.style.borderColor='var(--green)'; this.style.background='white';"
-               onblur="this.style.borderColor='var(--border)'; this.style.background='var(--mint-light)';"
-        >
+      <!-- SEARCH -->
+      <div class="meal-search-wrap">
+        <input type="text" id="search-{{ meal_key }}" class="meal-search"
+               placeholder="🔍 Поиск продукта..."
+               oninput="searchInMeal('{{ meal_key }}')">
       </div>
 
       <!-- PRODUCTS LIST -->
-      <div class="meal-products" id="products-{{ meal_key }}">
-        <div style="text-align: center; color: var(--text-light);">Выберите категорию</div>
-      </div>
+      <div class="meal-products" id="products-{{ meal_key }}"></div>
 
       <!-- ENTRIES -->
       <div class="meal-entries" id="entries-{{ meal_key }}">
@@ -417,51 +417,43 @@
         <div class="entry-item">
           <div class="entry-info">
             <div class="entry-name">{{ entry.name }}</div>
-            <div class="entry-sub">{{ entry.grams|int }}г</div>
+            <div class="entry-sub">{{ entry.grams|int }} г · {{ entry.calories|int }} ккал</div>
           </div>
-          <div class="entry-cal">{{ entry.calories|int }} ккал</div>
           <button class="entry-remove" onclick="removeEntry({{ entry.id }})">✕</button>
         </div>
         {% endfor %}
       </div>
+
     </div>
     {% endfor %}
 
-    <!-- CLEAR ALL -->
-    <div style="text-align: center; margin-top: 28px;">
-      <button onclick="clearDay()" style="background: linear-gradient(135deg, var(--danger), #f06292); color: white; border: none; border-radius: 14px; padding: 12px 28px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;">🗑 {{ t.clear }} всё</button>
+    <div class="clear-day-wrap">
+      <button class="btn-clear-day" onclick="clearDay()">🗑 Очистить всё за сегодня</button>
     </div>
   </div>
 
-  <!-- RIGHT SIDEBAR - TOTALS -->
+  <!-- TOTALS SIDEBAR -->
   <div class="totals-card">
-    <div class="card-title">
-      <span class="icon">🎯</span>
-      Сегодня
-    </div>
-
+    <div class="totals-title">🎯 Сегодня</div>
     <div class="total-item">
       <div class="total-label">Калории</div>
-      <div class="total-value" id="total-cal">{{ total_calories }}</div>
-      <div class="total-unit">ккал из {{ current_user.daily_calorie_goal if current_user.is_authenticated else 2000 }}</div>
+      <div class="total-value">{{ total_calories }}</div>
+      <div class="total-unit">из {{ current_user.daily_calorie_goal if current_user.is_authenticated else 2000 }} ккал</div>
       <div class="progress-bar">
         <div class="progress-fill" style="width: {{ [total_calories / (current_user.daily_calorie_goal if current_user.is_authenticated else 2000) * 100, 100]|min|int }}%"></div>
       </div>
     </div>
-
     {% if current_user.is_authenticated and current_user.is_premium %}
     <div class="total-item">
       <div class="total-label">Белки</div>
       <div class="total-value">{{ total_protein|int }}</div>
       <div class="total-unit">г из {{ current_user.protein_goal }}</div>
     </div>
-
     <div class="total-item">
       <div class="total-label">Жиры</div>
       <div class="total-value">{{ total_fat|int }}</div>
       <div class="total-unit">г из {{ current_user.fat_goal }}</div>
     </div>
-
     <div class="total-item">
       <div class="total-label">Углеводы</div>
       <div class="total-value">{{ total_carbs|int }}</div>
@@ -471,133 +463,194 @@
   </div>
 </main>
 
+<!-- MODAL: добавление продукта -->
+<div class="modal-overlay" id="addModal" onclick="modalBgClick(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-handle"></div>
+    <div class="modal-product-name" id="modalName"></div>
+    <div class="modal-product-meta" id="modalMeta"></div>
+    <label class="modal-label" id="modalWeightLabel">Вес:</label>
+    <div class="modal-input-row">
+      <input type="number" class="modal-input" id="modalWeight" value="100" min="1" max="9999" oninput="updatePreview()">
+      <span class="modal-unit" id="modalUnit">г</span>
+    </div>
+    <div class="modal-quick-btns" id="modalQuickBtns"></div>
+    <div class="modal-preview">
+      <div>
+        <div class="modal-preview-label">Итого</div>
+        <div class="modal-preview-cal" id="previewCal">100 ккал</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="modal-preview-label">Б / Ж / У</div>
+        <div id="previewBJU" style="font-size:13px;font-weight:700;color:var(--text-soft);">— / — / —</div>
+      </div>
+    </div>
+    <div class="modal-btn-row">
+      <button class="modal-cancel" onclick="closeModal()">Отмена</button>
+      <button class="modal-confirm" id="modalConfirmBtn" onclick="confirmAdd()">✓ Добавить</button>
+    </div>
+  </div>
+</div>
+
 <script>
-let currentMeal = null;
-const meals = {{ meals|tojson }};
-
-// Таймеры дебаунс для поиска
 const searchTimers = {};
+let modalData = null;
 
+// ── DRAWER ──
+function openDrawer() {
+  document.getElementById('mobileDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('mobileDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── CATEGORIES ──
+async function loadCategory(meal, category, btn) {
+  document.getElementById(`search-${meal}`).value = '';
+  document.getElementById(`cats-${meal}`).querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  await fetchProducts(meal, { category });
+}
+
+// ── SEARCH ──
 async function searchInMeal(meal) {
   clearTimeout(searchTimers[meal]);
   searchTimers[meal] = setTimeout(async () => {
-    const query = document.getElementById(`search-${meal}`).value.trim();
-    if (!query) {
-      // Если поиск пустой — показываем текущую активную категорию
-      const activeCatBtn = document.querySelector(`#meal-${meal} .cat-btn.active`);
-      if (activeCatBtn) {
-        const onclick = activeCatBtn.getAttribute('onclick');
-        const catMatch = onclick.match(/'([^']*)'\s*\)/);
-        const cat = catMatch ? catMatch[1] : '';
-        await loadCategoryByName(meal, cat);
-      }
+    const q = document.getElementById(`search-${meal}`).value.trim();
+    if (!q) {
+      const active = document.getElementById(`cats-${meal}`).querySelector('.cat-btn.active');
+      const m = active ? active.getAttribute('onclick').match(/loadCategory\('[^']*',\s*'([^']*)'/): null;
+      await fetchProducts(meal, { category: m ? m[1] : '' });
+    } else {
+      await fetchProducts(meal, { q });
+    }
+  }, 280);
+}
+
+// ── FETCH PRODUCTS ──
+async function fetchProducts(meal, params) {
+  const div = document.getElementById(`products-${meal}`);
+  div.innerHTML = '<div class="products-empty">⏳ Загрузка...</div>';
+  div.classList.add('show');
+  try {
+    const p = new URLSearchParams();
+    if (params.q) p.set('q', params.q);
+    else if (params.category) p.set('category', params.category);
+    else p.set('show_all', '1');
+
+    const res = await fetch(`/api/search?${p}`);
+    const items = await res.json();
+
+    if (!items.length) {
+      div.innerHTML = '<div class="products-empty">Ничего не найдено 🤷</div>';
       return;
     }
-    const productsDiv = document.getElementById(`products-${meal}`);
-    productsDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-light);">⏳</div>';
-    productsDiv.classList.add('show');
-    try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      const items = await response.json();
-      renderProducts(meal, items);
-    } catch(e) {
-      productsDiv.innerHTML = '<div style="color:var(--danger);padding:12px;">❌ Ошибка загрузки</div>';
-    }
-  }, 300);
-}
-
-async function loadCategoryByName(meal, category) {
-  const productsDiv = document.getElementById(`products-${meal}`);
-  productsDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-light);">⏳ Загрузка...</div>';
-  productsDiv.classList.add('show');
-  try {
-    const params = new URLSearchParams();
-    if (category) params.set('category', category);
-    else params.set('show_all', '1');
-    const response = await fetch(`/api/search?${params}`);
-    const items = await response.json();
-    renderProducts(meal, items);
-  } catch(e) {
-    productsDiv.innerHTML = '<div style="color:var(--danger);padding:12px;">❌ Ошибка загрузки</div>';
-  }
-}
-
-async function loadCategory(meal, category, btn) {
-  // Сбрасываем поиск
-  const searchInput = document.getElementById(`search-${meal}`);
-  if (searchInput) searchInput.value = '';
-
-  // Активируем кнопку
-  btn.closest('.category-buttons').querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  await loadCategoryByName(meal, category);
-}
-
-function renderProducts(meal, items) {
-  const productsDiv = document.getElementById(`products-${meal}`);
-  if (items.length === 0) {
-    productsDiv.innerHTML = '<div style="text-align:center;color:var(--text-light);padding:16px;">Продукты не найдены</div>';
-  } else {
-    productsDiv.innerHTML = items.map(item => `
-      <div class="product-item" onclick="addProduct('${meal}', ${item.id}, '${item.name_ru.replace(/'/g, "\\'")}', ${item.calories}, ${item.protein}, ${item.fat}, ${item.carbs})">
-        <div>
+    div.innerHTML = items.map(item => {
+      const isDrink = item.category === 'drinks';
+      const unit = isDrink ? 'мл' : 'г';
+      return `<div class="product-item" onclick="openModal('${meal}',${item.id},'${item.name_ru.replace(/'/g,"\\'")}',${item.calories},${item.protein},${item.fat},${item.carbs},'${unit}')">
+        <div style="min-width:0">
           <div class="product-name">${item.name_ru}</div>
-          <div style="font-size: 11px; color: var(--text-light);">${item.calories} ккал · ${item.protein}г Б · ${item.fat}г Ж · ${item.carbs}г У</div>
+          <div class="product-meta">${item.calories} ккал · ${item.protein}г Б · ${item.fat}г Ж · ${item.carbs}г У</div>
         </div>
-        <div class="product-cal">${item.calories} ккал</div>
-      </div>
-    `).join('');
+        <div class="product-cal-badge">${item.calories}&nbsp;ккал</div>
+      </div>`;
+    }).join('');
+  } catch {
+    div.innerHTML = '<div class="products-empty" style="color:var(--danger)">❌ Ошибка загрузки</div>';
   }
-  productsDiv.classList.add('show');
 }
 
-async function addProduct(meal, id, name, cal, protein, fat, carbs) {
-  const grams = prompt(`${name}\n\nУкажите вес в граммах (по умолчанию 100):`);
-  if (grams === null) return;
+// ── MODAL ──
+function openModal(meal, id, name, cal, protein, fat, carbs, unit) {
+  modalData = { meal, id, name, cal, protein, fat, carbs, unit };
+  document.getElementById('modalName').textContent = name;
+  document.getElementById('modalMeta').textContent = `${cal} ккал · ${protein}г Б · ${fat}г Ж · ${carbs}г У на 100 ${unit}`;
+  document.getElementById('modalUnit').textContent = unit;
+  document.getElementById('modalWeightLabel').textContent = unit === 'мл' ? 'Объём:' : 'Вес:';
+  const defaultVal = unit === 'мл' ? 200 : 100;
+  document.getElementById('modalWeight').value = defaultVal;
+  const quickVals = unit === 'мл' ? [100,150,200,250,330,500] : [50,100,150,200,250];
+  document.getElementById('modalQuickBtns').innerHTML = quickVals.map(v =>
+    `<button class="modal-quick-btn${v === defaultVal ? ' selected' : ''}" onclick="setWeight(${v})">${v}</button>`
+  ).join('');
+  updatePreview();
+  document.getElementById('addModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('modalWeight').focus(), 150);
+}
 
-  const gramValue = parseFloat(grams) || 100;
-  const response = await fetch('/api/add-entry', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      food_id: id,
-      grams: gramValue,
-      meal_type: meal
-    })
+function closeModal() {
+  document.getElementById('addModal').classList.remove('open');
+  document.body.style.overflow = '';
+  modalData = null;
+}
+
+function modalBgClick(e) {
+  if (e.target.id === 'addModal') closeModal();
+}
+
+function setWeight(v) {
+  document.getElementById('modalWeight').value = v;
+  document.querySelectorAll('.modal-quick-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.textContent) === v);
   });
+  updatePreview();
+}
 
-  if (response.ok) {
-    location.reload();
+function updatePreview() {
+  if (!modalData) return;
+  const w = parseFloat(document.getElementById('modalWeight').value) || 0;
+  const r = v => Math.round(v * w / 100);
+  document.getElementById('previewCal').textContent = `${r(modalData.cal)} ккал`;
+  document.getElementById('previewBJU').textContent = `${r(modalData.protein)}г / ${r(modalData.fat)}г / ${r(modalData.carbs)}г`;
+}
+
+async function confirmAdd() {
+  if (!modalData) return;
+  const w = parseFloat(document.getElementById('modalWeight').value) || 100;
+  const btn = document.getElementById('modalConfirmBtn');
+  btn.textContent = '⏳';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/add-entry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ food_id: modalData.id, grams: w, meal_type: modalData.meal })
+    });
+    if (res.ok) { closeModal(); location.reload(); }
+  } finally {
+    btn.textContent = '✓ Добавить';
+    btn.disabled = false;
   }
 }
 
+// ── DELETE / CLEAR ──
 async function removeEntry(id) {
-  if (confirm('Удалить этот продукт?')) {
-    await fetch(`/api/delete-entry/${id}`, { method: 'DELETE' });
-    location.reload();
-  }
+  if (!confirm('Удалить продукт?')) return;
+  await fetch(`/api/delete-entry/${id}`, { method: 'DELETE' });
+  location.reload();
 }
 
 async function clearMeal(meal) {
-  const mealNames = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', snack: 'Перекус' };
-  if (confirm(`Очистить "${mealNames[meal] || meal}"?`)) {
-    await fetch('/api/clear-meal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ meal_type: meal })
-    });
-    location.reload();
-  }
+  const names = { breakfast:'Завтрак', lunch:'Обед', dinner:'Ужин', snack:'Перекус' };
+  if (!confirm(`Очистить "${names[meal] || meal}"?`)) return;
+  await fetch('/api/clear-meal', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ meal_type: meal })
+  });
+  location.reload();
 }
 
 async function clearDay() {
-  if (confirm('Удалить ВСЕ продукты за сегодня?')) {
-    await fetch('/api/clear-day', { method: 'DELETE' });
-    location.reload();
-  }
+  if (!confirm('Удалить ВСЕ продукты за сегодня?')) return;
+  await fetch('/api/clear-day', { method: 'DELETE' });
+  location.reload();
 }
-</script>
 
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
 </body>
 </html>

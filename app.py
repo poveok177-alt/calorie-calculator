@@ -304,30 +304,31 @@ def index():
 @app.route('/api/search', methods=['GET'])
 @login_required
 def search_foods():
-    query = request.args.get('q', '').lower()
-    category = request.args.get('category', '')
+    query = request.args.get('q', '').strip().lower()
+    category = request.args.get('category', '').strip()
     show_all = request.args.get('show_all', '')
 
     if not query and not category and not show_all:
         return jsonify([])
-    
-    # Импортируем food_data
+
     from food_data import food_data
-    
+
     results = []
     for idx, food in enumerate(food_data):
-        # Фильтр по категории
+        # Фильтр категории
         if category and food.get('category') != category:
             continue
-        
-        # Фильтр по поисковому запросу
+        # Фильтр поиска
         if query:
-            if not (query in food['name_ru'].lower() or 
-                    query in food.get('name_en', '').lower() or
-                    query in food.get('name_uk', '').lower() or
-                    query in food.get('name_kk', '').lower()):
+            haystack = ' '.join([
+                food.get('name_ru', ''),
+                food.get('name_en', ''),
+                food.get('name_uk', ''),
+                food.get('name_kk', ''),
+            ]).lower()
+            if query not in haystack:
                 continue
-        
+
         results.append({
             'id': idx,
             'name_ru': food['name_ru'],
@@ -338,7 +339,7 @@ def search_foods():
             'carbs': food.get('carbs', 0),
             'category': food.get('category', 'other')
         })
-    
+
     return jsonify(results[:30])
 
 @app.route('/api/add-entry', methods=['POST'])
