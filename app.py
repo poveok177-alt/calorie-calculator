@@ -21,6 +21,9 @@ except ImportError:
     Payment = None
 
 app = Flask(__name__)
+@app.route("/health")
+def health():
+    return "OK", 200
 app.config['SECRET_KEY'] = 'mojasupertajnayastrokakotoruyaniktonevzlomaet123'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///calories.db')
@@ -696,6 +699,7 @@ def init_db():
                 db.session.add(food)
             db.session.commit()
             print(f"✅ Добавлено {len(FOODS)} продуктов в базу данных")
+init_db()
 @app.route('/api/create-payment', methods=['POST'])
 @login_required
 def create_payment():
@@ -752,7 +756,5 @@ def yookassa_webhook():
     except Exception as e:
         return jsonify({'status': 'error'}), 400
 if __name__ == '__main__':
-    init_db()
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(debug=True)
 # redeploy trigger
