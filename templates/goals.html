@@ -100,7 +100,7 @@
         </div>
 
         <div class="form-group">
-          <label>Возраст</label>
+          <label>{{ t['age'] }}</label>
           <input type="number" name="age" min="14" max="100" 
                  value="{{ current_user.age or 25 }}" placeholder="25" required>
         </div>
@@ -108,71 +108,70 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>Пол</label>
+          <label>{{ t['gender'] }}</label>
           <select name="gender" required onchange="updateCalculation()">
-            <option value="">Выбери...</option>
-            <option value="male">👨 Мужчина</option>
-            <option value="female">👩 Женщина</option>
+            <option value="">{{ t['select'] }}</option>
+            <option value="male">{{ t['gender_male'] }}</option>
+            <option value="female">{{ t['gender_female'] }}</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>Уровень активности</label>
           <select name="activity" required onchange="updateCalculation()">
-            <option value="">Выбери...</option>
-            <option value="sedentary">📍 Сидячий образ жизни (1.2)</option>
-            <option value="light">🚶 Лёгкая активность (1.375)</option>
-            <option value="moderate">🏃 Умеренная активность (1.55)</option>
-            <option value="active">💪 Активный образ жизни (1.725)</option>
-            <option value="very_active">🏋️ Очень активный (1.9)</option>
+            <option value="">{{ t['select'] }}</option>
+            <option value="sedentary">{{ t['act_sedentary'] }}</option>
+            <option value="light">{{ t['act_light'] }}</option>
+            <option value="moderate">{{ t['act_moderate'] }}</option>
+            <option value="active">{{ t['act_active'] }}</option>
+            <option value="very_active">{{ t['act_very_active'] }}</option>
           </select>
         </div>
       </div>
 
       <div class="info-box">
-        <strong>📍 Калькулятор использует Harris-Benedict формулу</strong><br>
-        Точность расчёта ≈ 90%. Если результаты не совпадают с реальностью, корректируй вручную.
+        <strong>{{ t['formula_note'] }}</strong>
       </div>
 
       <!-- Калории -->
       <div class="form-group" style="margin-top:20px;">
-        <label>🔥 Калории (ккал в день)</label>
+        <label>{{ t['daily_goal'] }}</label>
         <input type="number" name="daily_calorie_goal" min="500" max="10000" step="1"
                value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000" required>
       </div>
 
       <!-- БЖУ -->
       <div class="form-group">
-        <label>🥩 Белки (г в день)</label>
+        <label>{{ t['protein_goal_label'] }}</label>
         <input type="number" name="protein_goal" min="10" max="500" step="1"
                value="{{ current_user.protein_goal or 150 }}" placeholder="150" required>
       </div>
 
       <div class="form-group">
-        <label>🥑 Жиры (г в день)</label>
+        <label>{{ t['fat_goal_label'] }}</label>
         <input type="number" name="fat_goal" min="10" max="300" step="1"
                value="{{ current_user.fat_goal or 70 }}" placeholder="70" required>
       </div>
 
       <div class="form-group">
-        <label>🍞 Углеводы (г в день)</label>
+        <label>{{ t['carbs_goal_label'] }}</label>
         <input type="number" name="carbs_goal" min="10" max="700" step="1"
                value="{{ current_user.carbs_goal or 250 }}" placeholder="250" required>
       </div>
 
       <!-- Вода -->
       <div class="form-group">
-        <label>💧 Норма воды (стаканов в день)</label>
+        <label>{{ t['water_goal_label'] }}</label>
         <input type="number" name="water_goal" min="1" max="20" step="1"
                value="{{ current_user.water_goal or 8 }}" placeholder="8" required>
       </div>
 
       <!-- Кнопки -->
       <button type="button" onclick="calculateAll()" class="btn-secondary">
-        🧮 Рассчитать автоматически
+        {{ t['calc_auto'] }}
       </button>
 
-      <button type="submit" class="btn-primary">💾 Сохранить</button>
+      <button type="submit" class="btn-primary">💾 {{ t['save'] }}</button>
     </form>
 
     <!-- Отображение результатов -->
@@ -181,23 +180,23 @@
       {% set diff = (current_user.current_weight - current_user.goal_weight)|abs %}
       <div class="weight-diff">
         <div class="weight-val">
-          <div class="weight-label">Сейчас</div>
+          <div class="weight-label">{{ t['now'] }}</div>
           <div class="weight-num">{{ current_user.current_weight }} кг</div>
         </div>
         <div class="weight-arrow">→</div>
         <div class="weight-val">
-          <div class="weight-label">Цель</div>
+          <div class="weight-label">{{ t['goal'] }}</div>
           <div class="weight-num">{{ current_user.goal_weight }} кг</div>
         </div>
       </div>
 
       <div style="font-size:14px; color:var(--text-soft); margin-bottom:10px; font-weight:600;">
         {% if current_user.current_weight > current_user.goal_weight %}
-          До цели: {{ diff|round(1) }} кг похудеть 💪
+          {{ t['to_goal_lose'].replace('{d}', diff|round(1)|string) }}
         {% elif current_user.current_weight < current_user.goal_weight %}
-          До цели: {{ diff|round(1) }} кг набрать 🌱
+          {{ t['to_goal_gain'].replace('{d}', diff|round(1)|string) }}
         {% else %}
-          🎉 Цель достигнута!
+          {{ t['goal_reached'] }}
         {% endif %}
       </div>
 
@@ -221,25 +220,25 @@
       <!-- Текущие БЖУ -->
       {% if current_user.daily_calorie_goal %}
       <div style="margin-top:20px;">
-        <div style="font-size:13px; font-weight:700; color:var(--text-soft); margin-bottom:10px;">📋 Твои дневные нормы:</div>
+        <div style="font-size:13px; font-weight:700; color:var(--text-soft); margin-bottom:10px;">{{ t['your_norms'] }}</div>
         <div class="bju-grid">
           <div class="bju-item">
-            <div class="bju-label">Калории</div>
+            <div class="bju-label">{{ t['calories'] }}</div>
             <div class="bju-value">{{ current_user.daily_calorie_goal }}</div>
-            <div class="bju-label">ккал</div>
+            <div class="bju-label">{{ t['kcal'] }}</div>
           </div>
           <div class="bju-item">
-            <div class="bju-label">Белки</div>
+            <div class="bju-label">{{ t['protein'] }}</div>
             <div class="bju-value">{{ current_user.protein_goal }}</div>
             <div class="bju-label">г</div>
           </div>
           <div class="bju-item">
-            <div class="bju-label">Жиры</div>
+            <div class="bju-label">{{ t['fat'] }}</div>
             <div class="bju-value">{{ current_user.fat_goal }}</div>
             <div class="bju-label">г</div>
           </div>
           <div class="bju-item">
-            <div class="bju-label">Углеводы</div>
+            <div class="bju-label">{{ t['carbs'] }}</div>
             <div class="bju-value">{{ current_user.carbs_goal }}</div>
             <div class="bju-label">г</div>
           </div>
@@ -252,7 +251,21 @@
   </div>
 </main>
 
+
 <script>
+const T = {
+  calc_fill_all: {{ t['calc_fill_all']|tojson }},
+  calc_done: {{ t['calc_done']|tojson }},
+  calc_bmr: {{ t['calc_bmr']|tojson }},
+  calc_tdee: {{ t['calc_tdee']|tojson }},
+  calc_save: {{ t['calc_save']|tojson }},
+  calc_male: {{ t['calc_male']|tojson }},
+  calc_female: {{ t['calc_female']|tojson }},
+  kcal: {{ t['kcal']|tojson }},
+  g: {{ t['g']|tojson }},
+  save: {{ t['save']|tojson }},
+  calc_activity_label: {{ t['calc_activity_label']|tojson }},
+};
 function getActivityCoefficient() {
     const activity = document.querySelector('[name=activity]').value;
     const coefficients = {
@@ -274,8 +287,7 @@ function calculateAll() {
     const activity = document.querySelector('[name=activity]').value;
 
     if (!weight || !height || !age || !gender || !activity) {
-        alert('❌ Заполни все поля: вес, рост, возраст, пол и активность!');
-        return;
+        alert('❌ ' + T.calc_fill_all); return;
     }
 
     // Harris-Benedict формула для расчёта BMR
@@ -336,22 +348,10 @@ const carbs = Math.round((calories - (protein * 4 + fat * 9)) / 4);
     document.querySelector('[name=carbs_goal]').value = carbs;
     document.querySelector('[name=water_goal]').value = water;
 
-    const genderText = gender === 'male' ? 'мужчина' : 'женщина';
     
-    alert(`✅ Расчёт завершён!
-
-🧬 Метаболизм (BMR): ${Math.round(bmr)} ккал/день
-🔥 Дневная норма (TDEE): ${calories} ккал/день
-
-🥩 Белки: ${protein}г/день (${Math.round(protein * 4)} ккал)
-🥑 Жиры: ${fat}г/день (${Math.round(fat * 9)} ккал)
-🍞 Углеводы: ${carbs}г/день (${Math.round(carbs * 4)} ккал)
-💧 Вода: ${water} стаканов/день
-
-Профиль: ${genderText}, ${age} лет
-Активность: ${document.querySelector('[name=activity]').options[document.querySelector('[name=activity]').selectedIndex].text}
-
-📌 Не забудь нажать "Сохранить"!`);
+    
+    const genderTxt = gender === 'male' ? T.calc_male : T.calc_female;
+    alert(`✅ ${T.calc_done}\n\n🧬 ${T.calc_bmr}: ${Math.round(bmr)} ${T.kcal}\n🔥 ${T.calc_tdee}: ${calories} ${T.kcal}\n\n🥩 ${protein}${T.g}\n🥑 ${fat}${T.g}\n🍞 ${carbs}${T.g}\n\n📌 ${T.calc_save}`);
 }
 
 function updateCalculation() {

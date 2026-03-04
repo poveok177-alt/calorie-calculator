@@ -10,179 +10,135 @@
   :root {
     --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83;
     --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9;
-    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd;
-    --shadow:rgba(76,175,131,0.12); --gold:#f5a623; --gold-light:#fff3e0;
+    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e;
+    --border:#c8eedd; --shadow:rgba(76,175,131,0.12);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; }
+  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; padding-bottom:50px; }
   nav { background:rgba(255,255,255,.95); backdrop-filter:blur(12px); border-bottom:1px solid var(--border);
     padding:0 20px; position:sticky; top:0; z-index:100; box-shadow:0 2px 16px var(--shadow); }
   .nav-inner { max-width:900px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:60px; }
-  .logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--green-dark); text-decoration:none; display:flex; align-items:center; gap:6px; }
+  .logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--green-dark); text-decoration:none; }
   .nav-link { padding:7px 14px; border-radius:20px; text-decoration:none; font-size:13px; font-weight:700; color:var(--text-soft); transition:all .2s; }
   .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
-
-  /* HERO */
-  .hero { text-align:center; padding:48px 20px 36px;
-    background:linear-gradient(160deg,#e8f8f2 0%,#f9fdf9 100%); }
-  .hero-icon { font-size:56px; display:block; margin-bottom:14px;
-    animation:float 3s ease-in-out infinite; }
+  .hero { text-align:center; padding:44px 20px 32px; background:linear-gradient(160deg,#e8f8f2 0%,#f9fdf9 100%); }
+  .hero-icon { font-size:52px; display:block; margin-bottom:12px; animation:float 3s ease-in-out infinite; }
   @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-  .hero h1 { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:10px; }
-  @media(max-width:480px){ .hero h1 { font-size:28px; } }
-  .hero p { font-size:16px; color:var(--text-soft); max-width:440px; margin:0 auto; line-height:1.6; }
-
-  /* SUCCESS BANNER */
+  .hero h1 { font-family:'Playfair Display',serif; font-size:34px; color:var(--text); margin-bottom:8px; }
+  @media(max-width:480px){ .hero h1{font-size:26px;} }
+  .hero p { font-size:15px; color:var(--text-soft); max-width:420px; margin:0 auto; line-height:1.6; }
   .success-banner { background:linear-gradient(135deg,var(--green),var(--green-soft)); color:white;
-    text-align:center; padding:18px 24px; font-size:16px; font-weight:700; }
-
-  /* FEATURES GRID */
-  .features-wrap { max-width:860px; margin:0 auto; padding:32px 20px 0; }
-  .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  @media(max-width:580px){ .features-grid { grid-template-columns:1fr; } }
-  .feature-card {
-    background:white; border-radius:20px; padding:24px;
-    border:1.5px solid var(--border); box-shadow:0 4px 20px var(--shadow); transition:all .2s;
-  }
-  .feature-card:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(76,175,131,.18); }
-  .badge { font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px;
-    display:inline-block; margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
+    text-align:center; padding:16px 24px; font-size:15px; font-weight:700; }
+  /* FEATURES */
+  .features-wrap { max-width:860px; margin:0 auto; padding:28px 16px 0; }
+  .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:560px){ .features-grid{grid-template-columns:1fr;} }
+  .feature-card { background:white; border-radius:18px; padding:22px; border:1.5px solid var(--border); box-shadow:0 4px 18px var(--shadow); transition:all .2s; }
+  .feature-card:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(76,175,131,.18); }
+  .badge { font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
   .badge-free { background:var(--mint); color:var(--green-dark); }
   .badge-premium { background:linear-gradient(135deg,#2d8a63,#4caf83); color:white; }
-  .feature-icon { font-size:36px; margin-bottom:10px; display:block; }
-  .feature-title { font-family:'Playfair Display',serif; font-size:17px; color:var(--text); margin-bottom:6px; }
+  .feature-icon { font-size:34px; margin-bottom:8px; display:block; }
+  .feature-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--text); margin-bottom:5px; }
   .feature-desc { font-size:13px; color:var(--text-soft); line-height:1.5; }
-
   /* PRICING */
-  .pricing-wrap { max-width:480px; margin:32px auto 0; padding:0 20px; }
-
-  /* TRIAL CARD */
-  .trial-card {
-    background:linear-gradient(135deg,#ff9800,#ffb74d);
-    border-radius:24px; padding:28px 28px 24px; color:white; margin-bottom:16px;
-    position:relative; overflow:hidden; box-shadow:0 8px 30px rgba(255,152,0,.3);
-  }
-  .trial-card::after { content:'🎁'; position:absolute; font-size:80px; right:-10px; top:-10px; opacity:.15; }
-  .trial-badge { font-size:11px; font-weight:900; background:rgba(255,255,255,.25);
-    padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:10px;
-    text-transform:uppercase; letter-spacing:.5px; }
-  .trial-title { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:4px; }
-  .trial-price { font-size:42px; font-weight:900; line-height:1; }
+  .pricing-wrap { max-width:460px; margin:28px auto 0; padding:0 16px; }
+  /* TRIAL */
+  .trial-card { background:linear-gradient(135deg,#e65c00,#f9a825); border-radius:22px; padding:26px 24px 22px; color:white; margin-bottom:14px; position:relative; overflow:hidden; box-shadow:0 8px 28px rgba(230,92,0,.28); }
+  .trial-card::after { content:'🎁'; position:absolute; font-size:72px; right:-8px; top:-8px; opacity:.14; }
+  .trial-badge { font-size:11px; font-weight:900; background:rgba(255,255,255,.22); padding:3px 11px; border-radius:20px; display:inline-block; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+  .trial-title { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:4px; }
+  .trial-price { font-size:46px; font-weight:900; line-height:1; }
   .trial-price span { font-size:18px; }
-  .trial-desc { font-size:13px; opacity:.9; margin:6px 0 18px; }
-  .trial-features { margin-bottom:20px; }
-  .trial-feat { font-size:13px; padding:4px 0; opacity:.95; }
+  .trial-desc { font-size:13px; opacity:.9; margin:5px 0 14px; }
+  .trial-features { margin-bottom:16px; }
+  .trial-feat { font-size:13px; padding:3px 0; opacity:.95; }
   .trial-feat::before { content:'✓  '; font-weight:900; }
-  .btn-trial {
-    display:block; width:100%; padding:16px; border:none; border-radius:16px;
-    background:white; color:#e67e00; font-size:16px; font-weight:900;
-    font-family:'Nunito',sans-serif; cursor:pointer; transition:all .2s; text-decoration:none;
-    text-align:center;
-  }
-  .btn-trial:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.15); }
-  .trial-note { font-size:11px; opacity:.75; text-align:center; margin-top:10px; }
-
-  /* MAIN PRICE CARD */
-  .price-card {
-    background:linear-gradient(135deg,#2d8a63,#4caf83,#6dc49a);
-    border-radius:24px; padding:32px 28px; color:white;
-    position:relative; overflow:hidden; box-shadow:0 12px 40px rgba(76,175,131,.28);
-    margin-bottom:16px;
-  }
-  .price-card::before { content:'🌿'; position:absolute; font-size:100px; right:-15px; top:-15px; opacity:.12; }
-  .price-label { font-size:13px; opacity:.85; font-weight:600; margin-bottom:6px; }
-  .price-amount { font-size:52px; font-weight:900; line-height:1; }
+  .btn-trial { display:block; width:100%; padding:15px; border:none; border-radius:14px; background:white; color:#c94a00; font-size:15px; font-weight:900; font-family:'Nunito',sans-serif; cursor:pointer; transition:all .2s; text-decoration:none; text-align:center; }
+  .btn-trial:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.15); }
+  .trial-note { font-size:11px; opacity:.75; text-align:center; margin-top:9px; }
+  /* MAIN PRICE */
+  .price-card { background:linear-gradient(135deg,#2d8a63,#4caf83,#6dc49a); border-radius:22px; padding:28px 24px; color:white; position:relative; overflow:hidden; box-shadow:0 10px 36px rgba(76,175,131,.28); margin-bottom:14px; }
+  .price-card::before { content:'🌿'; position:absolute; font-size:90px; right:-12px; top:-12px; opacity:.11; }
+  .price-label { font-size:13px; opacity:.85; font-weight:600; margin-bottom:4px; }
+  .price-amount { font-size:50px; font-weight:900; line-height:1; }
   .price-amount span { font-size:20px; }
-  .price-period { font-size:14px; opacity:.8; margin-bottom:20px; }
-  .price-features { margin:20px 0; }
-  .price-feat { font-size:14px; padding:6px 0; opacity:.95; }
+  .price-period { font-size:13px; opacity:.8; margin-bottom:16px; }
+  .price-features { margin:16px 0; }
+  .price-feat { font-size:13px; padding:5px 0; opacity:.95; }
   .price-feat::before { content:'✓  '; font-weight:800; }
-  .btn-buy {
-    display:block; background:white; color:var(--green-dark);
-    text-decoration:none; border-radius:16px; padding:15px;
-    font-weight:900; font-size:15px; transition:all .2s;
-    text-align:center; border:none; cursor:pointer; font-family:'Nunito',sans-serif; width:100%;
-  }
-  .btn-buy:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.15); }
-  .payment-note { font-size:11px; opacity:.7; text-align:center; margin-top:10px; }
-
-  /* ALREADY ACTIVE */
-  .active-card {
-    background:linear-gradient(135deg,var(--green),var(--green-soft));
-    border-radius:24px; padding:32px; color:white; text-align:center;
-    box-shadow:0 12px 40px rgba(76,175,131,.28); margin-bottom:16px;
-  }
-  .active-icon { font-size:52px; margin-bottom:12px; }
-  .active-title { font-family:'Playfair Display',serif; font-size:24px; margin-bottom:8px; }
+  .btn-buy { display:block; background:white; color:var(--green-dark); text-decoration:none; border-radius:14px; padding:14px; font-weight:900; font-size:15px; transition:all .2s; text-align:center; border:none; cursor:pointer; font-family:'Nunito',sans-serif; width:100%; }
+  .btn-buy:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.15); }
+  .payment-note { font-size:11px; opacity:.7; text-align:center; margin-top:9px; }
+  /* ACTIVE */
+  .active-card { background:linear-gradient(135deg,var(--green),var(--green-soft)); border-radius:22px; padding:28px; color:white; text-align:center; box-shadow:0 10px 36px rgba(76,175,131,.28); margin-bottom:14px; }
+  .active-icon { font-size:48px; margin-bottom:10px; }
+  .active-title { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:6px; }
   .active-desc { font-size:14px; opacity:.9; line-height:1.6; }
-
-  /* PAYMENT INFO */
-  .payment-section { max-width:860px; margin:24px auto 48px; padding:0 20px; }
-  .payment-title { font-family:'Playfair Display',serif; font-size:20px; text-align:center; margin-bottom:16px; color:var(--text-soft); }
-  .payment-card { background:white; border-radius:18px; padding:22px; border:1.5px solid var(--border); margin-bottom:12px; }
-  .payment-card h3 { font-size:15px; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  /* PAY INFO */
+  .payment-section { max-width:860px; margin:24px auto 0; padding:0 16px; }
+  .payment-title { font-family:'Playfair Display',serif; font-size:18px; text-align:center; margin-bottom:14px; color:var(--text-soft); }
+  .payment-card { background:white; border-radius:16px; padding:20px; border:1.5px solid var(--border); margin-bottom:10px; }
+  .payment-card h3 { font-size:14px; font-weight:800; margin-bottom:7px; }
   .payment-card p { font-size:13px; color:var(--text-soft); line-height:1.7; }
   .payment-card code { background:var(--mint-light); padding:2px 7px; border-radius:6px; font-size:12px; color:var(--green-dark); font-weight:700; }
-
-  /* BOTTOM PADDING */
-  .bottom-pad { height: 40px; }
 </style>
 </head>
 <body>
 <nav>
   <div class="nav-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <a href="/" class="nav-link">← {{ t.today }}</a>
+    <a href="/" class="nav-link">← {{ t['today'] }}</a>
   </div>
 </nav>
 
 {% if trial_success is defined and trial_success %}
-<div class="success-banner">🎉 Пробный период активирован! 7 дней Премиума уже доступны.</div>
+<div class="success-banner">{{ t['trial_success_msg'] }}</div>
 {% endif %}
 
 <div class="hero">
   <span class="hero-icon">⭐</span>
   <h1>{{ t.premium }}</h1>
-  <p>{{ t.premium_desc }}</p>
+  <p>{{ t['premium_desc'] }}</p>
 </div>
 
 <div class="features-wrap">
   <div class="features-grid">
     <div class="feature-card">
-      <span class="badge badge-free">{{ t.free_badge }}</span>
+      <span class="badge badge-free">{{ t['free_badge'] }}</span>
       <span class="feature-icon">🔍</span>
-      <div class="feature-title">{% if lang == 'ru' %}Поиск продуктов{% elif lang == 'en' %}Food search{% elif lang == 'uk' %}Пошук продуктів{% else %}Өнімдерді іздеу{% endif %}</div>
-      <div class="feature-desc">{% if lang == 'ru' %}100+ продуктов, поиск по категориям{% elif lang == 'en' %}100+ foods, search by category{% elif lang == 'uk' %}100+ продуктів, пошук за категоріями{% else %}100+ өнімдер, санат бойынша іздеу{% endif %}</div>
+      <div class="feature-title">{{ t['food_search_feat'] }}</div>
+      <div class="feature-desc">{{ t['food_search_desc'] }}</div>
     </div>
     <div class="feature-card">
-      <span class="badge badge-free">{{ t.free_badge }}</span>
+      <span class="badge badge-free">{{ t['free_badge'] }}</span>
       <span class="feature-icon">🔥</span>
-      <div class="feature-title">{% if lang == 'ru' %}Счётчик калорий{% elif lang == 'en' %}Calorie counter{% elif lang == 'uk' %}Лічильник калорій{% else %}Калория есептегіш{% endif %}</div>
-      <div class="feature-desc">{% if lang == 'ru' %}Завтрак, обед, ужин, перекус{% elif lang == 'en' %}Breakfast, lunch, dinner, snack{% elif lang == 'uk' %}Сніданок, обід, вечеря, закуска{% else %}Таңғы ас, түскі ас, кешкі ас{% endif %}</div>
+      <div class="feature-title">{{ t['cal_counter_feat'] }}</div>
+      <div class="feature-desc">{{ t['cal_counter_desc'] }}</div>
     </div>
     <div class="feature-card">
-      <span class="badge badge-premium">{{ t.premium_badge }}</span>
+      <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
       <span class="feature-icon">📅</span>
-      <div class="feature-title">{{ t.month_history }}</div>
-      <div class="feature-desc">{% if lang == 'ru' %}Полная история питания за 30 дней{% elif lang == 'en' %}Full 30-day nutrition history{% elif lang == 'uk' %}Повна історія харчування за 30 днів{% else %}30 күндік толық тамақтану тарихы{% endif %}</div>
+      <div class="feature-title">{{ t['month_history'] }}</div>
+      <div class="feature-desc">{{ t['hist_feat_desc'] }}</div>
     </div>
     <div class="feature-card">
-      <span class="badge badge-premium">{{ t.premium_badge }}</span>
+      <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
       <span class="feature-icon">📊</span>
-      <div class="feature-title">{{ t.bju_counter }}</div>
-      <div class="feature-desc">{% if lang == 'ru' %}Белки, жиры, углеводы под контролем{% elif lang == 'en' %}Proteins, fats, carbs in control{% elif lang == 'uk' %}Білки, жири, вуглеводи під контролем{% else %}Ақуыз, май, көмірсулар бақылауда{% endif %}</div>
+      <div class="feature-title">{{ t['bju_counter'] }}</div>
+      <div class="feature-desc">{{ t['bju_feat_desc'] }}</div>
     </div>
     <div class="feature-card">
-      <span class="badge badge-premium">{{ t.premium_badge }}</span>
+      <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
       <span class="feature-icon">🎯</span>
-      <div class="feature-title">{{ t.weight_goal }}</div>
-      <div class="feature-desc">{% if lang == 'ru' %}ИМТ, прогресс к цели, калькулятор КБЖУ{% elif lang == 'en' %}BMI, goal progress, macro calculator{% elif lang == 'uk' %}ІМТ, прогрес до цілі, калькулятор{% else %}ДМИ, мақсатқа прогресс{% endif %}</div>
+      <div class="feature-title">{{ t['weight_goal'] }}</div>
+      <div class="feature-desc">{{ t['weight_feat_desc'] }}</div>
     </div>
     <div class="feature-card">
-      <span class="badge badge-premium">{{ t.premium_badge }}</span>
+      <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
       <span class="feature-icon">💧</span>
-      <div class="feature-title">{% if lang == 'ru' %}Счётчик воды{% elif lang == 'en' %}Water tracker{% elif lang == 'uk' %}Лічильник води{% else %}Су есептегіш{% endif %}</div>
-      <div class="feature-desc">{% if lang == 'ru' %}Контролируйте водный баланс каждый день{% elif lang == 'en' %}Track your daily water intake{% elif lang == 'uk' %}Контролюйте водний баланс{% else %}Күнделікті су балансын бақылаңыз{% endif %}</div>
+      <div class="feature-title">{{ t['water_feat'] }}</div>
+      <div class="feature-desc">{{ t['water_feat_desc'] }}</div>
     </div>
   </div>
 </div>
@@ -190,72 +146,66 @@
 <div class="pricing-wrap">
 
   {% if current_user.is_authenticated and current_user.is_premium and not (trial_success is defined and trial_success) %}
-  <!-- Already premium -->
   <div class="active-card">
     <div class="active-icon">🌿</div>
-    <div class="active-title">{% if lang == 'ru' %}Премиум активен!{% elif lang == 'en' %}Premium is active!{% elif lang == 'uk' %}Преміум активний!{% else %}Премиум белсенді!{% endif %}</div>
+    <div class="active-title">{{ t['premium_active'] }}</div>
     <div class="active-desc">
       {% if current_user.trial_ends %}
-        {% if lang == 'ru' %}Пробный период до {{ current_user.trial_ends.strftime('%d.%m.%Y') }}{% elif lang == 'en' %}Trial until {{ current_user.trial_ends.strftime('%d.%m.%Y') }}{% else %}До {{ current_user.trial_ends.strftime('%d.%m.%Y') }}{% endif %}
+        {{ t['trial_until'] }} {{ current_user.trial_ends.strftime('%d.%m.%Y') }}
       {% else %}
-        {% if lang == 'ru' %}Все функции доступны{% elif lang == 'en' %}All features available{% elif lang == 'uk' %}Всі функції доступні{% else %}Барлық функциялар қолжетімді{% endif %}
+        {{ t['all_features'] }}
       {% endif %}
     </div>
   </div>
 
   {% else %}
 
-  <!-- TRIAL CARD -->
   {% if trial_available %}
   <div class="trial-card">
-    <span class="trial-badge">🔥 {% if lang == 'ru' %}Специальное предложение{% elif lang == 'en' %}Special offer{% elif lang == 'uk' %}Спеціальна пропозиція{% else %}Арнайы ұсыныс{% endif %}</span>
-    <div class="trial-title">{% if lang == 'ru' %}Пробный период{% elif lang == 'en' %}Free trial{% elif lang == 'uk' %}Пробний період{% else %}Сынақ мерзімі{% endif %}</div>
+    <span class="trial-badge">🔥 {{ t['special_offer'] }}</span>
+    <div class="trial-title">{{ t['trial_period'] }}</div>
     <div class="trial-price">11<span>₽</span></div>
-    <div class="trial-desc">{% if lang == 'ru' %}7 дней полного Премиума · Только для новых пользователей{% elif lang == 'en' %}7 days of full Premium · New users only{% elif lang == 'uk' %}7 днів повного Преміума · Тільки для нових{% else %}7 күн толық Премиум · Тек жаңа қолданушылар{% endif %}</div>
+    <div class="trial-desc">{{ t['new_users_only'] }}</div>
     <div class="trial-features">
-      <div class="trial-feat">{% if lang == 'ru' %}Все Премиум функции{% elif lang == 'en' %}All Premium features{% elif lang == 'uk' %}Всі Преміум функції{% else %}Барлық Премиум мүмкіндіктер{% endif %}</div>
-      <div class="trial-feat">{% if lang == 'ru' %}История питания{% elif lang == 'en' %}Nutrition history{% elif lang == 'uk' %}Історія харчування{% else %}Тамақтану тарихы{% endif %}</div>
-      <div class="trial-feat">{% if lang == 'ru' %}Счётчик БЖУ{% elif lang == 'en' %}Macro tracker{% elif lang == 'uk' %}Лічильник БЖВ{% else %}БМУ есептегіш{% endif %}</div>
+      <div class="trial-feat">{{ t['trial_all_feat'] }}</div>
+      <div class="trial-feat">{{ t['trial_hist'] }}</div>
+      <div class="trial-feat">{{ t['trial_bju'] }}</div>
     </div>
-    <a href="/start-trial" class="btn-trial">{{ t.trial_btn }}</a>
-    <div class="trial-note">{% if lang == 'ru' %}После пробного периода — 199 ₽/месяц, отмена в любой момент{% elif lang == 'en' %}After trial — 199 ₽/month, cancel anytime{% elif lang == 'uk' %}Після пробного — 199 ₽/міс{% else %}Сынақтан кейін — 199 ₽/ай{% endif %}</div>
+    <a href="/start-trial" class="btn-trial">{{ t['trial_btn'] }}</a>
+    <div class="trial-note">{{ t['after_trial'] }}</div>
   </div>
   {% endif %}
 
-  <!-- MAIN PRICE CARD -->
   <div class="price-card">
-    <div class="price-label">{% if lang == 'ru' %}Премиум подписка{% elif lang == 'en' %}Premium subscription{% elif lang == 'uk' %}Преміум підписка{% else %}Премиум жазылым{% endif %}</div>
-    <div class="price-amount">199<span>₽</span></div>
-    <div class="price-period">{{ t.per_month }}</div>
+    <div class="price-label">{{ t['sub_label'] }}</div>
+    <div class="price-amount">129<span>₽</span></div>
+    <div class="price-period">{{ t['per_month'] }}</div>
     <div class="price-features">
-      <div class="price-feat">{% if lang == 'ru' %}История питания за 30 дней{% elif lang == 'en' %}30-day nutrition history{% elif lang == 'uk' %}Історія за 30 днів{% else %}30 күндік тарих{% endif %}</div>
-      <div class="price-feat">{% if lang == 'ru' %}Счётчик БЖУ{% elif lang == 'en' %}Macro tracker{% elif lang == 'uk' %}Лічильник БЖВ{% else %}БМУ есептегіш{% endif %}</div>
-      <div class="price-feat">{% if lang == 'ru' %}Цель по весу и ИМТ{% elif lang == 'en' %}Weight goal & BMI{% elif lang == 'uk' %}Ціль по вазі та ІМТ{% else %}Салмақ мақсаты{% endif %}</div>
-      <div class="price-feat">{% if lang == 'ru' %}Счётчик воды{% elif lang == 'en' %}Water tracker{% elif lang == 'uk' %}Лічильник води{% else %}Су есептегіш{% endif %}</div>
+      <div class="price-feat">{{ t['hist_price_feat'] }}</div>
+      <div class="price-feat">{{ t['bju_price_feat'] }}</div>
+      <div class="price-feat">{{ t['weight_price_feat'] }}</div>
+      <div class="price-feat">{{ t['water_price_feat'] }}</div>
     </div>
-    <a href="#payment-info" class="btn-buy">{{ t.buy_btn }}</a>
-    <div class="payment-note">{% if lang == 'ru' %}Безопасная оплата · Отмена в любой момент{% elif lang == 'en' %}Secure payment · Cancel anytime{% elif lang == 'uk' %}Безпечна оплата · Скасування будь-коли{% else %}Қауіпсіз төлем · Кез келген уақытта{% endif %}</div>
+    <a href="#payment-info" class="btn-buy">{{ t['buy_btn'] }}</a>
+    <div class="payment-note">{{ t['secure_pay'] }}</div>
   </div>
 
   {% endif %}
 </div>
 
 <div class="payment-section" id="payment-info">
-  <div class="payment-title">💳 {% if lang == 'ru' %}Как подключить оплату{% elif lang == 'en' %}How to set up payments{% else %}Как подключить оплату{% endif %}</div>
+  <div class="payment-title">💳 {% if lang == 'ru' %}Как подключить оплату{% elif lang == 'en' %}How to set up payments{% elif lang == 'uk' %}Як підключити оплату{% else %}Төлемді қалай қосу{% endif %}</div>
   <div class="payment-card">
     <h3>🇷🇺 ЮKassa</h3>
-    <p>1. <code>yookassa.ru</code> → ИП или самозанятость<br>
-    2. Получи <code>shop_id</code> + <code>secret_key</code><br>
+    <p>1. <code>yookassa.ru</code> → ИП / самозанятость<br>
+    2. <code>shop_id</code> + <code>secret_key</code><br>
     3. <code>pip install yookassa</code><br>
-    4. Добавь маршрут <code>/buy-premium</code> в app.py</p>
+    4. {% if lang == 'ru' %}Добавь маршрут{% else %}Add route{% endif %} <code>/buy-premium</code></p>
   </div>
   <div class="payment-card">
-    <h3>🚀 Быстрый старт</h3>
-    <p><code>Tribute</code> (tribute.tinkoff.ru) или <code>Boosty</code> — не нужен ИП. 
-    Создай страницу подписки, вставь ссылку в кнопку выше.</p>
+    <h3>🚀 {% if lang == 'ru' %}Быстрый старт{% elif lang == 'en' %}Quick start{% elif lang == 'uk' %}Швидкий старт{% else %}Жылдам бастау{% endif %}</h3>
+    <p><code>Tribute</code> / <code>Boosty</code> — {% if lang == 'ru' %}без ИП, просто вставь ссылку{% elif lang == 'en' %}no legal entity required, just add a link{% elif lang == 'uk' %}без ФОП, просто встав посилання{% else %}ЖК-сіз, тек сілтеме қос{% endif %}</p>
   </div>
 </div>
-
-<div class="bottom-pad"></div>
 </body>
 </html>

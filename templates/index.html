@@ -406,14 +406,14 @@
           <span>{{ meal.name }}</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <div class="meal-cal">{{ meal.total|int }} ккал</div>
-          <button class="btn-clear-meal" onclick="clearMeal('{{ meal_key }}')">🗑 Очистить</button>
+          <div class="meal-cal">{{ meal.total|int }} {{ t['kcal'] }}</div>
+          <button class="btn-clear-meal" onclick="clearMeal('{{ meal_key }}')">🗑 {{ t['clear'] }}</button>
         </div>
       </div>
 
       <!-- CATEGORY TABS -->
       <div class="category-scroll" id="cats-{{ meal_key }}">
-        <button class="cat-btn active" onclick="loadCategory('{{ meal_key }}','',this)">Все</button>
+        <button class="cat-btn active" onclick="loadCategory('{{ meal_key }}','',this)">{{ t['all'] }}</button>
         <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','fruits',this)">🍎 Фрукты</button>
         <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','vegetables',this)">🥦 Овощи</button>
         <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','meat',this)">🥩 Мясо</button>
@@ -430,7 +430,7 @@
       <!-- SEARCH -->
       <div class="meal-search-wrap">
         <input type="text" id="search-{{ meal_key }}" class="meal-search"
-               placeholder="🔍 Поиск продукта..."
+               placeholder="{{ t['search_placeholder'] }}"
                oninput="searchInMeal('{{ meal_key }}')">
       </div>
 
@@ -443,7 +443,7 @@
         <div class="entry-item">
           <div class="entry-info">
             <div class="entry-name">{{ entry.name }}</div>
-            <div class="entry-sub">{{ entry.grams|int }} г · {{ entry.calories|int }} ккал</div>
+            <div class="entry-sub">{{ entry.grams|int }} {{ t['g'] }} · {{ entry.calories|int }} {{ t['kcal'] }}</div>
           </div>
           <button class="entry-remove" onclick="removeEntry({{ entry.id }})">✕</button>
         </div>
@@ -454,49 +454,49 @@
     {% endfor %}
 
     <div class="clear-day-wrap">
-      <button class="btn-clear-day" onclick="clearDay()">🗑 Очистить всё за сегодня</button>
+      <button class="btn-clear-day" onclick="clearDay()">{{ t['clear_day'] }}</button>
     </div>
   </div>
 
   <!-- TOTALS SIDEBAR -->
   <div class="totals-card">
-    <div class="totals-title">🎯 Сегодня</div>
+    <div class="totals-title">{{ t['today_title'] }}</div>
     <div class="total-item">
-      <div class="total-label">Калории</div>
+      <div class="total-label">{{ t['calories'] }}</div>
       <div class="total-value">{{ total_calories }}</div>
-      <div class="total-unit">из {{ current_user.daily_calorie_goal if current_user.is_authenticated else 2000 }} ккал</div>
+      <div class="total-unit">{{ t['of'] }} {{ current_user.daily_calorie_goal if current_user.is_authenticated else 2000 }} {{ t['kcal'] }}</div>
       <div class="progress-bar">
         <div class="progress-fill" style="width: {{ [total_calories / (current_user.daily_calorie_goal if current_user.is_authenticated else 2000) * 100, 100]|min|int }}%"></div>
       </div>
     </div>
     {% if current_user.is_authenticated and current_user.is_premium %}
     <div class="total-item">
-      <div class="total-label">Белки</div>
+      <div class="total-label">{{ t['protein'] }}</div>
       <div class="total-value">{{ total_protein|int }}</div>
-      <div class="total-unit">г из {{ current_user.protein_goal }}</div>
+      <div class="total-unit">{{ t['g'] }} {{ t['of'] }} {{ current_user.protein_goal }}</div>
     </div>
     <div class="total-item">
-      <div class="total-label">Жиры</div>
+      <div class="total-label">{{ t['fat'] }}</div>
       <div class="total-value">{{ total_fat|int }}</div>
-      <div class="total-unit">г из {{ current_user.fat_goal }}</div>
+      <div class="total-unit">{{ t['g'] }} {{ t['of'] }} {{ current_user.fat_goal }}</div>
     </div>
     <div class="total-item">
-      <div class="total-label">Углеводы</div>
+      <div class="total-label">{{ t['carbs'] }}</div>
       <div class="total-value">{{ total_carbs|int }}</div>
-      <div class="total-unit">г из {{ current_user.carbs_goal }}</div>
+      <div class="total-unit">{{ t['g'] }} {{ t['of'] }} {{ current_user.carbs_goal }}</div>
     </div>
     {% endif %}
 
     <!-- WATER TRACKER -->
     {% set water_goal = current_user.water_goal if current_user.is_authenticated else 8 %}
     <div class="water-section">
-      <div class="water-label">💧 Вода</div>
+      <div class="water-label">{{ t['water'] }}</div>
       <div class="water-cups" id="waterCups">
         {% for i in range(water_goal) %}
         <button class="water-cup" id="cup-{{ i }}" onclick="toggleCup({{ i }})" title="{{ i+1 }} стакан">🥛</button>
         {% endfor %}
       </div>
-      <div class="water-info" id="waterInfo">0 / {{ water_goal }} стак.</div>
+      <div class="water-info" id="waterInfo">0 / {{ water_goal }} {{ t['cups'] }}</div>
     </div>
   </div>
 </main>
@@ -507,7 +507,7 @@
     <div class="modal-handle"></div>
     <div class="modal-product-name" id="modalName"></div>
     <div class="modal-product-meta" id="modalMeta"></div>
-    <label class="modal-label" id="modalWeightLabel">Вес:</label>
+    <label class="modal-label" id="modalWeightLabel">{{ t['weight_label'] }}</label>
     <div class="modal-input-row">
       <input type="number" class="modal-input" id="modalWeight" value="100" min="1" max="9999" oninput="updatePreview()">
       <span class="modal-unit" id="modalUnit">г</span>
@@ -515,7 +515,7 @@
     <div class="modal-quick-btns" id="modalQuickBtns"></div>
     <div class="modal-preview">
       <div>
-        <div class="modal-preview-label">Итого</div>
+        <div class="modal-preview-label">{{ t['total'] }}</div>
         <div class="modal-preview-cal" id="previewCal">100 ккал</div>
       </div>
       <div style="text-align:right;">
@@ -524,13 +524,38 @@
       </div>
     </div>
     <div class="modal-btn-row">
-      <button class="modal-cancel" onclick="closeModal()">Отмена</button>
-      <button class="modal-confirm" id="modalConfirmBtn" onclick="confirmAdd()">✓ Добавить</button>
+      <button class="modal-cancel" onclick="closeModal()">{{ t['cancel'] }}</button>
+      <button class="modal-confirm" id="modalConfirmBtn" onclick="confirmAdd()">{{ t['confirm_add'] }}</button>
     </div>
   </div>
 </div>
 
 <script>
+
+// Translated strings for JS
+const t_js = {
+  quick_loading: {{ t['quick_loading']|tojson }},
+  not_found: {{ t['not_found']|tojson }},
+  load_error: {{ t['load_error']|tojson }},
+  weight_label: {{ t['weight_label']|tojson }},
+  volume_label: {{ t['volume_label']|tojson }},
+  total: {{ t['total']|tojson }},
+  cancel: {{ t['cancel']|tojson }},
+  confirm_add: {{ t['confirm_add']|tojson }},
+  kcal: {{ t['kcal']|tojson }},
+  g: {{ t['g']|tojson }},
+  ml: {{ t['ml']|tojson }},
+  cups: {{ t['cups']|tojson }},
+  delete_entry_confirm: {{ t['delete_entry_confirm']|tojson }},
+  clear_meal_confirm: {{ t['clear_meal_confirm']|tojson }},
+  clear_day_confirm: {{ t['clear_day_confirm']|tojson }},
+  breakfast: {{ t['breakfast']|tojson }},
+  lunch: {{ t['lunch']|tojson }},
+  dinner: {{ t['dinner']|tojson }},
+  snack: {{ t['snack']|tojson }},
+  of: {{ t['of']|tojson }},
+};
+
 const searchTimers = {};
 let modalData = null;
 
@@ -605,9 +630,9 @@ async function fetchProducts(meal, params) {
 function openModal(meal, id, name, cal, protein, fat, carbs, unit) {
   modalData = { meal, id, name, cal, protein, fat, carbs, unit };
   document.getElementById('modalName').textContent = name;
-  document.getElementById('modalMeta').textContent = `${cal} ккал · ${protein}г Б · ${fat}г Ж · ${carbs}г У на 100 ${unit}`;
+  document.getElementById('modalMeta').textContent = `${cal} ${t_js.kcal} · ${protein}${t_js.g} · ${fat}${t_js.g} · ${carbs}${t_js.g} на 100 ${unit}`;
   document.getElementById('modalUnit').textContent = unit;
-  document.getElementById('modalWeightLabel').textContent = unit === 'мл' ? 'Объём:' : 'Вес:';
+  document.getElementById('modalWeightLabel').textContent = unit === 'мл' ? t_js.volume_label : t_js.weight_label;
   const defaultVal = unit === 'мл' ? 200 : 100;
   document.getElementById('modalWeight').value = defaultVal;
   const quickVals = unit === 'мл' ? [100,150,200,250,330,500] : [50,100,150,200,250];
@@ -642,8 +667,8 @@ function updatePreview() {
   if (!modalData) return;
   const w = parseFloat(document.getElementById('modalWeight').value) || 0;
   const r = v => Math.round(v * w / 100);
-  document.getElementById('previewCal').textContent = `${r(modalData.cal)} ккал`;
-  document.getElementById('previewBJU').textContent = `${r(modalData.protein)}г / ${r(modalData.fat)}г / ${r(modalData.carbs)}г`;
+  document.getElementById('previewCal').textContent = `${r(modalData.cal)} ${t_js.kcal}`;
+  document.getElementById('previewBJU').textContent = `${r(modalData.protein)}${t_js.g} / ${r(modalData.fat)}${t_js.g} / ${r(modalData.carbs)}${t_js.g}`;
 }
 
 async function confirmAdd() {
@@ -660,21 +685,21 @@ async function confirmAdd() {
     });
     if (res.ok) { closeModal(); location.reload(); }
   } finally {
-    btn.textContent = '✓ Добавить';
+    btn.textContent = t_js.confirm_add;
     btn.disabled = false;
   }
 }
 
 // ── DELETE / CLEAR ──
 async function removeEntry(id) {
-  if (!confirm('Удалить продукт?')) return;
+  if (!confirm(t_js.delete_entry_confirm)) return;
   await fetch(`/api/delete-entry/${id}`, { method: 'DELETE' });
   location.reload();
 }
 
 async function clearMeal(meal) {
-  const names = { breakfast:'Завтрак', lunch:'Обед', dinner:'Ужин', snack:'Перекус' };
-  if (!confirm(`Очистить "${names[meal] || meal}"?`)) return;
+  const names = { breakfast: t_js.breakfast, lunch: t_js.lunch, dinner: t_js.dinner, snack: t_js.snack };
+  if (!confirm(`${t_js.clear_meal_confirm} "${names[meal] || meal}"?`)) return;
   await fetch('/api/clear-meal', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ meal_type: meal })
@@ -683,7 +708,7 @@ async function clearMeal(meal) {
 }
 
 async function clearDay() {
-  if (!confirm('Удалить ВСЕ продукты за сегодня?')) return;
+  if (!confirm(t_js.clear_day_confirm)) return;
   await fetch('/api/clear-day', { method: 'DELETE' });
   location.reload();
 }
@@ -709,7 +734,7 @@ function renderWater() {
     if (cup) cup.classList.toggle('filled', i < waterCount);
   }
   const info = document.getElementById('waterInfo');
-  if (info) info.textContent = waterCount + ' / ' + waterGoal + ' стак.';
+  if (info) info.textContent = waterCount + ' / ' + waterGoal + ' ' + t_js.cups;
 }
 
 function getTodayKey() {
