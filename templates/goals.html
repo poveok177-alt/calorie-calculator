@@ -99,7 +99,7 @@
 
 <div class="form-group">
   <label>{{ t.daily_goal }} ({{ t.kcal }})</label>
-  <input type="number" name="daily_calorie_goal" min="500" max="10000" step="1"
+  <input type="number" name="daily_calorie_goal" min="500" max="10000" step="50"
          value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000">
 </div>
 
@@ -201,10 +201,10 @@ function calculate() {
         bmr = 10 * weight + 6.25 * height - 5 * age - 161;
     }
 
-    let calories = Math.round((bmr * 1.4) / 50) * 50;
-
+    let calories = bmr * 1.4;
     if (goal && goal < weight) calories -= 400;
     if (goal && goal > weight) calories += 300;
+    calories = Math.round(calories / 50) * 50;
 
     const protein = Math.round((calories * 0.30 / 4) / 5) * 5;
     const fat = Math.round((calories * 0.25 / 9) / 5) * 5;
