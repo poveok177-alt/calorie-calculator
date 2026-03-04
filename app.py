@@ -25,11 +25,12 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
-Client.configure(
-    account_id=os.getenv('YOOKASSA_SHOP_ID', '123456'),
-    secret_key=os.getenv('YOOKASSA_SECRET_KEY', 'test_key')
-)
+try:
+    from yookassa import Configuration
+    Configuration.account_id = os.getenv('YOOKASSA_SHOP_ID', '123456')
+    Configuration.secret_key = os.getenv('YOOKASSA_SECRET_KEY', 'test_key')
+except ImportError:
+    pass
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mojasupertajnayastrokakotoruyaniktonevzlomaet123'
