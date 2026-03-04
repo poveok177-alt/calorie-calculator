@@ -105,13 +105,53 @@ def load_user(user_id):
 # ===================== ИНИЦИАЛИЗАЦИЯ БД =====================
 
 def init_db():
+    """Добавляет недостающие колонки в существующую БД (миграция без alembic)."""
     with app.app_context():
-        inspector = db.inspect(db.engine)
-        user_columns = [col['name'] for col in inspector.get_columns('user')]
-        with db.engine.connect() as conn:
-            if 'favorites' not in user_columns:
-                conn.execute(db.text('ALTER TABLE "user" ADD COLUMN favorites TEXT DEFAULT \'[]\''))
-                conn.commit()
+        try:
+            inspector = db.inspect(db.engine)
+            # Проверяем что таблица user существует
+            if 'user' not in inspector.get_table_names():
+                return  # db.create_all() создаст всё с нуля
+            
+            user_columns = [col['name'] for col in inspector.get_columns('user')]
+            
+            # Список новых колонок которые могут отсутствовать в старой БД
+            new_columns = [
+                ('favorites',       'TEXT DEFAULT \'[]\''),
+                ('trial_used',      'BOOLEAN DEFAULT FALSE'),
+                ('trial_ends',      'TIMESTAMP'),
+                ('email_reminders', 'BOOLEAN DEFAULT TRUE'),
+                ('is_premium',      'BOOLEAN DEFAULT FALSE'),
+                ('current_weight',  'FLOAT'),
+                ('goal_weight',     'FLOAT'),
+                ('height',          'FLOAT'),
+                ('daily_calorie_goal', 'INTEGER DEFAULT 2000'),
+                ('water_goal',      'INTEGER DEFAULT 8'),
+                ('protein_goal',    'INTEGER DEFAULT 150'),
+                ('fat_goal',        'INTEGER DEFAULT 70'),
+                ('carbs_goal',      'INTEGER DEFAULT 250'),
+                ('age',             'INTEGER DEFAULT 25'),
+                ('gender',          'VARCHAR(10) DEFAULT \'male\''),
+                ('activity',        'VARCHAR(20) DEFAULT \'moderate\''),
+                ('language',        'VARCHAR(10) DEFAULT \'ru\''),
+            ]
+            
+            with db.engine.connect() as conn:
+                for col_name, col_def in new_columns:
+                    if col_name not in user_columns:
+                        try:
+                            # PostgreSQL и SQLite синтаксис
+                            tbl = '"user"' if 'postgresql' in str(db.engine.url) else '"user"'
+                            conn.execute(db.text(
+                                f'ALTER TABLE {tbl} ADD COLUMN {col_name} {col_def}'
+                            ))
+                            conn.commit()
+                            print(f'[init_db] Added column: {col_name}')
+                        except Exception as e:
+                            conn.rollback()
+                            print(f'[init_db] Skip {col_name}: {e}')
+        except Exception as e:
+            print(f'[init_db] Error: {e}')
 
 # ===================== ПЕРЕВОДЫ =====================
 
@@ -900,6 +940,7 @@ def set_language():
 
 with app.app_context():
     db.create_all()
+    init_db()  # Добавляем недостающие колонки если БД уже существует
     
     # Инициализируем food_data в БД если пусто
     if Food.query.count() == 0:
