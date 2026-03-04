@@ -5,32 +5,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 import json
 import os
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, date
-import json
-import os
-try:
-    from yookassa import Configuration, Payment
-except ImportError:
-    pass
 import uuid
 from dotenv import load_dotenv
-import os
-
-import uuid
-from dotenv import load_dotenv
-import os
 
 load_dotenv()
+
+# ===== YooKassa (без падения сервера) =====
 try:
-    from yookassa import Configuration
-    Configuration.account_id = os.getenv('YOOKASSA_SHOP_ID', '123456')
-    Configuration.secret_key = os.getenv('YOOKASSA_SECRET_KEY', 'test_key')
+    from yookassa import Configuration, Payment
+
+    Configuration.account_id = os.getenv('YOOKASSA_SHOP_ID')
+    Configuration.secret_key = os.getenv('YOOKASSA_SECRET_KEY')
+
 except ImportError:
-    pass
+    Payment = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mojasupertajnayastrokakotoruyaniktonevzlomaet123'
@@ -711,6 +699,10 @@ def init_db():
 @app.route('/api/create-payment', methods=['POST'])
 @login_required
 def create_payment():
+
+    if Payment is None:
+        return jsonify({'success': False, 'error': 'YooKassa not installed'}), 500
+
     try:
         payment = Payment.create({
             "amount": {
@@ -732,17 +724,15 @@ def create_payment():
             'success': True,
             'confirmation_url': payment.confirmation.confirmation_url
         })
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
 @app.route('/premium-success')
 @login_required
 def premium_success():
-    current_user.is_premium = True
-    db.session.commit()
-    flash('✅ Спасибо! Премиум активирован!', 'success')
+    flash('Если оплата прошла успешно — премиум активируется автоматически.', 'success')
     return redirect('/')
-
 
 @app.route('/webhook/yookassa', methods=['POST'])
 def yookassa_webhook():
