@@ -705,16 +705,13 @@ def init_db():
         db.create_all()
         
         # Добавляем продукты если БД пустая
-        if Food.query.count() < 9999:
-            Food.query.delete()
-            db.session.commit()
+        if Food.query.count() == 0:  # ← Только если БД совсем пустая
             from food_data import FOODS
             for f in FOODS:
                 food = Food(**f)
                 db.session.add(food)
             db.session.commit()
             print(f"✅ Добавлено {len(FOODS)} продуктов в базу данных")
-
 init_db()
 
 @app.route('/api/create-payment', methods=['POST'])
