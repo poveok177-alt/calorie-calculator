@@ -98,6 +98,20 @@
     border-color: var(--green); background: white;
     box-shadow: 0 0 0 4px rgba(76,175,131,0.12);
   }
+  .category-btn {
+    padding: 8px 14px; border: 2px solid var(--border);
+    border-radius: 20px; background: white; color: var(--text-soft);
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: all 0.2s; font-family: 'Nunito', sans-serif;
+  }
+  .category-btn:hover {
+    border-color: var(--green); color: var(--green-dark);
+    background: var(--mint-light);
+  }
+  .category-btn.active {
+    background: linear-gradient(135deg, var(--green), var(--green-soft));
+    color: white; border-color: var(--green);
+  }
   .search-tabs {
     display: flex; gap: 8px; border-bottom: 2px solid var(--border);
   }
@@ -287,10 +301,26 @@
     </div>
   </div>
 
-  <!-- ПОИСК -->
+  <!-- ПОИСК И КАТЕГОРИИ -->
   <div class="search-section">
     <input type="text" id="search-input" class="search-input"
            placeholder="{{ t.search_placeholder }}" autocomplete="off">
+    
+    <!-- КАТЕГОРИИ -->
+    <div style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
+      <button class="category-btn active" onclick="filterByCategory('')">Все</button>
+      <button class="category-btn" onclick="filterByCategory('fruits')">🍎 {{ t.fruits }}</button>
+      <button class="category-btn" onclick="filterByCategory('vegetables')">🥦 {{ t.vegetables }}</button>
+      <button class="category-btn" onclick="filterByCategory('meat')">🥩 {{ t.meat }}</button>
+      <button class="category-btn" onclick="filterByCategory('dairy')">🥛 {{ t.dairy }}</button>
+      <button class="category-btn" onclick="filterByCategory('grains')">🌾 {{ t.grains }}</button>
+      <button class="category-btn" onclick="filterByCategory('nuts')">🌰 {{ t.nuts }}</button>
+      <button class="category-btn" onclick="filterByCategory('fish')">🐟 {{ t.fish }}</button>
+      <button class="category-btn" onclick="filterByCategory('sweets')">🍫 {{ t.sweets }}</button>
+      <button class="category-btn" onclick="filterByCategory('drinks')">🥤 {{ t.drinks }}</button>
+      <button class="category-btn" onclick="filterByCategory('supplements')">💊 {{ t.supplements }}</button>
+      <button class="category-btn" onclick="filterByCategory('sports_nutrition')">💪 {{ t.sports_nutrition }}</button>
+    </div>
     
     <div class="search-tabs">
       <button class="search-tab active" onclick="switchTab('search')">🔍 {{ t.search_placeholder }}</button>
@@ -463,6 +493,7 @@ const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
 let currentFood = null;
 let defaultMeal = 'snack';
 let modalFood = null;
+let currentCategory = '';  // НОВОЕ: фильтр по категории
 
 function switchTab(tab) {
   document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
@@ -481,17 +512,32 @@ function switchTab(tab) {
   }
 }
 
+function filterByCategory(cat) {
+  // НОВОЕ: обновляем активную кнопку категории
+  document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  currentCategory = cat;
+  document.getElementById('search-input').dispatchEvent(new Event('input'));
+}
+
 document.getElementById('search-input').addEventListener('input', async (e) => {
   const q = e.target.value.toLowerCase().trim();
-  if (!q) {
+  if (!q && !currentCategory) {
     document.getElementById('search-tab').innerHTML = '';
     return;
   }
   const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
   const foods = await res.json();
   
+  // НОВОЕ: фильтруем по категории если выбрана
+  let filtered = foods;
+  if (currentCategory) {
+    filtered = foods.filter(f => f.category === currentCategory);
+  }
+  
   let html = '';
-  for (const f of foods) {
+  for (const f of filtered) {
     const fav = await isFavorite(f.id);
     html += `
       <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
@@ -503,7 +549,7 @@ document.getElementById('search-input').addEventListener('input', async (e) => {
       </div>
     `;
   }
-  document.getElementById('search-tab').innerHTML = html;
+  document.getElementById('search-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Ничего не найдено</div>';
 });
 
 async function loadRecent() {
