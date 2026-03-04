@@ -6,108 +6,54 @@
 <title>{{ t.app_name }} — {{ t.goals }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --mint: #b5ead7; --mint-light: #e8f8f2; --green: #4caf83;
-    --green-dark: #2d8a63; --green-soft: #6dc49a; --cream: #f9fdf9;
-    --text: #2d4a3e; --text-soft: #5a7a6e; --text-light: #8aaa9e;
-    --border: #c8eedd; --shadow: rgba(76,175,131,.12);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-    background-image: radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
-  }
-  nav {
-    background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border); padding: 0 24px;
-    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px var(--shadow);
-  }
-  .nav-inner {
-    max-width: 1100px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between; height: 64px;
-  }
-  .logo {
-    font-family: 'Playfair Display', serif; font-size: 22px;
-    font-weight: 600; color: var(--green-dark); text-decoration: none;
-  }
-  .nav-link {
-    padding: 8px 14px; border-radius: 20px; text-decoration: none;
-    font-size: 14px; font-weight: 600; color: var(--text-soft); transition: all .2s;
-  }
-  .nav-link:hover { background: var(--mint-light); color: var(--green-dark); }
+  :root { --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83; --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9; --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd; --shadow:rgba(76,175,131,.12); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh;
+    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%); }
+  nav { background:rgba(255,255,255,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow); }
+  .nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
+  .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
+  .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
+  main { max-width:700px; margin:0 auto; padding:40px 24px; }
+  .page-title { font-family:'Playfair Display',serif; font-size:32px; margin-bottom:32px; }
+  .card { background:white; border-radius:24px; padding:32px; margin-bottom:24px; border:1.5px solid var(--border); box-shadow:0 4px 24px var(--shadow); }
+  .card-title { font-size:18px; font-weight:800; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .form-group { margin-bottom:18px; }
+  .form-group label { display:block; font-size:12px; font-weight:700; color:var(--text-soft); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .form-group input, .form-group select { width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:14px; font-size:15px; font-family:'Nunito',sans-serif; background:var(--mint-light); color:var(--text); outline:none; transition:all .25s; }
+  .form-group input:focus, .form-group select:focus { border-color:var(--green); background:white; box-shadow:0 0 0 4px rgba(76,175,131,.12); }
+  .btn-primary { background:linear-gradient(135deg,var(--green),var(--green-soft)); color:white; border:none; border-radius:20px; padding:14px 32px; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; transition:all .2s; width:100%; margin-bottom:12px; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(76,175,131,.3); }
+  .btn-secondary { background:var(--mint); color:var(--green-dark); border:none; border-radius:20px; padding:12px 24px; font-size:14px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; margin-bottom:12px; width:100%; }
+  .btn-secondary:hover { background:var(--mint-light); }
+  .flash-ok { background:var(--mint); color:var(--green-dark); padding:12px 18px; border-radius:14px; margin-bottom:20px; font-weight:700; font-size:14px; }
 
-  main { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
-  .page-title {
-    font-family: 'Playfair Display', serif; font-size: 32px;
-    margin-bottom: 8px;
-  }
-  .page-sub { color: var(--text-soft); font-size: 15px; margin-bottom: 32px; }
+  /* Two column layout */
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+  .form-row .form-group { margin-bottom:0; }
 
-  .card {
-    background: white; border-radius: 20px; padding: 28px;
-    margin-bottom: 24px; border: 1.5px solid var(--border);
-    box-shadow: 0 4px 20px var(--shadow);
+  /* Weight progress */
+  .progress-section { margin-top:24px; }
+  .weight-diff {
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--mint-light); border-radius:16px; padding:16px 20px; margin-bottom:16px;
   }
-  .card-title {
-    font-family: 'Playfair Display', serif; font-size: 20px;
-    color: var(--text); margin-bottom: 20px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .form-row {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
-  }
-  @media(max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
-  }
-  .form-group {
-    display: flex; flex-direction: column;
-  }
-  .form-label {
-    font-size: 12px; font-weight: 700; color: var(--text-soft);
-    margin-bottom: 8px; text-transform: uppercase;
-  }
-  .form-input {
-    padding: 12px 16px; border: 2px solid var(--border);
-    border-radius: 14px; font-size: 15px; font-family: 'Nunito', sans-serif;
-    outline: none; transition: all .2s; background: var(--mint-light);
-  }
-  .form-input:focus {
-    border-color: var(--green); background: white;
-    box-shadow: 0 0 0 4px rgba(76,175,131,.12);
-  }
-  .form-select {
-    padding: 12px 16px; border: 2px solid var(--border);
-    border-radius: 14px; font-size: 15px; font-family: 'Nunito', sans-serif;
-    outline: none; cursor: pointer; background: var(--mint-light);
-  }
-  .form-select:focus {
-    border-color: var(--green); background: white;
-  }
-  .btn-submit {
-    width: 100%; padding: 14px; margin-top: 20px;
-    background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white; border: none; border-radius: 16px;
-    font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
-    cursor: pointer; transition: all .2s;
-  }
-  .btn-submit:hover {
-    transform: translateY(-2px); box-shadow: 0 8px 25px rgba(76,175,131,.3);
-  }
+  .weight-val { text-align:center; }
+  .weight-label { font-size:11px; color:var(--text-light); font-weight:700; text-transform:uppercase; }
+  .weight-num { font-size:24px; font-weight:800; color:var(--text); }
+  .weight-arrow { font-size:24px; color:var(--green); }
 
-  .info-box {
-    background: var(--mint-light); border-left: 4px solid var(--green);
-    padding: 16px; border-radius: 12px; font-size: 13px; color: var(--text-soft);
-    line-height: 1.6; margin-bottom: 20px;
-  }
+  /* BMI hint */
+  .hint-box { background:var(--mint-light); border-radius:16px; padding:16px; font-size:13px; color:var(--text-soft); line-height:1.6; margin-top:16px; }
+  .hint-box strong { color:var(--green-dark); }
 
-  .flash {
-    background: #e8f5e9; color: #2e7d32; padding: 12px 18px;
-    border-radius: 14px; margin-bottom: 20px; font-size: 14px; font-weight: 600;
-    border: 1px solid #c8e6c9;
-  }
+  .bju-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-top:12px; }
+  .bju-item { background:var(--mint-light); border-radius:12px; padding:12px; text-align:center; }
+  .bju-label { font-size:11px; color:var(--text-light); font-weight:700; }
+  .bju-value { font-size:18px; font-weight:800; color:var(--green-dark); }
+
+  .info-box { background:var(--mint-light); border-radius:12px; padding:12px; font-size:12px; color:var(--text-soft); margin-top:12px; line-height:1.5; }
 </style>
 </head>
 <body>
@@ -116,125 +62,300 @@
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
     <div>
       <a href="/" class="nav-link">← {{ t.today }}</a>
+      <a href="/history" class="nav-link">📅 {{ t.history }}</a>
     </div>
   </div>
 </nav>
-
 <main>
   <div class="page-title">🎯 {{ t.goals }}</div>
-  <div class="page-sub">Установите ваши цели и отслеживайте прогресс</div>
 
   {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for msg in messages %}
-        <div class="flash">{{ msg }}</div>
-      {% endfor %}
-    {% endif %}
+    {% if messages %}{% for msg in messages %}<div class="flash-ok">{{ msg }}</div>{% endfor %}{% endif %}
   {% endwith %}
 
-  <form method="POST">
-    <!-- КАЛОРИИ И БЖУ -->
-    <div class="card">
-      <div class="card-title">🔥 {{ t.calories }} и БЖУ</div>
-      
+  <div class="card">
+    <div class="card-title">⚖️ {{ t.weight_goal }}</div>
+    <form method="POST">
+      <!-- Основные параметры в две колонки -->
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">{{ t.daily_goal }} (ккал)</label>
-          <input type="number" name="daily_calorie_goal" class="form-input"
-                 value="{{ current_user.daily_calorie_goal or 2000 }}" required>
+          <label>{{ t.current_weight }}</label>
+          <input type="number" name="current_weight" step="0.1" min="30" max="300"
+                 value="{{ current_user.current_weight or '' }}" placeholder="70.5" required>
         </div>
+
         <div class="form-group">
-          <label class="form-label">💧 {{ t.water_goal }} (стаканов)</label>
-          <input type="number" name="water_goal" class="form-input"
-                 value="{{ current_user.water_goal or 8 }}" required>
+          <label>{{ t.goal_weight }}</label>
+          <input type="number" name="goal_weight" step="0.1" min="30" max="300"
+                 value="{{ current_user.goal_weight or '' }}" placeholder="65.0" required>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">{{ t.protein }} (г/день)</label>
-          <input type="number" name="protein_goal" class="form-input"
-                 value="{{ current_user.protein_goal or 150 }}" required>
+          <label>{{ t.height }}</label>
+          <input type="number" name="height" step="1" min="100" max="250"
+                 value="{{ current_user.height or '' }}" placeholder="173" required>
         </div>
+
         <div class="form-group">
-          <label class="form-label">{{ t.fat }} (г/день)</label>
-          <input type="number" name="fat_goal" class="form-input"
-                 value="{{ current_user.fat_goal or 70 }}" required>
+          <label>Возраст</label>
+          <input type="number" name="age" min="14" max="100" 
+                 value="{{ current_user.age or 25 }}" placeholder="25" required>
         </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Пол</label>
+          <select name="gender" required onchange="updateCalculation()">
+            <option value="">Выбери...</option>
+            <option value="male">👨 Мужчина</option>
+            <option value="female">👩 Женщина</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Уровень активности</label>
+          <select name="activity" required onchange="updateCalculation()">
+            <option value="">Выбери...</option>
+            <option value="sedentary">📍 Сидячий образ жизни (1.2)</option>
+            <option value="light">🚶 Лёгкая активность (1.375)</option>
+            <option value="moderate">🏃 Умеренная активность (1.55)</option>
+            <option value="active">💪 Активный образ жизни (1.725)</option>
+            <option value="very_active">🏋️ Очень активный (1.9)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>📍 Калькулятор использует Harris-Benedict формулу</strong><br>
+        Точность расчёта ≈ 90%. Если результаты не совпадают с реальностью, корректируй вручную.
+      </div>
+
+      <!-- Калории -->
+      <div class="form-group" style="margin-top:20px;">
+        <label>{{ t.daily_goal }} ({{ t.kcal }})</label>
+        <input type="number" name="daily_calorie_goal" min="500" max="10000" step="1"
+               value="{{ current_user.daily_calorie_goal or 2000 }}" placeholder="2000" required>
+      </div>
+
+      <!-- БЖУ -->
+      <div class="form-group">
+        <label>🥩 {{ t.protein }} (г в день)</label>
+        <input type="number" name="protein_goal" min="10" max="500" step="1"
+               value="{{ current_user.protein_goal or 150 }}" placeholder="150" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label">{{ t.carbs }} (г/день)</label>
-        <input type="number" name="carbs_goal" class="form-input"
-               value="{{ current_user.carbs_goal or 250 }}" required>
+        <label>🥑 {{ t.fat }} (г в день)</label>
+        <input type="number" name="fat_goal" min="10" max="300" step="1"
+               value="{{ current_user.fat_goal or 70 }}" placeholder="70" required>
       </div>
+
+      <div class="form-group">
+        <label>🍞 {{ t.carbs }} (г в день)</label>
+        <input type="number" name="carbs_goal" min="10" max="700" step="1"
+               value="{{ current_user.carbs_goal or 250 }}" placeholder="250" required>
+      </div>
+
+      <!-- Вода -->
+      <div class="form-group">
+        <label>💧 Норма воды (стаканов в день)</label>
+        <input type="number" name="water_goal" min="1" max="20" step="1"
+               value="{{ current_user.water_goal or 8 }}" placeholder="8" required>
+      </div>
+
+      <!-- Кнопки -->
+      <button type="button" onclick="calculateAll()" class="btn-secondary">
+        🧮 Рассчитать автоматически
+      </button>
+
+      <button type="submit" class="btn-primary">💾 {{ t.save }}</button>
+    </form>
+
+    <!-- Отображение результатов -->
+    {% if current_user.current_weight and current_user.goal_weight %}
+    <div class="progress-section">
+      {% set diff = (current_user.current_weight - current_user.goal_weight)|abs %}
+      <div class="weight-diff">
+        <div class="weight-val">
+          <div class="weight-label">Сейчас</div>
+          <div class="weight-num">{{ current_user.current_weight }} кг</div>
+        </div>
+        <div class="weight-arrow">→</div>
+        <div class="weight-val">
+          <div class="weight-label">Цель</div>
+          <div class="weight-num">{{ current_user.goal_weight }} кг</div>
+        </div>
+      </div>
+
+      <div style="font-size:14px; color:var(--text-soft); margin-bottom:10px; font-weight:600;">
+        {% if current_user.current_weight > current_user.goal_weight %}
+          До цели: {{ diff|round(1) }} кг похудеть 💪
+        {% elif current_user.current_weight < current_user.goal_weight %}
+          До цели: {{ diff|round(1) }} кг набрать 🌱
+        {% else %}
+          🎉 Цель достигнута!
+        {% endif %}
+      </div>
+
+      <!-- ИМТ -->
+      {% if current_user.height and current_user.current_weight %}
+      {% set bmi = current_user.current_weight / ((current_user.height / 100) ** 2) %}
+      <div class="hint-box">
+        <strong>📊 Ваш ИМТ: {{ bmi|round(1) }}</strong><br>
+        {% if bmi < 18.5 %}
+          Недостаточный вес (< 18.5). Рекомендуется набрать вес. 📈
+        {% elif bmi < 25 %}
+          Норма (18.5–24.9). Отличный результат! 🌿
+        {% elif bmi < 30 %}
+          Избыточный вес (25–29.9). Рекомендуется небольшой дефицит калорий. 💪
+        {% else %}
+          Ожирение (> 30). Рекомендуется консультация с врачом. 🏥
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Текущие БЖУ -->
+      {% if current_user.daily_calorie_goal %}
+      <div style="margin-top:20px;">
+        <div style="font-size:13px; font-weight:700; color:var(--text-soft); margin-bottom:10px;">📋 Твои дневные нормы:</div>
+        <div class="bju-grid">
+          <div class="bju-item">
+            <div class="bju-label">Калории</div>
+            <div class="bju-value">{{ current_user.daily_calorie_goal }}</div>
+            <div class="bju-label">ккал</div>
+          </div>
+          <div class="bju-item">
+            <div class="bju-label">Белки</div>
+            <div class="bju-value">{{ current_user.protein_goal }}</div>
+            <div class="bju-label">г</div>
+          </div>
+          <div class="bju-item">
+            <div class="bju-label">Жиры</div>
+            <div class="bju-value">{{ current_user.fat_goal }}</div>
+            <div class="bju-label">г</div>
+          </div>
+          <div class="bju-item">
+            <div class="bju-label">Углеводы</div>
+            <div class="bju-value">{{ current_user.carbs_goal }}</div>
+            <div class="bju-label">г</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
+    {% endif %}
 
-    <!-- ВЕС И ФИГУРА -->
-    <div class="card">
-      <div class="card-title">⚖️ {{ t.weight_goal }}</div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">{{ t.current_weight }}</label>
-          <input type="number" name="current_weight" class="form-input" step="0.1"
-                 value="{{ current_user.current_weight or '' }}" placeholder="70">
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ t.goal_weight }}</label>
-          <input type="number" name="goal_weight" class="form-input" step="0.1"
-                 value="{{ current_user.goal_weight or '' }}" placeholder="65">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">{{ t.height }} (см)</label>
-          <input type="number" name="height" class="form-input"
-                 value="{{ current_user.height or '' }}" placeholder="175">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Возраст (лет)</label>
-          <input type="number" name="age" class="form-input"
-                 value="{{ current_user.age or 25 }}" required>
-        </div>
-      </div>
-    </div>
-
-    <!-- ПОЛ И АКТИВНОСТЬ -->
-    <div class="card">
-      <div class="card-title">👤 Профиль</div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Пол</label>
-          <select name="gender" class="form-select" required>
-            <option value="male" {% if current_user.gender == 'male' %}selected{% endif %}>Мужской</option>
-            <option value="female" {% if current_user.gender == 'female' %}selected{% endif %}>Женский</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Активность</label>
-          <select name="activity" class="form-select" required>
-            <option value="sedentary" {% if current_user.activity == 'sedentary' %}selected{% endif %}>Малоподвижный образ жизни</option>
-            <option value="light" {% if current_user.activity == 'light' %}selected{% endif %}>Лёгкая активность (1-3 дня/неделю)</option>
-            <option value="moderate" {% if current_user.activity == 'moderate' %}selected{% endif %}>Умеренная (3-5 дней/неделю)</option>
-            <option value="active" {% if current_user.activity == 'active' %}selected{% endif %}>Высокая (6-7 дней/неделю)</option>
-            <option value="very_active" {% if current_user.activity == 'very_active' %}selected{% endif %}>Очень высокая (ежедневно)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <button type="submit" class="btn-submit">{{ t.save }} ✓</button>
-  </form>
-
-  <div class="info-box">
-    💡 <strong>Совет:</strong> Калории рассчитываются для среднестатистического человека. 
-    Подберите оптимальную цифру экспериментально. Белки = 1-1.2 г на кг веса, жиры = 0.8-1 г/кг, 
-    углеводы = остальное.
   </div>
-
 </main>
+
+<script>
+function getActivityCoefficient() {
+    const activity = document.querySelector('[name=activity]').value;
+    const coefficients = {
+        'sedentary': 1.2,
+        'light': 1.375,
+        'moderate': 1.55,
+        'active': 1.725,
+        'very_active': 1.9
+    };
+    return coefficients[activity] || 1.55;
+}
+
+function calculateAll() {
+    const weight = parseFloat(document.querySelector('[name=current_weight]').value);
+    const goal = parseFloat(document.querySelector('[name=goal_weight]').value);
+    const height = parseFloat(document.querySelector('[name=height]').value);
+    const age = parseFloat(document.querySelector('[name=age]').value);
+    const gender = document.querySelector('[name=gender]').value;
+    const activity = document.querySelector('[name=activity]').value;
+
+    if (!weight || !height || !age || !gender || !activity) {
+        alert('❌ Заполни все поля: вес, рост, возраст, пол и активность!');
+        return;
+    }
+
+    // Harris-Benedict формула для расчёта BMR
+    let bmr;
+    
+    if (gender === 'male') {
+        // Мужчины: BMR = 88.362 + (13.397 × вес) + (4.799 × рост) - (5.677 × возраст)
+        bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+        // Женщины: BMR = 447.593 + (9.247 × вес) + (3.098 × рост) - (4.330 × возраст)
+        bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+
+    // TDEE = BMR × коэффициент активности
+    let calories = bmr * getActivityCoefficient();
+    
+    // Корректировка для похудения/набора
+    if (goal && goal < weight) {
+        calories -= 400; // дефицит 400 ккал для похудения
+    }
+    if (goal && goal > weight) {
+        calories += 300; // профицит 300 ккал для набора
+    }
+    
+    calories = Math.round(calories); // обычное округление
+
+    // ПРАВИЛЬНЫЙ расчёт БЖУ (macronutrient ratios)
+    // Стандартный баланс: 30% белки, 25% жиры, 45% углеводы
+    // Белок считаем от веса
+    let protein;
+
+    if (goal < weight) {
+        protein = weight * 1.8;   // похудение
+    } else if (goal > weight) {
+        protein = weight * 1.7;   // набор
+    } else {
+        protein = weight * 1.6;   // поддержание
+    }
+
+// ограничение сверху (без фанатизма)
+protein = Math.min(protein, 150);
+protein = Math.round(protein);
+
+    // Жиры 0.9 г на кг
+    let fat = weight * 0.9;
+    fat = Math.round(fat);
+
+    // Углеводы = остаток калорий
+const carbs = Math.round((calories - (protein * 4 + fat * 9)) / 4);
+
+    // Вода (примерно 30мл на 1кг веса = 1 стакан на 250мл)
+    const water = Math.round((weight * 30) / 250);
+
+    // Заполняем поля
+    document.querySelector('[name=daily_calorie_goal]').value = calories;
+    document.querySelector('[name=protein_goal]').value = protein;
+    document.querySelector('[name=fat_goal]').value = fat;
+    document.querySelector('[name=carbs_goal]').value = carbs;
+    document.querySelector('[name=water_goal]').value = water;
+
+    const genderText = gender === 'male' ? 'мужчина' : 'женщина';
+    
+    alert(`✅ Расчёт завершён!
+
+🧬 Метаболизм (BMR): ${Math.round(bmr)} ккал/день
+🔥 Дневная норма (TDEE): ${calories} ккал/день
+
+🥩 Белки: ${protein}г/день (${Math.round(protein * 4)} ккал)
+🥑 Жиры: ${fat}г/день (${Math.round(fat * 9)} ккал)
+🍞 Углеводы: ${carbs}г/день (${Math.round(carbs * 4)} ккал)
+💧 Вода: ${water} стаканов/день
+
+Профиль: ${genderText}, ${age} лет
+Активность: ${document.querySelector('[name=activity]').options[document.querySelector('[name=activity]').selectedIndex].text}
+
+📌 Не забудь нажать "Сохранить"!`);
+}
+
+function updateCalculation() {
+    // Если нужно, можно добавить автоматический расчёт при изменении пола/активности
+}
+</script>
 </body>
 </html>

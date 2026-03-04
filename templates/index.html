@@ -135,105 +135,154 @@
   }
   .card-title .icon { font-size: 24px; }
 
-  /* SEARCH */
-  .search-wrap { position: relative; margin-bottom: 16px; }
-  .search-input {
-    width: 100%;
-    padding: 14px 20px 14px 48px;
-    border: 2px solid var(--border);
-    border-radius: 50px;
-    font-size: 15px;
-    font-family: 'Nunito', sans-serif;
-    background: var(--mint-light);
-    color: var(--text);
-    outline: none;
-    transition: all 0.25s;
-  }
-  .search-input:focus {
-    border-color: var(--green);
+  /* MEAL SECTIONS */
+  .meal-section {
+    margin-bottom: 28px;
     background: white;
-    box-shadow: 0 0 0 4px rgba(76, 175, 131, 0.12);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 4px 24px var(--shadow);
+    border: 1px solid var(--border);
   }
-  .search-icon {
-    position: absolute;
-    left: 17px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px;
-    pointer-events: none;
-  }
-
-  /* SEARCH RESULTS */
-  #search-results {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(76,175,131,0.15);
-    border: 1.5px solid var(--border);
-    overflow: hidden;
-    display: none;
-    margin-bottom: 16px;
-    max-height: 360px;
-    overflow-y: auto;
-  }
-  .result-item {
-    padding: 14px 20px;
+  .meal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
-    border-bottom: 1px solid var(--mint-light);
-    transition: background 0.15s;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
     gap: 12px;
   }
-  .result-item:last-child { border-bottom: none; }
-  .result-item:hover { background: var(--mint-light); }
-  .result-name { font-weight: 600; font-size: 14px; color: var(--text); flex: 1; }
-  .result-cal { font-size: 13px; color: var(--green-dark); font-weight: 700; white-space: nowrap; }
-  .result-macros { font-size: 11px; color: var(--text-light); white-space: nowrap; }
-  .add-btn-small {
-    background: var(--green);
-    color: white;
+  .meal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .meal-title .icon { font-size: 24px; }
+  .meal-cal {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
+  .meal-buttons {
+    display: flex;
+    gap: 6px;
+  }
+  .btn-clear-meal {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--text-soft);
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-clear-meal:hover { background: var(--mint-light); border-color: var(--green); color: var(--green-dark); }
+
+  /* CATEGORY BUTTONS */
+  .category-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-btn {
+    background: var(--mint-light);
+    border: 1.5px solid var(--border);
+    color: var(--text-soft);
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.2s;
+  }
+  .cat-btn:hover { background: var(--green); color: white; border-color: var(--green); }
+  .cat-btn.active { background: var(--green); color: white; border-color: var(--green-dark); }
+
+  /* PRODUCTS LIST */
+  .meal-products {
+    background: var(--mint-light);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: none;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .meal-products.show { display: block; }
+  .product-item {
+    padding: 12px;
+    background: white;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+    border: 1.5px solid var(--border);
+  }
+  .product-item:last-child { margin-bottom: 0; }
+  .product-item:hover {
+    background: var(--mint-light);
+    border-color: var(--green);
+    transform: translateX(4px);
+  }
+  .product-name { font-weight: 600; font-size: 14px; }
+  .product-cal { font-size: 12px; color: var(--green-dark); font-weight: 700; }
+
+  /* ENTRIES */
+  .meal-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .entry-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px;
+    background: var(--mint-light);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    gap: 12px;
+  }
+  .entry-info { flex: 1; }
+  .entry-name { font-weight: 600; font-size: 14px; color: var(--text); }
+  .entry-sub { font-size: 12px; color: var(--text-light); }
+  .entry-cal { font-weight: 700; color: var(--green-dark); white-space: nowrap; }
+  .entry-remove {
+    background: none;
     border: none;
-    border-radius: 50%;
+    cursor: pointer;
+    color: var(--danger);
+    font-weight: 700;
+    font-size: 18px;
+    padding: 0;
     width: 30px;
     height: 30px;
-    font-size: 18px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
     transition: all 0.2s;
   }
-  .add-btn-small:hover { background: var(--green-dark); transform: scale(1.1); }
+  .entry-remove:hover { transform: scale(1.2); }
 
-  /* ADD FOOD FORM */
-  #add-form {
-    background: var(--mint-light);
-    border-radius: 18px;
-    padding: 20px;
-    display: none;
-    margin-bottom: 16px;
-    border: 1.5px solid var(--border);
+  /* BUTTONS */
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
   }
-  .add-form-title { font-weight: 700; color: var(--text); margin-bottom: 14px; font-size: 15px; }
-  .form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-  .form-group { flex: 1; min-width: 100px; }
-  .form-group label { font-size: 12px; color: var(--text-soft); font-weight: 600; display: block; margin-bottom: 5px; }
-  .form-group select,
-  .form-group input[type="number"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    font-size: 14px;
-    font-family: 'Nunito', sans-serif;
-    background: white;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--green); }
   .btn-add {
     background: linear-gradient(135deg, var(--green), var(--green-soft));
     color: white;
@@ -245,633 +294,251 @@
     font-family: 'Nunito', sans-serif;
     cursor: pointer;
     transition: all 0.2s;
-    white-space: nowrap;
+    flex: 1;
   }
   .btn-add:hover { transform: translateY(-1px); box-shadow: 0 4px 15px var(--shadow-hover); }
-  .btn-cancel {
-    background: none;
-    border: 1.5px solid var(--border);
-    color: var(--text-soft);
-    border-radius: 14px;
-    padding: 11px 18px;
-    font-size: 14px;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-cancel:hover { background: var(--mint-light); }
 
-  /* CATEGORIES LINK */
-  .categories-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-soft);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 16px;
-    border-radius: 14px;
-    border: 1.5px dashed var(--border);
-    transition: all 0.2s;
-    margin-bottom: 16px;
-  }
-  .categories-link:hover { background: var(--mint-light); border-color: var(--green); color: var(--green-dark); }
-
-  /* GUEST CTA */
-  .guest-cta {
-    text-align: center;
-    padding: 30px 20px;
-    background: var(--mint-light);
-    border-radius: 18px;
-    border: 1.5px dashed var(--border);
-  }
-  .guest-cta p { color: var(--text-soft); font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
-  .btn-primary {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white;
-    text-decoration: none;
-    border-radius: 24px;
-    padding: 12px 28px;
-    font-weight: 700;
-    font-size: 14px;
-    transition: all 0.2s;
-    margin: 4px;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-hover); }
-  .btn-secondary {
-    display: inline-block;
+  /* TOTALS */
+  .totals-card {
     background: white;
-    color: var(--green-dark);
-    text-decoration: none;
     border-radius: 24px;
-    padding: 12px 28px;
-    font-weight: 700;
-    font-size: 14px;
-    border: 1.5px solid var(--border);
-    transition: all 0.2s;
-    margin: 4px;
+    padding: 28px;
+    box-shadow: 0 4px 24px var(--shadow);
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 80px;
   }
-  .btn-secondary:hover { background: var(--mint-light); }
-
-  /* TODAY ENTRIES */
-  .entries-list { margin-top: 8px; }
-  .entry-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--mint-light);
-    gap: 12px;
-    animation: slideIn 0.3s ease;
-  }
-  @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-  .entry-item:last-child { border-bottom: none; }
-  .entry-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--green);
-    flex-shrink: 0;
-  }
-  .entry-dot.breakfast { background: #ffb74d; }
-  .entry-dot.lunch { background: #81c784; }
-  .entry-dot.dinner { background: #64b5f6; }
-  .entry-dot.snack { background: #f06292; }
-  .entry-info { flex: 1; }
-  .entry-name { font-size: 14px; font-weight: 600; color: var(--text); }
-  .entry-sub { font-size: 12px; color: var(--text-light); }
-  .entry-cal { font-size: 14px; font-weight: 700; color: var(--green-dark); white-space: nowrap; }
-  .entry-remove {
-    background: none;
-    border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-  .entry-remove:hover { background: #ffebee; color: var(--danger); }
-  .empty-state {
+  .total-item {
     text-align: center;
-    padding: 30px;
-    color: var(--text-light);
-    font-size: 14px;
-    line-height: 1.8;
+    margin-bottom: 20px;
   }
-  .empty-state .emoji { font-size: 40px; display: block; margin-bottom: 12px; }
-
-  /* SIDEBAR - STATS */
-  .sidebar { display: flex; flex-direction: column; gap: 20px; }
-
-  /* CALORIES RING */
-  .calories-card { text-align: center; }
-  .ring-wrap { position: relative; display: inline-block; margin: 16px 0; }
-  .ring-svg { transform: rotate(-90deg); }
-  .ring-track { fill: none; stroke: var(--mint-medium); stroke-width: 10; }
-  .ring-progress { fill: none; stroke: url(#ringGrad); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
-  .ring-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .ring-cal { font-size: 30px; font-weight: 800; color: var(--text); line-height: 1; }
-  .ring-label { font-size: 12px; color: var(--text-light); font-weight: 600; margin-top: 2px; }
-  .ring-goal { font-size: 12px; color: var(--text-soft); margin-top: 6px; }
-
-  /* MACROS */
-  .macros-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 4px; }
-  .macro-item { text-align: center; }
-  .macro-label { font-size: 11px; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .macro-value { font-size: 20px; font-weight: 800; color: var(--text); }
-  .macro-unit { font-size: 11px; color: var(--text-soft); }
-  .macro-bar { height: 5px; border-radius: 3px; margin-top: 6px; background: var(--mint-light); overflow: hidden; }
-  .macro-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-  .macro-fill.protein { background: #81c784; }
-  .macro-fill.fat { background: #ffb74d; }
-  .macro-fill.carbs { background: #64b5f6; }
-
-  /* PREMIUM BANNER */
-  .premium-banner {
-    background: linear-gradient(135deg, #2d8a63, #4caf83, #6dc49a);
-    border-radius: 20px;
-    padding: 24px;
-    color: white;
-    text-align: center;
-    position: relative;
+  .total-item:last-child { margin-bottom: 0; }
+  .total-label { font-size: 13px; color: var(--text-soft); font-weight: 600; }
+  .total-value { font-size: 32px; font-weight: 800; color: var(--green-dark); }
+  .total-unit { font-size: 12px; color: var(--text-light); }
+  .progress-bar {
+    background: var(--mint-light);
+    border-radius: 10px;
+    height: 8px;
+    margin-top: 8px;
     overflow: hidden;
   }
-  .premium-banner::before {
-    content: '🌿';
-    position: absolute;
-    font-size: 80px;
-    right: -10px;
-    top: -10px;
-    opacity: 0.2;
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    transition: width 0.3s;
   }
-  .premium-banner h3 { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 8px; }
-  .premium-banner p { font-size: 13px; opacity: 0.9; margin-bottom: 16px; line-height: 1.5; }
-  .premium-feature { font-size: 12px; opacity: 0.9; margin: 4px 0; text-align: left; }
-  .premium-feature::before { content: '✓ '; }
-  .btn-premium {
-    display: inline-block;
-    background: white;
-    color: var(--green-dark);
-    text-decoration: none;
-    border-radius: 20px;
-    padding: 10px 24px;
-    font-weight: 800;
-    font-size: 13px;
-    margin-top: 12px;
-    transition: all 0.2s;
-  }
-  .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
-
-  /* FLASH */
-  .flash { background: var(--mint); color: var(--green-dark); padding: 12px 20px; border-radius: 14px; margin-bottom: 16px; font-weight: 600; font-size: 14px; }
-
-  /* LOADING */
-  .search-loading { padding: 20px; text-align: center; color: var(--text-light); font-size: 14px; }
-
-  /* SCROLLBAR */
-  #search-results::-webkit-scrollbar { width: 6px; }
-  #search-results::-webkit-scrollbar-track { background: var(--mint-light); }
-  #search-results::-webkit-scrollbar-thumb { background: var(--mint); border-radius: 3px; }
-body.dark {
-  --mint: #1a3d2e; --mint-light: #0f2419;
-  --green: #4caf83; --green-dark: #6dc49a; --green-soft: #4caf83;
-  --cream: #0d1f16;
-  --text: #e8f5ee; --text-soft: #8abf9e; --text-light: #5a8a6e;
-  --border: #1e4030; --shadow: rgba(0,0,0,0.3);
-  background: #0d1f16;
-}
-body.dark nav { background: rgba(13,31,22,0.95); }
-body.dark .card { background: #122b1e; }
-body.dark .search-input { background: #0f2419; color: #e8f5ee; }
-body.dark #add-form { background: #0f2419; }
-body.dark .result-item:hover { background: #1a3d2e; }
-body.dark #search-results { background: #122b1e; }
-body.dark .lang-btn { background: #1a3d2e; color: #8abf9e; border-color: #1e4030; }
-body.dark .lang-btn.active { background: #4caf83; color: white; }
-.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 8px; }
-.burger span { display: block; width: 24px; height: 2px; background: var(--green-dark); border-radius: 2px; }
-.nav-right { display: flex; align-items: center; gap: 6px; }
-@media (max-width: 768px) {
-  .burger { display: flex; }
-  .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(255,255,255,0.98); flex-direction: column; padding: 16px; gap: 8px; border-bottom: 1px solid var(--border); box-shadow: 0 8px 20px var(--shadow); z-index: 99; }
-  .nav-links.open { display: flex; }
-  .nav-link { width: 100%; text-align: center; padding: 12px; font-size: 15px; }
-  main { padding: 16px 12px; }
-}
 </style>
 </head>
-<body id="body">
+<body>
 
+<!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="logo"><span>🌿</span> {{ t.app_name }}</a>
-    <button class="burger" onclick="toggleMenu()" id="burger">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="nav-links" id="nav-links">
-      {% if current_user.is_authenticated %}
-      <a href="/history" class="nav-link">📅 {{ t.history }}</a>
-      <a href="/goals" class="nav-link">🎯 {{ t.goals }}</a>
-      <a href="/categories" class="nav-link">🗂 {{ t.categories }}</a>
+    <a href="/" class="logo">
+      <span>🌿</span>
+      <span>CaloriMint</span>
+    </a>
+    <div class="nav-links">
+      <a href="/history" class="nav-link">{{ t.history }}</a>
+      <a href="/goals" class="nav-link">{{ t.goals }}</a>
+      <a href="/categories" class="nav-link">{{ t.categories }}</a>
+      <a href="/premium" class="nav-link premium-btn">{{ t.premium }}</a>
       <a href="/logout" class="nav-link">{{ t.logout }}</a>
-      {% else %}
-      <a href="/categories" class="nav-link">🗂 {{ t.categories }}</a>
-      <a href="/login" class="nav-link">{{ t.login }}</a>
-      <a href="/register" class="nav-link">{{ t.register }}</a>
-      {% endif %}
-      {% if not current_user.is_authenticated or not current_user.is_premium %}
-      <a href="/premium" class="nav-link premium-btn">⭐ {{ t.premium }}</a>
-      {% endif %}
     </div>
-    <div class="nav-right">
-      <button onclick="toggleTheme()" id="theme-btn" style="background:none; border:1.5px solid var(--border); border-radius:12px; padding:6px 10px; font-size:14px; cursor:pointer;">🌙</button>
-      <div class="lang-switcher">
-        <button class="lang-btn {% if lang=='ru' %}active{% endif %}" onclick="location.href='/set-language/ru'">RU</button>
-        <button class="lang-btn {% if lang=='en' %}active{% endif %}" onclick="location.href='/set-language/en'">EN</button>
-        <button class="lang-btn {% if lang=='uk' %}active{% endif %}" onclick="location.href='/set-language/uk'">UK</button>
-        <button class="lang-btn {% if lang=='kk' %}active{% endif %}" onclick="location.href='/set-language/kk'">KK</button>
-      </div>
+    <div class="lang-switcher">
+      {% for lang_code in ['ru', 'en', 'uk', 'kk'] %}
+      <form method="POST" action="/language" style="display:inline;">
+        <input type="hidden" name="lang" value="{{ lang_code }}">
+        <button type="submit" class="lang-btn {% if lang == lang_code %}active{% endif %}">
+          {{ {'ru': 'РУ', 'en': 'EN', 'uk': 'UK', 'kk': 'КК'}[lang_code] }}
+        </button>
+      </form>
+      {% endfor %}
     </div>
   </div>
 </nav>
+
+<!-- MAIN -->
 <main>
-  <!-- LEFT COLUMN -->
   <div>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for msg in messages %}<div class="flash">{{ msg }}</div>{% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <div class="card">
-      <div class="card-title"><span class="icon">🔍</span> {{ t.search_placeholder[:-3] }}</div>
-
-      <div class="search-wrap">
-        <span class="search-icon">🌱</span>
-        <input type="text" class="search-input" id="searchInput"
-               placeholder="{{ t.search_placeholder }}" autocomplete="off">
-      </div>
-
-      <div id="search-results"></div>
-
-      <div id="add-form">
-        <div class="add-form-title" id="add-form-title">Добавить продукт</div>
-        <input type="hidden" id="selected-food-id">
-        <div class="form-row">
-          <div class="form-group">
-            <label>{{ t.grams }}</label>
-            <input type="number" id="grams-input" value="100" min="1" max="9999">
-          </div>
-          <div class="form-group">
-            <label>Приём пищи</label>
-            <select id="meal-select">
-              <option value="breakfast">{{ t.breakfast }}</option>
-              <option value="lunch" selected>{{ t.lunch }}</option>
-              <option value="dinner">{{ t.dinner }}</option>
-              <option value="snack">{{ t.snack }}</option>
-            </select>
-          </div>
-          <button class="btn-add" onclick="addEntry()">{{ t.add_food }} ✓</button>
-          <button class="btn-cancel" onclick="closeAddForm()">✕</button>
+    <!-- MEALS -->
+    {% for meal_key, meal in meals.items() %}
+    <div class="meal-section">
+      <div class="meal-header">
+        <div class="meal-title">
+          <span class="icon">{{ meal.icon }}</span>
+          <span>{{ meal.name }}</span>
         </div>
-        <div id="add-form-preview" style="margin-top:12px; font-size:13px; color:var(--text-soft);"></div>
-      </div>
-
-      <a href="/categories" class="categories-link">
-        🗂 {{ t.categories }} — если не нашли через поиск
-      </a>
-
-      {% if current_user.is_authenticated %}
-      <div class="card-title" style="margin-top:8px; justify-content:space-between;">
-        <span><span class="icon">🍽️</span> {{ t.today }}</span>
-        {% if current_user.is_authenticated and today_entries %}
-        <button onclick="clearDay()" style="background:none; border:1.5px solid #ffcdd2; color:#e57373; border-radius:12px; padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Nunito',sans-serif;">🗑 Очистить день</button>
-        {% endif %}
-      </div>
-        <div class="entries-list" id="entries-list">
-          {% if today_entries %}
-            {% for entry in today_entries %}
-            <div class="entry-item" id="entry-{{ entry.id }}">
-              <div class="entry-dot {{ entry.meal_type }}"></div>
-              <div class="entry-info">
-                <div class="entry-name">{{ entry.food_name }}</div>
-                <div class="entry-sub">{{ entry.grams|int }} г · {{ t[entry.meal_type] if entry.meal_type in t else entry.meal_type }}
-                  {% if current_user.is_premium %}
-                    · Б: {{ entry.protein }}г  Ж: {{ entry.fat }}г  У: {{ entry.carbs }}г
-                  {% endif %}
-                </div>
-              </div>
-              <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
-              <button class="entry-remove" onclick="removeEntry({{ entry.id }})" title="{{ t.remove }}">✕</button>
-            </div>
-            {% endfor %}
-          {% else %}
-            <div class="empty-state">
-              <span class="emoji">🌿</span>
-              Добавьте первый продукт дня!<br>Начните с поиска или выберите из категорий.
-            </div>
-          {% endif %}
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="meal-cal">{{ meal.total|int }} ккал</div>
+          <div class="meal-buttons">
+            <button class="btn-clear-meal" onclick="clearMeal('{{ meal_key }}')">🗑 {{ t.clear }}</button>
+          </div>
         </div>
-      {% else %}
-      <div class="guest-cta">
-        <p>🌱 Войдите, чтобы вести дневник питания и отслеживать калории за день</p>
-        <a href="/register" class="btn-primary">{{ t.register }}</a>
-        <a href="/login" class="btn-secondary">{{ t.login }}</a>
       </div>
-      {% endif %}
+
+      <!-- CATEGORY BUTTONS -->
+      <div class="category-buttons">
+        <button class="cat-btn active" onclick="loadCategory('{{ meal_key }}', '', this)">{{ t.all }}</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'fruits', this)">🍎</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'vegetables', this)">🥦</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'meat', this)">🥩</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'dairy', this)">🥛</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'grains', this)">🌾</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'nuts', this)">🌰</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'fish', this)">🐟</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'sweets', this)">🍫</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'drinks', this)">🥤</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'supplements', this)">💊</button>
+        <button class="cat-btn" onclick="loadCategory('{{ meal_key }}', 'sports_nutrition', this)">💪</button>
+      </div>
+
+      <!-- PRODUCTS LIST -->
+      <div class="meal-products" id="products-{{ meal_key }}">
+        <div style="text-align: center; color: var(--text-light);">Выберите категорию</div>
+      </div>
+
+      <!-- ENTRIES -->
+      <div class="meal-entries" id="entries-{{ meal_key }}">
+        {% for entry in meal.entries %}
+        <div class="entry-item">
+          <div class="entry-info">
+            <div class="entry-name">{{ entry.name }}</div>
+            <div class="entry-sub">{{ entry.grams|int }}г</div>
+          </div>
+          <div class="entry-cal">{{ entry.calories|int }} ккал</div>
+          <button class="entry-remove" onclick="removeEntry({{ entry.id }})">✕</button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- CLEAR ALL -->
+    <div style="text-align: center; margin-top: 28px;">
+      <button onclick="clearDay()" style="background: linear-gradient(135deg, var(--danger), #f06292); color: white; border: none; border-radius: 14px; padding: 12px 28px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;">🗑 {{ t.clear }} всё</button>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
+  <!-- RIGHT SIDEBAR - TOTALS -->
+  <div class="totals-card">
+    <div class="card-title">
+      <span class="icon">🎯</span>
+      Сегодня
+    </div>
 
-    <!-- CALORIES RING -->
-    <div class="card calories-card">
-      <div class="card-title" style="justify-content:center;"><span class="icon">🔥</span> {{ t.calories }}</div>
-      <div class="ring-wrap">
-        <svg class="ring-svg" width="160" height="160" viewBox="0 0 160 160">
-          <defs>
-            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#4caf83"/>
-              <stop offset="100%" style="stop-color:#b5ead7"/>
-            </linearGradient>
-          </defs>
-          <circle class="ring-track" cx="80" cy="80" r="65"/>
-          <circle class="ring-progress" cx="80" cy="80" r="65"
-                  stroke-dasharray="{{ (progress_pct / 100 * 408.41)|int }} 408.41"
-                  id="ringCircle"/>
-        </svg>
-        <div class="ring-center">
-          <div class="ring-cal" id="total-cal">{{ total_cal }}</div>
-          <div class="ring-label">{{ t.kcal }}</div>
-        </div>
-      </div>
-      <div class="ring-goal">{{ t.daily_goal }}: {{ daily_goal }} {{ t.kcal }}</div>
-      <div class="ring-goal" style="color:var(--green-dark); font-weight:700;">
-        {{ t.remaining }}: {{ [daily_goal - total_cal, 0]|max }} {{ t.kcal }}
+    <div class="total-item">
+      <div class="total-label">Калории</div>
+      <div class="total-value" id="total-cal">{{ total_calories }}</div>
+      <div class="total-unit">ккал из {{ current_user.daily_calorie_goal if current_user.is_authenticated else 2000 }}</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ [total_calories / (current_user.daily_calorie_goal if current_user.is_authenticated else 2000) * 100, 100]|min|int }}%"></div>
       </div>
     </div>
 
-    <!-- ВОДА -->
-    {% if current_user.is_authenticated %}
-    <div class="card" style="text-align:center;">
-      <div class="card-title" style="justify-content:center;"><span class="icon">💧</span> Вода</div>
-      <div id="water-glasses" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:12px 0;"></div>
-      <div id="water-count" style="font-size:14px; color:var(--text-soft); font-weight:600; margin-bottom:12px;"></div>
-      <div style="display:flex; gap:8px; justify-content:center;">
-        <button onclick="addWater()" style="background:linear-gradient(135deg,#4caf83,#6dc49a); color:white; border:none; border-radius:14px; padding:10px 20px; font-size:14px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer;">+ Стакан</button>
-        <button onclick="removeWater()" style="background:none; border:1.5px solid var(--border); border-radius:14px; padding:10px 16px; font-size:14px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; color:var(--text-soft);">−</button>
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- MACROS (PREMIUM) -->
     {% if current_user.is_authenticated and current_user.is_premium %}
-    <div class="card">
-      <div class="card-title"><span class="icon">📊</span> {{ t.bju_counter }}</div>
-      <div class="macros-grid">
-        <div class="macro-item">
-          <div class="macro-label">{{ t.protein }}</div>
-          <div class="macro-value" id="total-protein">{{ total_protein }}</div>
-          <div class="macro-unit">{{ t.g }}</div>
-          <div class="macro-bar"><div class="macro-fill protein" style="width:{{ [total_protein/150*100,100]|min|int }}%"></div></div>
-        </div>
-        <div class="macro-item">
-          <div class="macro-label">{{ t.fat }}</div>
-          <div class="macro-value" id="total-fat">{{ total_fat }}</div>
-          <div class="macro-unit">{{ t.g }}</div>
-          <div class="macro-bar"><div class="macro-fill fat" style="width:{{ [total_fat/70*100,100]|min|int }}%"></div></div>
-        </div>
-        <div class="macro-item">
-          <div class="macro-label">{{ t.carbs }}</div>
-          <div class="macro-value" id="total-carbs">{{ total_carbs }}</div>
-          <div class="macro-unit">{{ t.g }}</div>
-          <div class="macro-bar"><div class="macro-fill carbs" style="width:{{ [total_carbs/250*100,100]|min|int }}%"></div></div>
-        </div>
-      </div>
+    <div class="total-item">
+      <div class="total-label">Белки</div>
+      <div class="total-value">{{ total_protein|int }}</div>
+      <div class="total-unit">г из {{ current_user.protein_goal }}</div>
+    </div>
+
+    <div class="total-item">
+      <div class="total-label">Жиры</div>
+      <div class="total-value">{{ total_fat|int }}</div>
+      <div class="total-unit">г из {{ current_user.fat_goal }}</div>
+    </div>
+
+    <div class="total-item">
+      <div class="total-label">Углеводы</div>
+      <div class="total-value">{{ total_carbs|int }}</div>
+      <div class="total-unit">г из {{ current_user.carbs_goal }}</div>
     </div>
     {% endif %}
-
-    <!-- PREMIUM BANNER (not premium) -->
-    {% if not current_user.is_authenticated or not current_user.is_premium %}
-    <div class="premium-banner">
-      <h3>⭐ {{ t.premium }}</h3>
-      <p>{{ t.premium_desc }}</p>
-      <div class="premium-feature">{{ t.month_history }}</div>
-      <div class="premium-feature">{{ t.bju_counter }}</div>
-      <div class="premium-feature">{{ t.weight_goal }}</div>
-      <div class="premium-feature">{{ t.no_ads }}</div>
-      <a href="/premium" class="btn-premium">{{ t.get_premium }}</a>
-    </div>
-    {% endif %}
-
   </div>
 </main>
 
 <script>
-function toggleMenu() {
-  document.getElementById('nav-links').classList.toggle('open');
-}
-const lang = '{{ lang }}';
-const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
-const t = {
-  add: '{{ t.add_food }}',
-  grams: '{{ t.grams }}',
-  kcal: '{{ t.kcal }}',
-  per100g: '{{ t.per_100g }}',
-  notFound: '{{ t.not_found }}',
-  didYouMean: '{{ t.did_you_mean }}',
-  remove: '{{ t.remove }}',
-  loginFirst: lang === 'ru' ? 'Войдите, чтобы добавлять продукты' : 'Login to add foods',
-};
+let currentMeal = null;
+const meals = {{ meals|tojson }};
 
-let selectedFood = null;
-let searchTimer = null;
+async function loadCategory(meal, category, btn) {
+  // Активируем кнопку
+  document.querySelectorAll(`#meal-${meal} .cat-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 
-const searchInput = document.getElementById('searchInput');
-const resultsDiv = document.getElementById('search-results');
-const addForm = document.getElementById('add-form');
-
-searchInput.addEventListener('input', function() {
-  clearTimeout(searchTimer);
-  const q = this.value.trim();
-  if (q.length < 1) { resultsDiv.style.display = 'none'; return; }
-  searchTimer = setTimeout(() => doSearch(q), 300);
-});
-
-async function doSearch(q) {
-  resultsDiv.style.display = 'block';
-  resultsDiv.innerHTML = '<div class="search-loading">🌱 Ищем...</div>';
+  const productsDiv = document.getElementById(`products-${meal}`);
+  
   try {
-    const r = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-    const items = await r.json();
+    const q = category ? `?category=${category}` : '';
+    const response = await fetch(`/api/search${q}`);
+    const items = await response.json();
+
     if (items.length === 0) {
-      resultsDiv.innerHTML = `<div class="search-loading">🍃 ${t.notFound}</div>`;
-      return;
+      productsDiv.innerHTML = '<div style="text-align: center; color: var(--text-light); padding: 16px;">Нет продуктов</div>';
+    } else {
+      productsDiv.innerHTML = items.map(item => `
+        <div class="product-item" onclick="addProduct('${meal}', ${item.id}, '${item.name_ru.replace(/'/g, "\\'")}', ${item.calories}, ${item.protein}, ${item.fat}, ${item.carbs})">
+          <div>
+            <div class="product-name">${item.name_ru}</div>
+            <div style="font-size: 11px; color: var(--text-light);">${item.calories} ккал · ${item.protein}g Б · ${item.fat}g Ж · ${item.carbs}g У</div>
+          </div>
+          <div class="product-cal">${item.calories} ккал</div>
+        </div>
+      `).join('');
     }
-    resultsDiv.innerHTML = items.map(item => `
-      <div class="result-item" onclick="selectFood(${item.id}, '${item.name.replace(/'/g,"\\'")}', ${item.calories}, ${item.protein}, ${item.fat}, ${item.carbs})">
-        <div>
-          <div class="result-name">${item.name}</div>
-          <div class="result-macros">Б:${item.protein}г Ж:${item.fat}г У:${item.carbs}г · ${t.per100g}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="result-cal">${item.calories} ${t.kcal}</div>
-          <button class="add-btn-small">+</button>
-        </div>
-      </div>
-    `).join('');
+    productsDiv.classList.add('show');
   } catch(e) {
-    resultsDiv.innerHTML = '<div class="search-loading">⚠️ Ошибка поиска</div>';
+    productsDiv.innerHTML = '<div style="color: var(--danger);">❌ Ошибка загрузки</div>';
   }
 }
 
-function selectFood(id, name, cal, protein, fat, carbs) {
-  selectedFood = { id, name, cal, protein, fat, carbs };
-  resultsDiv.style.display = 'none';
-  searchInput.value = name;
-  document.getElementById('add-form-title').textContent = name;
-  document.getElementById('selected-food-id').value = id;
-  addForm.style.display = 'block';
-  updatePreview();
-}
+async function addProduct(meal, id, name, cal, protein, fat, carbs) {
+  const grams = prompt(`${name}\n\nУкажите вес в граммах (по умолчанию 100):`);
+  if (!grams) return;
 
-function updatePreview() {
-  if (!selectedFood) return;
-  const g = parseFloat(document.getElementById('grams-input').value) || 100;
-  const r = g / 100;
-  document.getElementById('add-form-preview').innerHTML =
-    `🔥 ${Math.round(selectedFood.cal * r)} ${t.kcal} · Б:${(selectedFood.protein*r).toFixed(1)}г Ж:${(selectedFood.fat*r).toFixed(1)}г У:${(selectedFood.carbs*r).toFixed(1)}г`;
-}
-
-document.getElementById('grams-input').addEventListener('input', updatePreview);
-
-function closeAddForm() {
-  addForm.style.display = 'none';
-  selectedFood = null;
-  searchInput.value = '';
-}
-
-async function addEntry() {
-  if (!isAuth) { alert(t.loginFirst); return; }
-  if (!selectedFood) return;
-  const grams = parseFloat(document.getElementById('grams-input').value) || 100;
-  const meal = document.getElementById('meal-select').value;
-
-  const r = await fetch('/api/add-entry', {
+  const gramValue = parseFloat(grams) || 100;
+  const response = await fetch('/api/add-entry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ food_id: selectedFood.id, grams, meal_type: meal })
+    body: JSON.stringify({
+      food_id: id,
+      grams: gramValue,
+      meal_type: meal
+    })
   });
-  const data = await r.json();
-  if (data.success) {
-    closeAddForm();
-    location.reload(); // Обновляем страницу для показа нового продукта
+
+  if (response.ok) {
+    location.reload();
   }
 }
 
 async function removeEntry(id) {
-  await fetch(`/api/remove-entry/${id}`, { method: 'DELETE' });
-  const el = document.getElementById(`entry-${id}`);
-  if (el) { el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = '0.3s'; setTimeout(() => { el.remove(); updateTotals(); }, 300); }
-}
-
-async function updateTotals() {
-  if (!isAuth) return;
-  const r = await fetch('/api/today-summary');
-  const data = await r.json();
-  document.getElementById('total-cal').textContent = data.calories;
-  const calEl = document.getElementById('total-protein');
-  if (calEl) {
-    calEl.textContent = data.protein;
-    document.getElementById('total-fat').textContent = data.fat;
-    document.getElementById('total-carbs').textContent = data.carbs;
+  if (confirm('Удалить этот продукт?')) {
+    await fetch(`/api/delete-entry/${id}`, { method: 'DELETE' });
+    location.reload();
   }
 }
 
-// Закрыть результаты при клике вне
-document.addEventListener('click', function(e) {
-  if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
-    resultsDiv.style.display = 'none';
+async function clearMeal(meal) {
+  if (confirm(`Очистить все продукты из этого приёма пищи?`)) {
+    await fetch('/api/clear-meal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ meal_type: meal })
+    });
+    location.reload();
   }
-});
-let waterGlasses = 0;
-let waterGoal = 8;
-
-async function loadWater() {
-    const r = await fetch('/api/water');
-    const data = await r.json();
-    waterGlasses = data.glasses;
-    waterGoal = data.goal;
-    renderWater();
 }
 
-function renderWater() {
-    const el = document.getElementById('water-glasses');
-    const countEl = document.getElementById('water-count');
-    if (!el) return;
-    el.innerHTML = '';
-    for (let i = 0; i < waterGoal; i++) {
-        const glass = document.createElement('span');
-        glass.style.fontSize = '24px';
-        glass.style.opacity = i < waterGlasses ? '1' : '0.2';
-        glass.textContent = '💧';
-        el.appendChild(glass);
-    }
-    countEl.textContent = `${waterGlasses} из ${waterGoal} стаканов`;
-}
-
-async function addWater() {
-    if (waterGlasses >= waterGoal) return;
-    waterGlasses++;
-    await fetch('/api/water', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({glasses: waterGlasses})
-    });
-    renderWater();
-}
-
-async function removeWater() {
-    if (waterGlasses <= 0) return;
-    waterGlasses--;
-    await fetch('/api/water', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({glasses: waterGlasses})
-    });
-    renderWater();
-}
-
-if (isAuth) loadWater();
-// ТЁМНАЯ ТЕМА
-function toggleTheme() {
-    const body = document.getElementById('body');
-    const btn = document.getElementById('theme-btn');
-    const isDark = body.classList.toggle('dark');
-    btn.textContent = isDark ? '☀️' : '🌙';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
-    document.getElementById('body').classList.add('dark');
-    document.getElementById('theme-btn').textContent = '☀️';
-}
 async function clearDay() {
-    if (!confirm('Удалить все записи за сегодня?')) return;
+  if (confirm('Удалить ВСЕ продукты за сегодня?')) {
     await fetch('/api/clear-day', { method: 'DELETE' });
     location.reload();
+  }
 }
 </script>
+
 </body>
 </html>

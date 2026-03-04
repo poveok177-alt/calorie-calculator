@@ -1,0 +1,5 @@
+FLASK_APP=app.py
+FLASK_ENV=production
+SECRET_KEY=super-secret-key-12345
+YOOKASSA_SHOP_ID=123456
+YOOKASSA_SECRET_KEY=test_key
