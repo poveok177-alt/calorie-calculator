@@ -530,20 +530,25 @@ def goals():
         return redirect(url_for('premium'))
 
     if request.method == 'POST':
-        current_user.current_weight = float(request.form.get('current_weight') or 0)
-        current_user.goal_weight = float(request.form.get('goal_weight') or 0)
-        current_user.height = float(request.form.get('height') or 0)
-        current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal') or 2000)
-        current_user.water_goal = int(request.form.get('water_goal') or 8)
-        current_user.protein_goal = int(request.form.get('protein_goal') or 150)
-        current_user.fat_goal = int(request.form.get('fat_goal') or 70)
-        current_user.carbs_goal = int(request.form.get('carbs_goal') or 250)
-        current_user.age = int(request.form.get('age') or 25)
-        db.session.commit()
-        flash('Цели сохранены!')
+        try:
+            current_user.current_weight = float(request.form.get('current_weight') or 0)
+            current_user.goal_weight = float(request.form.get('goal_weight') or 0)
+            current_user.height = float(request.form.get('height') or 0)
+            current_user.age = int(request.form.get('age') or 25)
+            current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal') or 2000)
+            current_user.water_goal = int(request.form.get('water_goal') or 8)
+            current_user.protein_goal = int(request.form.get('protein_goal') or 150)
+            current_user.fat_goal = int(request.form.get('fat_goal') or 70)
+            current_user.carbs_goal = int(request.form.get('carbs_goal') or 250)
+            
+            db.session.commit()
+            flash('✅ Цели сохранены!')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'❌ Ошибка: {str(e)}')
+            print(f"Error saving goals: {e}")
 
     return render_template('goals.html', t=t, lang=lang)
-
 @app.route('/categories')
 def categories():
     t = get_t()
