@@ -7,67 +7,204 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root { --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83; --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9; --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd; --shadow:rgba(76,175,131,.12); }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh;
-    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%); }
-  nav { background:rgba(255,255,255,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow); }
-  .nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
-  .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
+  *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; overflow-x:hidden; }
+  body {
+    font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text);
+    min-height:100vh; overflow-x:hidden;
+    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
+    /* Отступ под bottom nav */
+    padding-bottom: max(80px, calc(72px + env(safe-area-inset-bottom)));
+  }
+  button, a { touch-action:manipulation; }
+
+  /* ── NAV ── */
+  nav {
+    background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border); padding:0 20px;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow);
+  }
+  .nav-inner {
+    max-width:1100px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between; height:60px;
+  }
+  .logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--green-dark); text-decoration:none; white-space:nowrap; }
+  .nav-link {
+    padding:8px 14px; border-radius:20px; text-decoration:none;
+    font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s;
+    min-height:44px; display:inline-flex; align-items:center;
+  }
   .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
 
-  main { max-width:1100px; margin:0 auto; padding:32px 24px; display:grid; grid-template-columns:220px 1fr; gap:24px; }
+  /* ── LAYOUT ── */
+  main {
+    max-width:1100px; margin:0 auto; padding:28px 20px;
+    display:grid; grid-template-columns:220px 1fr; gap:24px;
+  }
 
-
-  /* SIDEBAR CATEGORIES */
-  .cat-sidebar { background:white; border-radius:20px; padding:20px; border:1.5px solid var(--border); height:fit-content; box-shadow:0 4px 20px var(--shadow); position:sticky; top:84px; }
-  .cat-title { font-weight:800; font-size:14px; color:var(--text); margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px; }
+  /* ── SIDEBAR ── */
+  .cat-sidebar {
+    background:white; border-radius:20px; padding:18px;
+    border:1.5px solid var(--border); height:fit-content;
+    box-shadow:0 4px 20px var(--shadow); position:sticky; top:76px;
+  }
+  .cat-title { font-weight:800; font-size:13px; color:var(--text); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
   .cat-btn {
     display:block; width:100%; text-align:left;
     padding:10px 14px; border-radius:14px;
     text-decoration:none; font-size:14px; font-weight:600;
-    color:var(--text-soft); transition:all .2s; margin-bottom:4px;
+    color:var(--text-soft); transition:all .2s; margin-bottom:3px;
     border:none; background:none; cursor:pointer; font-family:'Nunito',sans-serif;
+    /* Минимум 44px */
+    min-height:44px;
   }
   .cat-btn:hover { background:var(--mint-light); color:var(--green-dark); }
   .cat-btn.active { background:var(--mint); color:var(--green-dark); }
 
-  /* FOOD LIST */
-  .foods-panel { }
-  .foods-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:8px; }
-  .foods-count { font-size:14px; color:var(--text-light); margin-bottom:20px; }
-  .foods-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+  /* ── FOOD GRID ── */
+  .foods-panel { min-width:0; }
+  .foods-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
+  .foods-count { font-size:13px; color:var(--text-light); margin-bottom:18px; }
+  .foods-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:16px;
+  }
   .food-card {
-    background:white; border-radius:18px; padding:20px;
+    background:white; border-radius:18px; padding:18px;
     border:1.5px solid var(--border); box-shadow:0 3px 16px var(--shadow);
     transition:all .2s; cursor:pointer;
   }
   .food-card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(76,175,131,.18); border-color:var(--green); }
-  .food-name { font-weight:700; font-size:15px; color:var(--text); margin-bottom:8px; }
+  .food-card:active { transform:scale(0.98); }
+  .food-name { font-weight:700; font-size:14px; color:var(--text); margin-bottom:8px; line-height:1.3; }
   .food-cal { font-size:22px; font-weight:800; color:var(--green-dark); }
   .food-cal-label { font-size:11px; color:var(--text-light); }
-  .food-macros { display:flex; gap:10px; margin-top:10px; }
-  .macro-chip { background:var(--mint-light); color:var(--green-dark); font-size:11px; font-weight:700; padding:3px 9px; border-radius:10px; }
+  .food-macros { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .macro-chip { background:var(--mint-light); color:var(--green-dark); font-size:11px; font-weight:700; padding:3px 8px; border-radius:10px; }
   .add-from-cat {
-    display:block; width:100%; margin-top:12px; padding:9px;
+    display:block; width:100%; margin-top:10px; padding:10px;
     background:linear-gradient(135deg,var(--green),var(--green-soft));
     color:white; border:none; border-radius:12px;
     font-size:13px; font-weight:700; font-family:'Nunito',sans-serif;
-    cursor:pointer; transition:all .2s;
-    text-align:center;
+    cursor:pointer; transition:all .2s; text-align:center;
+    min-height:44px;
   }
   .add-from-cat:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(76,175,131,.25); }
-@media(max-width:700px) {
-    main { grid-template-columns:1fr !important; padding:12px; }
-    .cat-sidebar { position:static !important; display:flex !important; flex-wrap:wrap; gap:6px; padding:12px; }
-    .cat-title { width:100%; }
-    .cat-btn { width:auto !important; padding:7px 12px; font-size:13px; margin-bottom:0; }
-    .foods-grid { grid-template-columns:1fr 1fr !important; gap:10px; }
-    .food-card { padding:12px; }
-    .food-cal { font-size:18px; }
+  .add-from-cat:active { transform:scale(0.98); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.4); z-index:200;
+    align-items:flex-end; justify-content:center;
+    padding:0;
   }
-  @media(max-width:400px) {
-    .foods-grid { grid-template-columns:1fr !important; }
+  @media(min-width:500px){
+    .modal-overlay { align-items:center; padding:16px; }
+    .modal-box { border-radius:24px!important; max-width:400px!important; }
+  }
+  .modal-box {
+    background:white; border-radius:24px 24px 0 0;
+    padding:28px 24px max(28px,env(safe-area-inset-bottom));
+    width:100%; max-width:100%;
+    box-shadow:0 -8px 40px rgba(0,0,0,.2);
+  }
+  .modal-handle { width:36px; height:4px; background:#c8eedd; border-radius:4px; margin:0 auto 20px; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:18px; }
+  .modal-label { font-size:11px; font-weight:700; color:#5a7a6e; display:block; margin-bottom:6px; text-transform:uppercase; }
+  .modal-input {
+    width:100%; padding:12px 16px; border:2px solid #c8eedd; border-radius:14px;
+    font-size:16px; font-family:'Nunito',sans-serif; outline:none; min-height:48px;
+  }
+  .modal-input:focus { border-color:#4caf83; }
+  .modal-preview { font-size:13px; color:#5a7a6e; margin:12px 0 18px; min-height:20px; }
+  .modal-btns { display:flex; gap:12px; }
+  .modal-ok {
+    flex:1; padding:13px; background:linear-gradient(135deg,#4caf83,#6dc49a);
+    color:white; border:none; border-radius:14px;
+    font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer;
+    min-height:50px;
+  }
+  .modal-cancel {
+    padding:13px 20px; background:none; border:2px solid #c8eedd;
+    border-radius:14px; font-size:14px; font-weight:700;
+    font-family:'Nunito',sans-serif; cursor:pointer; min-height:50px;
+  }
+
+  /* ── BOTTOM NAV (mobile) ── */
+  .bottom-nav {
+    display:none; position:fixed; bottom:0; left:0; right:0; z-index:150;
+    background:rgba(255,255,255,.97); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border-top:1px solid #c8eedd; box-shadow:0 -4px 20px rgba(76,175,131,.1);
+    padding:6px 0 max(6px,env(safe-area-inset-bottom));
+  }
+  .bnav-item {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+    text-decoration:none; color:#8aaa9e; font-weight:700; padding:6px 4px;
+    border-radius:12px; margin:0 3px; transition:all .2s;
+    min-height:50px; justify-content:center;
+  }
+  .bnav-item.active { color:#2d8a63; background:rgba(181,234,215,.35); }
+  .bnav-icon { font-size:22px; line-height:1; }
+  .bnav-label { letter-spacing:.3px; text-transform:uppercase; font-size:9px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:860px){
+    /* Sidebar → горизонтальная прокрутка сверху */
+    main {
+      grid-template-columns:1fr;
+      padding:14px 14px;
+    }
+    .cat-sidebar {
+      position:static;
+      display:flex;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      gap:6px;
+      padding:12px 14px;
+      border-radius:16px;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .cat-sidebar::-webkit-scrollbar { display:none; }
+    .cat-title { display:none; }
+    .cat-btn {
+      width:auto!important;
+      padding:7px 14px;
+      font-size:13px;
+      margin-bottom:0;
+      flex-shrink:0;
+      min-height:40px;
+      white-space:nowrap;
+    }
+    .bottom-nav { display:flex; }
+    body { padding-bottom:0; }
+  }
+
+  @media(max-width:600px){
+    /* Карточки: одна колонка на телефонах */
+    .foods-grid { grid-template-columns:1fr 1fr; gap:10px; }
+    .food-card { padding:14px; }
+    .food-cal { font-size:20px; }
+    .food-name { font-size:13px; }
+    .foods-title { font-size:22px; }
+  }
+
+  @media(max-width:400px){
+    /* Самые маленькие — одна колонка */
+    .foods-grid { grid-template-columns:1fr; }
+    main { padding:10px 10px; }
+    .cat-btn { font-size:12px; padding:6px 11px; min-height:38px; }
+    .food-cal { font-size:18px; }
+    .add-from-cat { font-size:12px; min-height:44px; }
+  }
+
+  @media(max-width:320px){
+    main { padding:8px 8px; }
+    .foods-grid { gap:8px; }
+    .food-card { padding:12px; }
+    .macro-chip { font-size:10px; padding:2px 6px; }
   }
 </style>
 </head>
@@ -78,8 +215,9 @@
     <a href="/" class="nav-link">← Поиск</a>
   </div>
 </nav>
+
 <main>
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR / CATEGORY SCROLL -->
   <div class="cat-sidebar">
     <div class="cat-title">{{ t.categories }}</div>
     {% for cat in category_keys %}
@@ -92,7 +230,7 @@
   <!-- FOODS -->
   <div class="foods-panel">
     <div class="foods-title">{{ t[current_cat] }}</div>
-    <div class="foods-count">{{ foods|length }} продуктов · сортировка по алфавиту</div>
+    <div class="foods-count">{{ foods|length }} {{ t.get('products_count','продуктов') }} · А–Я</div>
     <div class="foods-grid">
       {% for food in foods %}
       <div class="food-card" onclick="quickAdd({{ food.id }}, '{{ food.name|replace("'", "\\'") }}', {{ food.calories }}, {{ food.protein }}, {{ food.fat }}, {{ food.carbs }})">
@@ -106,28 +244,35 @@
           <span class="macro-chip">Ж {{ food.fat }}г</span>
           <span class="macro-chip">У {{ food.carbs }}г</span>
         </div>
-        <button class="add-from-cat">+ Добавить</button>
+        <button class="add-from-cat">{{ t.get('add_from_cat','+ Добавить') }}</button>
       </div>
       {% endfor %}
     </div>
   </div>
 </main>
 
-<!-- Modal for adding -->
-<div id="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; align-items:center; justify-content:center;">
-  <div style="background:white; border-radius:24px; padding:32px; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.2);">
-    <div style="font-family:'Playfair Display',serif; font-size:20px; margin-bottom:20px;" id="modal-title"></div>
-    <div style="margin-bottom:16px;">
-      <label style="font-size:12px; font-weight:700; color:#5a7a6e; display:block; margin-bottom:6px; text-transform:uppercase;">Количество (граммов)</label>
-      <input type="number" id="modal-grams" value="100" min="1" max="9999" style="width:100%; padding:12px 16px; border:2px solid #c8eedd; border-radius:14px; font-size:15px; font-family:'Nunito',sans-serif; outline:none;">
-    </div>
-    <div id="modal-preview" style="font-size:13px; color:#5a7a6e; margin-bottom:20px;"></div>
-    <div style="display:flex; gap:12px;">
-      <button onclick="confirmAdd()" style="flex:1; padding:12px; background:linear-gradient(135deg,#4caf83,#6dc49a); color:white; border:none; border-radius:14px; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer;">✓ Добавить</button>
-      <button onclick="closeModal()" style="padding:12px 20px; background:none; border:2px solid #c8eedd; border-radius:14px; font-size:14px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer;">✕</button>
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <label class="modal-label">{{ t.get('grams_label','Количество (граммов)') }}</label>
+    <input type="number" id="modal-grams" class="modal-input" value="100" min="1" max="9999">
+    <div class="modal-preview" id="modal-preview"></div>
+    <div class="modal-btns">
+      <button class="modal-ok" onclick="confirmAdd()">✓ {{ t.get('confirm_add','Добавить') }}</button>
+      <button class="modal-cancel" onclick="closeModal()">✕</button>
     </div>
   </div>
 </div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="/" class="bnav-item"><span class="bnav-icon">🏠</span><span class="bnav-label">{{ t.get('today','Сегодня') }}</span></a>
+  <a href="/history" class="bnav-item"><span class="bnav-icon">📊</span><span class="bnav-label">{{ t.get('history','История') }}</span></a>
+  <a href="/goals" class="bnav-item"><span class="bnav-icon">🎯</span><span class="bnav-label">{{ t.goals }}</span></a>
+  <a href="/premium" class="bnav-item"><span class="bnav-icon">⭐</span><span class="bnav-label">Premium</span></a>
+</nav>
 
 <script>
 const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
@@ -135,12 +280,13 @@ let modalFood = null;
 
 function quickAdd(id, name, cal, protein, fat, carbs) {
   if (!isAuth) {
-    alert('Войдите в аккаунт, чтобы добавлять продукты в дневник');
+    alert('{{ t.get("login_required","Войдите, чтобы добавлять продукты") }}');
     return;
   }
   modalFood = { id, name, cal, protein, fat, carbs };
   document.getElementById('modal-title').textContent = name;
   document.getElementById('modal-overlay').style.display = 'flex';
+  document.getElementById('modal-grams').focus();
   updateModalPreview();
 }
 
@@ -149,10 +295,13 @@ function updateModalPreview() {
   const g = parseFloat(document.getElementById('modal-grams').value) || 100;
   const r = g / 100;
   document.getElementById('modal-preview').textContent =
-    `🔥 ${Math.round(modalFood.cal*r)} ккал · Б:${(modalFood.protein*r).toFixed(1)}г Ж:${(modalFood.fat*r).toFixed(1)}г У:${(modalFood.carbs*r).toFixed(1)}г`;
+    `🔥 ${Math.round(modalFood.cal*r)} {{ t.kcal }} · Б:${(modalFood.protein*r).toFixed(1)}г Ж:${(modalFood.fat*r).toFixed(1)}г У:${(modalFood.carbs*r).toFixed(1)}г`;
 }
 
 document.getElementById('modal-grams').addEventListener('input', updateModalPreview);
+document.getElementById('modal-grams').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmAdd();
+});
 
 async function confirmAdd() {
   if (!modalFood) return;
@@ -164,7 +313,8 @@ async function confirmAdd() {
   const data = await r.json();
   if (data.success) {
     closeModal();
-    alert(`✓ ${modalFood.name} добавлен в дневник!`);
+    // Мягкое уведомление вместо alert
+    showToast(`✓ ${modalFood.name} — {{ t.get('added_to_diary','добавлен в дневник') }}`);
   }
 }
 
@@ -173,9 +323,20 @@ function closeModal() {
   modalFood = null;
 }
 
-document.getElementById('modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+// Toast уведомление
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2d8a63;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:opacity .3s;white-space:nowrap;max-width:90vw;text-overflow:ellipsis;overflow:hidden;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
 </script>
 </body>
 </html>

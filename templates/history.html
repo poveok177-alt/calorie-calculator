@@ -8,126 +8,156 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{--mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;--green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;--text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;--border:#c8eedd;--shadow:rgba(76,175,131,.12);--danger:#e57373;}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);padding-bottom:60px;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
+  body{
+    font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
+    min-height:100vh;overflow-x:hidden;
+    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
+    padding-bottom: max(90px, calc(80px + env(safe-area-inset-bottom)));
+  }
+  button, a { touch-action:manipulation; }
+
+  /* ── NAV ── */
   nav{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px var(--shadow);}
-  .nav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;}
-  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark);text-decoration:none;}
-  .nav-link{padding:7px 14px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;color:var(--text-soft);transition:all .2s;}
+  .nav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
+  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+  .nav-link{padding:7px 12px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;color:var(--text-soft);transition:all .2s;min-height:44px;display:inline-flex;align-items:center;}
   .nav-link:hover{background:var(--mint-light);color:var(--green-dark);}
-  main{max-width:900px;margin:0 auto;padding:24px 16px;}
-  .page-title{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:6px;}
-  .page-sub{color:var(--text-soft);font-size:14px;margin-bottom:24px;}
 
-  /* STREAK */
-  .streak-banner{background:linear-gradient(135deg,#ff6b35,#f7c59f);border-radius:20px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px;color:white;box-shadow:0 4px 20px rgba(255,107,53,.25);}
-  .streak-icon{font-size:40px;line-height:1;}
-  .streak-num{font-size:36px;font-weight:900;line-height:1;}
-  .streak-label{font-size:14px;opacity:.9;font-weight:600;}
-  .streak-zero{background:var(--mint-light);color:var(--text-soft);}
+  main{max-width:900px;margin:0 auto;padding:20px 14px;}
+  .page-title{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:4px;}
+  .page-sub{color:var(--text-soft);font-size:13px;margin-bottom:20px;}
 
-  /* CARDS */
-  .card{background:white;border-radius:20px;padding:24px;margin-bottom:20px;border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);}
-  .card-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  /* ── STREAK ── */
+  .streak-banner{background:linear-gradient(135deg,#ff6b35,#f7c59f);border-radius:18px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px;color:white;box-shadow:0 4px 20px rgba(255,107,53,.25);}
+  .streak-icon{font-size:36px;line-height:1;flex-shrink:0;}
+  .streak-num{font-size:34px;font-weight:900;line-height:1;}
+  .streak-label{font-size:13px;opacity:.9;font-weight:600;}
+  .streak-zero{background:var(--mint-light);color:var(--text-soft);box-shadow:none;}
 
-  /* WEEKLY SUMMARY */
-  .weekly-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-  @media(max-width:480px){.weekly-grid{grid-template-columns:repeat(2,1fr);}}
-  .weekly-item{background:var(--mint-light);border-radius:14px;padding:14px;text-align:center;}
-  .weekly-val{font-size:22px;font-weight:800;color:var(--green-dark);}
-  .weekly-lbl{font-size:11px;color:var(--text-soft);font-weight:700;margin-top:3px;}
-  .bju-mini{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-  .bju-chip{background:var(--mint-light);color:var(--green-dark);font-size:12px;font-weight:700;padding:4px 11px;border-radius:20px;}
+  /* ── CARDS ── */
+  .card{background:white;border-radius:18px;padding:20px;margin-bottom:18px;border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);}
+  .card-title{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
 
-  /* WEIGHT SECTION */
-  .weight-log-row{display:flex;gap:10px;margin-bottom:16px;align-items:flex-end;}
-  .weight-log-row input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;font-family:'Nunito',sans-serif;color:var(--text);background:var(--mint-light);outline:none;min-height:44px;}
+  /* ── WEEKLY SUMMARY ── */
+  .weekly-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .weekly-item{background:var(--mint-light);border-radius:14px;padding:12px;text-align:center;}
+  .weekly-val{font-size:20px;font-weight:800;color:var(--green-dark);}
+  .weekly-lbl{font-size:10px;color:var(--text-soft);font-weight:700;margin-top:3px;}
+  .bju-mini{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .bju-chip{background:var(--mint-light);color:var(--green-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;}
+
+  /* ── WEIGHT SECTION ── */
+  .weight-log-row{display:flex;gap:10px;margin-bottom:14px;align-items:center;}
+  .weight-log-row input{
+    flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;
+    /* 16px — без zoom */
+    font-size:16px;font-family:'Nunito',sans-serif;color:var(--text);
+    background:var(--mint-light);outline:none;min-height:48px;
+  }
   .weight-log-row input:focus{border-color:var(--green);background:white;}
-  .btn-log-weight{background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border:none;border-radius:12px;padding:10px 18px;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;min-height:44px;white-space:nowrap;}
+  .btn-log-weight{
+    background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;
+    border:none;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:800;
+    font-family:'Nunito',sans-serif;cursor:pointer;min-height:48px;white-space:nowrap;flex-shrink:0;
+  }
   .btn-log-weight:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(76,175,131,.3);}
-  .chart-wrap{position:relative;height:220px;}
+  .chart-wrap{position:relative;height:200px;}
 
-  /* LOCK OVERLAY */
+  /* ── LOCK ── */
   .locked-wrap{position:relative;}
   .lock-overlay{position:absolute;inset:0;background:rgba(232,248,242,.9);display:flex;align-items:center;justify-content:center;border-radius:16px;z-index:10;}
-  .lock-content{text-align:center;padding:20px;}
-  .lock-content a{display:inline-block;margin-top:10px;background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;padding:9px 22px;border-radius:16px;font-weight:800;text-decoration:none;font-size:13px;}
+  .lock-content{text-align:center;padding:16px;}
+  .lock-content a{display:inline-block;margin-top:8px;background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;padding:8px 20px;border-radius:16px;font-weight:800;text-decoration:none;font-size:13px;min-height:44px;display:inline-flex;align-items:center;}
   .blurred{filter:blur(4px);pointer-events:none;user-select:none;}
 
-  /* CALORIE HISTORY */
-  .cal-bars{display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px;}
-  .cal-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:3px;}
-  .cal-bar{width:100%;border-radius:6px 6px 0 0;transition:opacity .2s;min-height:4px;}
+  /* ── CALORIE BAR CHART ── */
+  /* Горизонтальный скролл при переполнении */
+  .cal-bars-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .cal-bars-wrap::-webkit-scrollbar{display:none;}
+  .cal-bars{display:flex;align-items:flex-end;gap:3px;height:110px;padding:0 2px;min-width:max-content;}
+  .cal-bar-wrap{width:24px;display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:3px;flex-shrink:0;}
+  .cal-bar{width:100%;border-radius:4px 4px 0 0;transition:opacity .2s;min-height:4px;}
   .cal-bar:hover{opacity:.8;}
   .cal-bar.green{background:var(--green);}
   .cal-bar.red{background:var(--danger);}
-  .cal-day-lbl{font-size:9px;color:var(--text-light);font-weight:700;white-space:nowrap;}
+  .cal-day-lbl{font-size:8px;color:var(--text-light);font-weight:700;white-space:nowrap;}
 
-  /* FOODS POPUP */
-  .day-detail{background:var(--mint-light);border-radius:14px;padding:14px;margin-top:14px;display:none;}
+  /* ── DAY POPUP ── */
+  .day-detail{background:var(--mint-light);border-radius:12px;padding:12px;margin-top:12px;display:none;}
   .day-detail.show{display:block;}
-  .day-detail-title{font-weight:800;font-size:14px;color:var(--green-dark);margin-bottom:10px;}
-  .day-food-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .day-detail-title{font-weight:800;font-size:13px;color:var(--green-dark);margin-bottom:8px;}
+  .day-food-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
   .day-food-row:last-child{border-bottom:none;}
-  .dot-meal{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-right:8px;}
+  .dot-meal{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-right:6px;}
   .dot-breakfast{background:#ffb74d;}.dot-lunch{background:#81c784;}.dot-dinner{background:#64b5f6;}.dot-snack{background:#f06292;}.dot-other{background:#b0bec5;}
 
-  /* DAY HISTORY CARDS */
-  .day-card{background:white;border-radius:16px;padding:18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 12px var(--shadow);}
-  .day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--mint-light);}
-  .day-card-date{font-weight:800;font-size:15px;}
-  .day-card-cal{color:var(--green-dark);font-weight:800;font-size:16px;}
-  .day-macros{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
-  .macro-pill{background:var(--mint-light);color:var(--green-dark);font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;}
-  .food-entry-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--mint-light);font-size:13px;}
+  /* ── DAY CARDS ── */
+  .day-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:1.5px solid var(--border);box-shadow:0 2px 12px var(--shadow);}
+  .day-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--mint-light);}
+  .day-card-date{font-weight:800;font-size:14px;}
+  .day-card-cal{color:var(--green-dark);font-weight:800;font-size:15px;white-space:nowrap;}
+  .day-macros{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;}
+  .macro-pill{background:var(--mint-light);color:var(--green-dark);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+  .food-entry-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--mint-light);font-size:12px;}
   .food-entry-row:last-child{border-bottom:none;}
-  .food-entry-name{flex:1;font-weight:600;}
-  .food-entry-g{color:var(--text-light);}
-  .food-entry-cal{font-weight:700;color:var(--green-dark);}
-  .empty{text-align:center;padding:50px;color:var(--text-light);}
+  .food-entry-name{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .food-entry-g{color:var(--text-light);flex-shrink:0;}
+  .food-entry-cal{font-weight:700;color:var(--green-dark);flex-shrink:0;white-space:nowrap;}
+  .empty{text-align:center;padding:40px;color:var(--text-light);}
 
-  /* ═══ MOBILE GLOBAL FIXES ═══ */
-  /* iOS safe area */
-  body { padding-bottom: max(60px, calc(60px + env(safe-area-inset-bottom))); }
-  /* Prevent double-tap zoom on buttons */
-  button, a { touch-action: manipulation; }
-  /* Scrollable lists scroll smoothly */
-  .meal-products, .category-scroll { -webkit-overflow-scrolling: touch; }
-  /* Bottom nav padding */
+  /* ── BOTTOM NAV ── */
+  .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
+  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
+  .bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
+  .bnav-item.bnav-premium{color:#e65c00;}
+  .bnav-icon{font-size:22px;line-height:1;}
+  .bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
+
+  /* ── RESPONSIVE ── */
   @media(max-width:860px){
-    body { padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom))); }
-    /* Hide top nav links on mobile — use bottom nav instead */
-    .nav-links { display:none!important; }
-    .lang-switcher { display:flex!important; }
-    /* Bigger tap targets */
-    .entry-remove { min-width:40px!important; min-height:40px!important; }
-    .cat-btn { min-height:36px!important; padding:6px 14px!important; }
-    .modal-quick-btn { min-height:40px!important; padding:8px 16px!important; }
-    /* Product list full width on mobile */
-    .meal-products { margin:0 10px 10px!important; }
-    /* Meal header wraps nicely */
-    .meal-header { padding:12px 14px 10px!important; }
-    /* Search row */
-    .meal-search-wrap { padding:0 10px 10px!important; }
-    /* Modal full width on mobile */
-    .modal-box { padding:22px 16px 28px!important; }
-  }
-  @media(max-width:480px){
-    .modal-meal-selector { gap:4px!important; }
-    .modal-meal-btn { min-width:60px!important; padding:7px 6px!important; font-size:11px!important; }
-    .modal-meal-btn span { font-size:9px!important; }
-    .search-tabs { overflow-x:auto; scrollbar-width:none; padding-bottom:0; }
-    .search-tabs::-webkit-scrollbar { display:none; }
-    .search-tab { font-size:12px!important; padding:6px 10px!important; white-space:nowrap; }
+    .bottom-nav{display:flex;}
+    .nav-links{display:none!important;}
   }
 
+  @media(max-width:480px){
+    main{padding:14px 10px;}
+    .card{padding:16px 14px;border-radius:16px;}
+    .streak-banner{padding:14px 16px;border-radius:16px;}
+    .streak-num{font-size:28px;}
+    .weekly-grid{grid-template-columns:repeat(2,1fr);}
+    /* Маленький streak — убираем 3ю плитку на 2 колонки */
+    .page-title{font-size:22px;}
+    .chart-wrap{height:170px;}
+    .day-card{padding:12px;}
+    .day-card-date{font-size:13px;}
+    .food-entry-name{font-size:11px;}
+    .food-entry-row{padding:4px 0;}
+  }
+
+  @media(max-width:360px){
+    main{padding:10px 8px;}
+    .card{padding:14px 12px;}
+    .weekly-val{font-size:18px;}
+    .streak-num{font-size:24px;}
+    .streak-icon{font-size:28px;}
+    .bju-chip{font-size:11px;padding:3px 7px;}
+    .cal-bar-wrap{width:20px;}
+  }
+
+  @media(max-width:320px){
+    main{padding:8px 6px;}
+    .card{padding:12px 10px;border-radius:14px;}
+    .cal-bar-wrap{width:18px;}
+  }
 </style>
 </head>
 <body>
 <nav>
   <div class="nav-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <div>
+    <div class="nav-links">
       <a href="/" class="nav-link">← {{ t.today }}</a>
       <a href="/goals" class="nav-link">🎯 {{ t.goals }}</a>
     </div>
@@ -150,7 +180,7 @@
   <div class="streak-banner streak-zero">
     <div class="streak-icon">🌱</div>
     <div>
-      <div style="font-size:16px;font-weight:800;">{{ t.get('streak_zero','Начните вести дневник!') }}</div>
+      <div style="font-size:15px;font-weight:800;">{{ t.get('streak_zero','Начните вести дневник!') }}</div>
     </div>
   </div>
   {% endif %}
@@ -185,8 +215,8 @@
       </div>
       <div class="lock-overlay">
         <div class="lock-content">
-          <div style="font-size:32px;">📈</div>
-          <div style="font-size:15px;font-weight:800;margin:8px 0;">{{ t.get('weight_chart_premium','График веса доступен в Premium') }}</div>
+          <div style="font-size:28px;">📈</div>
+          <div style="font-size:14px;font-weight:800;margin:6px 0;">{{ t.get('weight_chart_premium','График веса — Premium') }}</div>
           <a href="/premium">⭐ Premium</a>
         </div>
       </div>
@@ -197,8 +227,11 @@
   <!-- CALORIE HISTORY CHART -->
   <div class="card">
     <div class="card-title">{{ t.get('cal_history_title','📅 История калорий') }}</div>
-    <div style="font-size:12px;color:var(--text-light);margin-bottom:12px;">{{ t.get('click_day_hint','Нажмите на день — список продуктов') }}</div>
-    <div class="cal-bars" id="calBars"></div>
+    <div style="font-size:12px;color:var(--text-light);margin-bottom:10px;">{{ t.get('click_day_hint','Нажмите на день — список продуктов') }}</div>
+    <!-- Обёртка для горизонтального скролла — нет overflow на body -->
+    <div class="cal-bars-wrap">
+      <div class="cal-bars" id="calBars"></div>
+    </div>
     <div class="day-detail" id="dayDetail">
       <div class="day-detail-title" id="dayDetailTitle"></div>
       <div id="dayDetailFoods"></div>
@@ -233,7 +266,7 @@
       </div>
       {% endfor %}
       {% if not is_premium %}
-      <div style="text-align:center;padding:16px;background:var(--mint-light);border-radius:14px;font-size:13px;color:var(--text-soft);">
+      <div style="text-align:center;padding:14px;background:var(--mint-light);border-radius:14px;font-size:13px;color:var(--text-soft);">
         🔒 {{ t.get('history_premium_msg','Полная история доступна в Premium') }} — <a href="/premium" style="color:var(--green-dark);font-weight:800;">Premium</a>
       </div>
       {% endif %}
@@ -249,15 +282,10 @@ const calGoal = {{ goal }};
 const t_js = {
   kcal: {{ t.get('kcal','ккал')|tojson }},
   g: {{ t.get('g','г')|tojson }},
-  protein: {{ t.get('protein','Белки')|tojson }},
-  fat: {{ t.get('fat','Жиры')|tojson }},
-  carbs: {{ t.get('carbs','Углеводы')|tojson }},
   no_foods_day: {{ t.get('no_foods_day','Нет записей')|tojson }},
   foods_that_day: {{ t.get('foods_that_day','Продукты за этот день')|tojson }},
-  avg_cal_label: {{ t.get('avg_cal_label','Среднее ккал')|tojson }},
 };
 
-// ── LOAD LAST WEIGHT ──
 (async function() {
   if (!isPremium) { drawBlurChart(); return; }
   const res = await fetch('/api/last-weight');
@@ -269,7 +297,7 @@ const t_js = {
 async function loadWeightChart() {
   const res = await fetch('/api/weight-log?days=30');
   const data = await res.json();
-  const labels = data.map(d => d.date.slice(5)); // MM-DD
+  const labels = data.map(d => d.date.slice(5));
   const weights = data.map(d => d.weight);
   const goalW = {{ current_user.goal_weight or 'null' }};
 
@@ -305,7 +333,7 @@ async function loadWeightChart() {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 8 } },
         y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } }
       }
     }
@@ -335,7 +363,6 @@ async function logWeight() {
   loadWeightChart();
 }
 
-// ── WEEKLY SUMMARY ──
 (async function() {
   const res = await fetch('/api/weekly-summary');
   const d = await res.json();
@@ -348,30 +375,28 @@ async function logWeight() {
      <span class="bju-chip">У: ${d.avg_carbs}г</span>`;
 })();
 
-// ── CALORIE BAR CHART ──
 let historyData = {};
 (async function() {
   const res = await fetch('/api/history-data?days=30');
   const json = await res.json();
   historyData = json.days;
   const goal = json.goal;
-  
-  // Generate last 30 days
+
   const days = [];
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     days.push(d.toISOString().split('T')[0]);
   }
-  
+
   const maxCal = Math.max(goal * 1.5, ...days.map(d => historyData[d]?.calories || 0));
-  
+
   const container = document.getElementById('calBars');
   container.innerHTML = days.map(d => {
     const cal = historyData[d]?.calories || 0;
-    const h = cal ? Math.max(8, Math.round(cal / maxCal * 110)) : 4;
+    const h = cal ? Math.max(8, Math.round(cal / maxCal * 100)) : 4;
     const cls = cal > goal ? 'red' : 'green';
-    const lbl = d.slice(8); // day number
+    const lbl = d.slice(8);
     return `<div class="cal-bar-wrap" onclick="showDay('${d}')">
       <div class="cal-bar ${cls}" style="height:${h}px" title="${Math.round(cal)} ккал"></div>
       <div class="cal-day-lbl">${lbl}</div>
@@ -383,26 +408,25 @@ function showDay(dateStr) {
   const detail = document.getElementById('dayDetail');
   const titleEl = document.getElementById('dayDetailTitle');
   const foodsEl = document.getElementById('dayDetailFoods');
-  
+
   const day = historyData[dateStr];
   titleEl.textContent = `${t_js.foods_that_day}: ${dateStr}`;
-  
+
   if (!day || !day.foods || !day.foods.length) {
     foodsEl.innerHTML = `<div style="color:var(--text-light);font-size:13px;">${t_js.no_foods_day}</div>`;
   } else {
     foodsEl.innerHTML = day.foods.map(f =>
       `<div class="day-food-row">
-        <div style="display:flex;align-items:center;flex:1">
+        <div style="display:flex;align-items:center;flex:1;min-width:0;">
           <div class="dot-meal dot-${f.meal||'other'}"></div>
-          <span style="flex:1">${f.name}</span>
+          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</span>
         </div>
-        <span style="color:var(--text-light);margin-right:8px;font-size:12px;">${Math.round(f.grams)}г</span>
-        <span style="font-weight:700;color:var(--green-dark)">${Math.round(f.calories)} ${t_js.kcal}</span>
+        <span style="color:var(--text-light);margin:0 6px;font-size:11px;flex-shrink:0;">${Math.round(f.grams)}г</span>
+        <span style="font-weight:700;color:var(--green-dark);flex-shrink:0;">${Math.round(f.calories)} ${t_js.kcal}</span>
       </div>`
     ).join('');
   }
-  
-  // Toggle
+
   if (detail.dataset.open === dateStr) {
     detail.classList.remove('show');
     detail.dataset.open = '';
@@ -413,31 +437,33 @@ function showDay(dateStr) {
 }
 </script>
 
-<!-- ═══ PREMIUM MODAL ═══ -->
+<!-- PREMIUM MODAL -->
 <div id="premiumModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:flex-end;justify-content:center;">
-  <div id="premiumModalBox" style="background:white;border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.18);animation:pmSlide .22s ease;position:relative;overflow:hidden;">
-    <div style="width:36px;height:4px;background:#c8eedd;border-radius:4px;margin:0 auto 22px;"></div>
-    <div style="position:absolute;right:-10px;top:-10px;font-size:90px;opacity:.07;pointer-events:none;">🌿</div>
-    <div style="font-size:13px;font-weight:700;color:#6dc49a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Premium</div>
-    <div id="pmMessage" style="font-family:'Playfair Display',serif;font-size:22px;color:#2d4a3e;margin-bottom:8px;line-height:1.3;"></div>
-    <div style="font-size:13px;color:#8aaa9e;margin-bottom:24px;line-height:1.5;">CaloriMint Premium</div>
-    <a id="pmTryBtn" href="/start-trial" style="display:block;width:100%;padding:15px;background:linear-gradient(135deg,#4caf83,#6dc49a);color:white;border-radius:16px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box;"></a>
-    <div id="pmMonthlyNote" style="text-align:center;font-size:12px;color:#8aaa9e;margin-bottom:16px;"></div>
-    <button onclick="closePremiumModal()" id="pmNoThanks" style="width:100%;padding:13px;border:1.5px solid #c8eedd;border-radius:16px;background:none;font-size:15px;font-weight:700;color:#5a7a6e;cursor:pointer;font-family:'Nunito',sans-serif;"></button>
+  <div id="premiumModalBox" style="background:white;border-radius:24px 24px 0 0;padding:24px 20px max(28px,env(safe-area-inset-bottom));width:100%;max-width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.18);position:relative;overflow:hidden;">
+    <div style="width:36px;height:4px;background:#c8eedd;border-radius:4px;margin:0 auto 18px;"></div>
+    <div id="pmMessage" style="font-family:'Playfair Display',serif;font-size:20px;color:#2d4a3e;margin-bottom:20px;line-height:1.3;"></div>
+    <a id="pmTryBtn" href="/start-trial" style="display:block;width:100%;padding:14px;background:linear-gradient(135deg,#4caf83,#6dc49a);color:white;border-radius:16px;font-size:15px;font-weight:800;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box;min-height:50px;display:flex;align-items:center;justify-content:center;"></a>
+    <div id="pmMonthlyNote" style="text-align:center;font-size:12px;color:#8aaa9e;margin-bottom:14px;"></div>
+    <button onclick="closePremiumModal()" id="pmNoThanks" style="width:100%;padding:13px;border:1.5px solid #c8eedd;border-radius:16px;background:none;font-size:15px;font-weight:700;color:#5a7a6e;cursor:pointer;font-family:'Nunito',sans-serif;min-height:50px;"></button>
   </div>
 </div>
-<style>@keyframes pmSlide{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}@media(min-width:520px){ #premiumModal{align-items:center!important}#premiumModalBox{border-radius:24px!important;max-width:420px!important}}</style>
+<style>
+@media(min-width:520px){
+  #premiumModal{align-items:center!important}
+  #premiumModalBox{border-radius:24px!important;max-width:420px!important;padding:28px 24px!important}
+}
+</style>
 <script>
 const _pmH = {
   trial_available: {{ 'true' if not current_user.trial_used and not current_user.is_premium else 'false' }},
   no_thanks: {{ t.get('pm_no_thanks','Нет, спасибо')|tojson }},
-  try_btn: {{ t.get('pm_try_btn','Попробовать — 11 ₽ / неделя')|tojson }},
-  monthly_note: {{ t.get('pm_monthly_note','или 129 ₽ / месяц')|tojson }},
+  try_btn: {{ t.get('pm_try_btn','Попробовать 3 дня бесплатно')|tojson }},
+  monthly_note: {{ t.get('pm_monthly_note','затем 89 ₽/месяц')|tojson }},
   messages: {
-    history: {{ t.get('pm_history','🔒 Полная история — это Premium')|tojson }},
-    weight_chart: {{ t.get('pm_weight_chart','📈 График динамики веса доступен в Premium')|tojson }},
-    weekly: {{ t.get('pm_weekly','📅 Месячные сводки — это Premium')|tojson }},
-    generic: {{ t.get('pm_generic','👑 Весь потенциал приложения открыт в Premium')|tojson }},
+    history: {{ t.get('pm_history','🔒 Полная история — Premium')|tojson }},
+    weight_chart: {{ t.get('pm_weight_chart','📈 График веса — Premium')|tojson }},
+    weekly: {{ t.get('pm_weekly','📅 Месячные сводки — Premium')|tojson }},
+    generic: {{ t.get('pm_generic','👑 Весь потенциал — Premium')|tojson }},
   }
 };
 function showPremiumModal(key) {
@@ -458,35 +484,13 @@ document.getElementById('premiumModal').addEventListener('click', function(e){ i
 document.addEventListener('keydown', e => { if(e.key==='Escape') closePremiumModal(); });
 </script>
 
-<!-- BOTTOM NAV (mobile only) -->
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="/" class="bnav-item ">
-    <span class="bnav-icon">🏠</span>
-    <span class="bnav-label">{{ t.get('today','Сегодня') }}</span>
-  </a>
-  <a href="/history" class="bnav-item active">
-    <span class="bnav-icon">📊</span>
-    <span class="bnav-label">{{ t.get('history','История') }}</span>
-  </a>
-  <a href="/goals" class="bnav-item ">
-    <span class="bnav-icon">🎯</span>
-    <span class="bnav-label">{{ t.get('goals','Цели') }}</span>
-  </a>
-  <a href="/premium" class="bnav-item bnav-premium ">
-    <span class="bnav-icon">⭐</span>
-    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
-  </a>
+  <a href="/" class="bnav-item"><span class="bnav-icon">🏠</span><span class="bnav-label">{{ t.get('today','Сегодня') }}</span></a>
+  <a href="/history" class="bnav-item active"><span class="bnav-icon">📊</span><span class="bnav-label">{{ t.get('history','История') }}</span></a>
+  <a href="/goals" class="bnav-item"><span class="bnav-icon">🎯</span><span class="bnav-label">{{ t.get('goals','Цели') }}</span></a>
+  <a href="/premium" class="bnav-item bnav-premium"><span class="bnav-icon">⭐</span><span class="bnav-label">{{ t.get('premium','Premium') }}</span></a>
 </nav>
-<style>
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
-@media(max-width:860px){.bottom-nav{display:flex;}}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
-.bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
-.bnav-item.bnav-premium{color:#e65c00;}
-.bnav-item.bnav-premium.active{background:rgba(255,107,53,.1);}
-.bnav-icon{font-size:22px;line-height:1;}
-.bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
-</style>
 
 </body>
 </html>

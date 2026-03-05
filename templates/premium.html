@@ -7,126 +7,87 @@
 <title>{{ t.app_name }} — {{ t.get('premium','Premium') }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83;
-    --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9;
-    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e;
-    --border:#c8eedd; --shadow:rgba(76,175,131,.12);
-    --gold:#f39c12; --orange:#e65c00;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text);
-    min-height:100vh;
+  :root{--mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;--green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;--text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;--border:#c8eedd;--shadow:rgba(76,175,131,.12);--gold:#f39c12;--orange:#e65c00;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
+  body{
+    font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
+    min-height:100vh;overflow-x:hidden;
     background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
-    padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+    padding-bottom: max(88px, calc(80px + env(safe-area-inset-bottom)));
   }
-  nav {
-    background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--border); padding:0 24px;
-    position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow);
-  }
-  .nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
-  .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
-  .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
+  button, a{touch-action:manipulation;}
 
-  main { max-width:560px; margin:0 auto; padding:36px 20px; }
+  nav{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px var(--shadow);}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;}
+  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+  .nav-link{padding:8px 14px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;color:var(--text-soft);transition:all .2s;min-height:44px;display:inline-flex;align-items:center;}
+  .nav-link:hover{background:var(--mint-light);color:var(--green-dark);}
+
+  main{max-width:540px;margin:0 auto;padding:28px 16px;}
 
   /* HERO */
-  .hero {
-    text-align:center; padding:40px 24px 32px;
-    background:white; border-radius:28px; margin-bottom:20px;
-    border:1.5px solid var(--border); box-shadow:0 6px 32px var(--shadow);
-    position:relative; overflow:hidden;
-  }
-  .hero::before {
-    content:'🌿';
-    position:absolute; right:-10px; top:-10px;
-    font-size:120px; opacity:.05; pointer-events:none;
-  }
-  .hero-icon { font-size:64px; margin-bottom:16px; display:block; }
-  .hero-title {
-    font-family:'Playfair Display',serif; font-size:30px;
-    color:var(--text); margin-bottom:8px;
-  }
-  .hero-sub { font-size:15px; color:var(--text-soft); margin-bottom:24px; }
+  .hero{text-align:center;padding:36px 24px 28px;background:white;border-radius:26px;margin-bottom:18px;border:1.5px solid var(--border);box-shadow:0 6px 32px var(--shadow);position:relative;overflow:hidden;}
+  .hero::before{content:'🌿';position:absolute;right:-10px;top:-10px;font-size:110px;opacity:.05;pointer-events:none;}
+  .hero-icon{font-size:60px;margin-bottom:14px;display:block;}
+  .hero-title{font-family:'Playfair Display',serif;font-size:28px;color:var(--text);margin-bottom:8px;}
+  .hero-sub{font-size:14px;color:var(--text-soft);margin-bottom:22px;}
+  .active-badge{display:inline-block;padding:10px 22px;background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border-radius:20px;font-size:14px;font-weight:800;margin-bottom:10px;}
+  .active-until{font-size:13px;color:var(--text-light);margin-top:6px;}
 
-  /* ACTIVE BADGE */
-  .active-badge {
-    display:inline-block; padding:10px 22px;
-    background:linear-gradient(135deg,var(--green),var(--green-soft));
-    color:white; border-radius:20px; font-size:15px; font-weight:800;
-    margin-bottom:12px;
-  }
-  .active-until { font-size:13px; color:var(--text-light); margin-top:6px; }
+  /* FEATURES */
+  .features{background:white;border-radius:22px;padding:22px;margin-bottom:18px;border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);}
+  .features-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:16px;color:var(--text);}
+  .feature-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--mint-light);font-size:14px;font-weight:600;}
+  .feature-item:last-child{border-bottom:none;}
+  .feature-icon{font-size:22px;width:32px;text-align:center;flex-shrink:0;}
+  .feature-text{flex:1;}
+  .feature-check{font-size:18px;color:var(--green);}
 
-  /* FEATURE LIST */
-  .features {
-    background:white; border-radius:22px; padding:24px;
-    margin-bottom:20px; border:1.5px solid var(--border);
-    box-shadow:0 4px 20px var(--shadow);
-  }
-  .features-title {
-    font-family:'Playfair Display',serif; font-size:18px;
-    margin-bottom:18px; color:var(--text);
-  }
-  .feature-item {
-    display:flex; align-items:center; gap:14px;
-    padding:13px 0; border-bottom:1px solid var(--mint-light);
-    font-size:15px; font-weight:600;
-  }
-  .feature-item:last-child { border-bottom:none; }
-  .feature-icon { font-size:24px; width:36px; text-align:center; flex-shrink:0; }
-  .feature-text { flex:1; }
-  .feature-check { font-size:18px; color:var(--green); }
-
-  /* CTA BUTTONS */
-  .btn-trial {
-    display:block; width:100%; padding:16px;
-    background:linear-gradient(135deg,var(--green),var(--green-soft));
-    color:white; border:none; border-radius:20px;
-    font-size:16px; font-weight:800; font-family:'Nunito',sans-serif;
-    cursor:pointer; text-align:center; text-decoration:none;
-    transition:all .2s; margin-bottom:10px;min-height:48px;touch-action:manipulation;
-  }
-  .btn-trial:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(76,175,131,.3); }
-
-  .btn-pay {
-    display:block; width:100%; padding:14px;
-    background:linear-gradient(135deg,var(--orange),var(--gold));
-    color:white; border:none; border-radius:20px;
-    font-size:15px; font-weight:800; font-family:'Nunito',sans-serif;
-    cursor:pointer; text-align:center; text-decoration:none;
-    transition:all .2s; margin-bottom:10px;min-height:48px;touch-action:manipulation;
-  }
-  .btn-pay:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(230,92,0,.25); }
-
-  .note-text { text-align:center; font-size:12px; color:var(--text-light); margin-top:8px; }
-
-  .flash { background:#e8f5e9; color:#2e7d32; padding:12px 18px; border-radius:14px; margin-bottom:16px; font-size:14px; font-weight:600; border:1px solid #c8e6c9; }
-
-  /* TRIAL USED NOTE */
-  .trial-note {
-    background:var(--mint-light); border-radius:14px; padding:14px 16px;
-    font-size:13px; color:var(--text-soft); text-align:center; margin-bottom:10px;
-  }
+  /* CTA */
+  .btn-trial{display:flex;align-items:center;justify-content:center;width:100%;padding:15px;background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border:none;border-radius:20px;font-size:16px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:10px;min-height:52px;}
+  .btn-trial:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(76,175,131,.3);}
+  .btn-trial:active{transform:scale(0.98);}
+  .btn-pay{display:flex;align-items:center;justify-content:center;width:100%;padding:14px;background:linear-gradient(135deg,var(--orange),var(--gold));color:white;border:none;border-radius:20px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:10px;min-height:50px;}
+  .btn-pay:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(230,92,0,.25);}
+  .btn-pay:active{transform:scale(0.98);}
+  .note-text{text-align:center;font-size:12px;color:var(--text-light);margin-top:6px;}
+  .flash{background:#e8f5e9;color:#2e7d32;padding:12px 16px;border-radius:14px;margin-bottom:14px;font-size:14px;font-weight:600;border:1px solid #c8e6c9;}
+  .trial-note{background:var(--mint-light);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--text-soft);text-align:center;margin-bottom:10px;}
 
   /* BOTTOM NAV */
-  .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:150; background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border-top:1px solid #c8eedd; box-shadow:0 -4px 20px rgba(76,175,131,.1); padding:6px 0 max(6px,env(safe-area-inset-bottom)); }
-  @media(max-width:860px) { .bottom-nav { display:flex; } .nav-links { display:none!important; } }
-  .bnav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; color:#8aaa9e; font-weight:700; padding:6px 4px; border-radius:12px; margin:0 3px; transition:all .2s; min-height:50px; justify-content:center; touch-action:manipulation; }
-  .bnav-item.active { color:#2d8a63; background:rgba(181,234,215,.35); }
-  .bnav-item.bnav-premium { color:#e65c00; }
-  .bnav-item.bnav-premium.active { background:rgba(255,107,53,.1); }
-  .bnav-icon { font-size:22px; line-height:1; }
-  .bnav-label { letter-spacing:.3px; text-transform:uppercase; font-size:9px; }
+  .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
+  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
+  .bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
+  .bnav-item.bnav-premium{color:#e65c00;}
+  .bnav-item.bnav-premium.active{background:rgba(255,107,53,.1);}
+  .bnav-icon{font-size:22px;line-height:1;}
+  .bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
 
-  @media(max-width:480px) {
-    main { padding:16px 12px; }
-    .hero { padding:28px 16px 24px; border-radius:20px; }
-    .hero-title { font-size:24px; }
-    .btn-trial, .btn-pay { min-height:44px; font-size:15px; }
+  @media(max-width:860px){
+    .bottom-nav{display:flex;}
+    .nav-links{display:none!important;}
+  }
+
+  @media(max-width:480px){
+    main{padding:16px 12px;}
+    .hero{padding:26px 16px 22px;border-radius:20px;}
+    .hero-icon{font-size:48px;margin-bottom:10px;}
+    .hero-title{font-size:24px;}
+    .hero-sub{font-size:13px;}
+    .features{padding:18px 14px;border-radius:18px;}
+    .feature-item{font-size:13px;padding:10px 0;}
+    .btn-trial{font-size:15px;min-height:50px;}
+    .btn-pay{font-size:14px;min-height:48px;}
+  }
+
+  @media(max-width:360px){
+    main{padding:12px 10px;}
+    .hero{padding:20px 14px 18px;}
+    .hero-title{font-size:22px;}
+    .hero-icon{font-size:40px;}
+    .features{padding:14px 12px;}
+    .feature-icon{font-size:18px;width:26px;}
   }
 </style>
 </head>
@@ -154,11 +115,11 @@
     {% if current_user.is_authenticated and current_user.is_premium %}
       <div class="active-badge">✅ {{ t.get('premium_active','Premium активен') }}</div>
       {% if current_user.premium_ends %}
-      <div class="active-until">до {{ current_user.premium_ends.strftime('%d.%m.%Y') }}</div>
+        <div class="active-until">до {{ current_user.premium_ends.strftime('%d.%m.%Y') }}</div>
       {% elif current_user.trial_ends and current_user.trial_ends > now %}
-      <div class="active-until">Пробный период до {{ current_user.trial_ends.strftime('%d.%m.%Y') }}</div>
+        <div class="active-until">Пробный период до {{ current_user.trial_ends.strftime('%d.%m.%Y') }}</div>
       {% else %}
-      <div class="active-until">∞ Бессрочно</div>
+        <div class="active-until">∞ Бессрочно</div>
       {% endif %}
     {% endif %}
   </div>
@@ -166,37 +127,12 @@
   <!-- FEATURES -->
   <div class="features">
     <div class="features-title">🌿 {{ t.get('premium_features','Что входит в Premium') }}</div>
-
-    <div class="feature-item">
-      <span class="feature-icon">📅</span>
-      <span class="feature-text">{{ t.get('premium_feature_history','История за 30 дней') }}</span>
-      <span class="feature-check">✓</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">📈</span>
-      <span class="feature-text">{{ t.get('premium_feature_chart','График веса') }}</span>
-      <span class="feature-check">✓</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">📊</span>
-      <span class="feature-text">{{ t.get('premium_feature_reports','Недельные отчёты') }}</span>
-      <span class="feature-check">✓</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">👤</span>
-      <span class="feature-text">{{ t.get('premium_feature_foods','Безлимит своих продуктов') }}</span>
-      <span class="feature-check">✓</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">🔥</span>
-      <span class="feature-text">{{ t.get('premium_feature_streak','Streak — дней подряд') }}</span>
-      <span class="feature-check">✓</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">🚫</span>
-      <span class="feature-text">{{ t.get('premium_feature_ads','Без рекламы') }}</span>
-      <span class="feature-check">✓</span>
-    </div>
+    <div class="feature-item"><span class="feature-icon">📅</span><span class="feature-text">{{ t.get('premium_feature_history','История за 30 дней') }}</span><span class="feature-check">✓</span></div>
+    <div class="feature-item"><span class="feature-icon">📈</span><span class="feature-text">{{ t.get('premium_feature_chart','График веса') }}</span><span class="feature-check">✓</span></div>
+    <div class="feature-item"><span class="feature-icon">📊</span><span class="feature-text">{{ t.get('premium_feature_reports','Недельные отчёты') }}</span><span class="feature-check">✓</span></div>
+    <div class="feature-item"><span class="feature-icon">👤</span><span class="feature-text">{{ t.get('premium_feature_foods','Безлимит своих продуктов') }}</span><span class="feature-check">✓</span></div>
+    <div class="feature-item"><span class="feature-icon">🔥</span><span class="feature-text">{{ t.get('premium_feature_streak','Streak — дней подряд') }}</span><span class="feature-check">✓</span></div>
+    <div class="feature-item"><span class="feature-icon">🚫</span><span class="feature-text">{{ t.get('premium_feature_ads','Без рекламы') }}</span><span class="feature-check">✓</span></div>
   </div>
 
   <!-- CTA -->
@@ -210,7 +146,6 @@
       {% else %}
       <div class="trial-note">{{ t.get('premium_already_used','Пробный период уже использован') }}</div>
       {% endif %}
-
       <button class="btn-pay" onclick="buyPremium()">
         ⭐ {{ t.get('subscribe','Подписаться — 199 ₽/мес') }}
       </button>
@@ -221,7 +156,6 @@
     </a>
     <div class="note-text">Регистрация бесплатна · 3 дня Premium в подарок</div>
   {% endif %}
-
 </main>
 
 <script>
@@ -240,25 +174,11 @@ async function buyPremium() {
 }
 </script>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="/" class="bnav-item">
-    <span class="bnav-icon">🏠</span>
-    <span class="bnav-label">{{ t.get('today','Сегодня') }}</span>
-  </a>
-  <a href="/history" class="bnav-item">
-    <span class="bnav-icon">📊</span>
-    <span class="bnav-label">{{ t.get('history','История') }}</span>
-  </a>
-  <a href="/goals" class="bnav-item">
-    <span class="bnav-icon">🎯</span>
-    <span class="bnav-label">{{ t.goals }}</span>
-  </a>
-  <a href="/premium" class="bnav-item bnav-premium active">
-    <span class="bnav-icon">⭐</span>
-    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
-  </a>
+  <a href="/" class="bnav-item"><span class="bnav-icon">🏠</span><span class="bnav-label">{{ t.get('today','Сегодня') }}</span></a>
+  <a href="/history" class="bnav-item"><span class="bnav-icon">📊</span><span class="bnav-label">{{ t.get('history','История') }}</span></a>
+  <a href="/goals" class="bnav-item"><span class="bnav-icon">🎯</span><span class="bnav-label">{{ t.goals }}</span></a>
+  <a href="/premium" class="bnav-item bnav-premium active"><span class="bnav-icon">⭐</span><span class="bnav-label">Premium</span></a>
 </nav>
-
 </body>
 </html>

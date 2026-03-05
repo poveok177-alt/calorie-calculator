@@ -1,8 +1,33 @@
 {% extends "base.html" %}
 {% block title %}{{ t.register }}{% endblock %}
+
+{% block extra_style %}
+.page-wrap {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  .page-wrap {
+    align-items: flex-start;
+    margin: 12px auto;
+  }
+  .card {
+    padding: 28px 18px !important;
+    border-radius: 20px !important;
+  }
+  .page-title { font-size: 22px !important; }
+  .deco { font-size: 38px !important; margin-bottom: 12px !important; }
+}
+@media (max-width: 360px) {
+  .card { padding: 22px 14px !important; }
+  .page-title { font-size: 20px !important; }
+}
+{% endblock %}
+
 {% block content %}
 <div class="page-wrap">
-  <div class="card">
+  <div class="card" style="width:100%;">
     <div class="deco">🌿</div>
     <h1 class="page-title">{{ t.register }}</h1>
     <p class="page-subtitle">{{ t.tagline }}</p>
@@ -14,15 +39,24 @@
     <form method="POST">
       <div class="form-group">
         <label>{{ t.username }}</label>
-        <input type="text" name="username" required placeholder="cooluser123" autocomplete="username">
+        <input type="text" name="username" required
+               placeholder="cooluser123"
+               autocomplete="username"
+               autocorrect="off"
+               autocapitalize="off">
       </div>
       <div class="form-group">
         <label>{{ t.email }}</label>
-        <input type="email" name="email" required placeholder="your@email.com" autocomplete="email">
+        <input type="email" name="email" required
+               placeholder="your@email.com"
+               autocomplete="email"
+               inputmode="email">
       </div>
       <div class="form-group">
         <label>{{ t.password }}</label>
-        <input type="password" name="password" required placeholder="••••••••" autocomplete="new-password">
+        <input type="password" name="password" required
+               placeholder="••••••••"
+               autocomplete="new-password">
       </div>
       <button type="submit" class="btn-submit">🚀 {{ t.register }}</button>
     </form>

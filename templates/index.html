@@ -12,23 +12,41 @@
   --text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;
   --border:#c8eedd;--shadow:rgba(76,175,131,.12);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;
-  padding-bottom:80px;
-  background-image:radial-gradient(circle at 15% 15%,rgba(181,234,215,.25) 0%,transparent 50%);}
-nav{background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
-  padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);}
-.nav-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
-.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--green-dark);text-decoration:none;}
-.nav-links a{padding:7px 12px;border-radius:16px;text-decoration:none;font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;}
-.nav-links a:hover{background:var(--mint-light);color:var(--green-dark);}
-main{max-width:860px;margin:0 auto;padding:24px 16px;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
+body{
+  font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+  /* Отступ снизу — под bottom nav + safe area */
+  padding-bottom: max(80px, calc(72px + env(safe-area-inset-bottom)));
+  background-image:radial-gradient(circle at 15% 15%,rgba(181,234,215,.25) 0%,transparent 50%);
+}
+/* Все интерактивные — без двойного тапа */
+button,a{touch-action:manipulation;}
 
-/* ПРОГРЕСС */
-.prog-card{background:linear-gradient(135deg,var(--green) 0%,var(--green-soft) 100%);
-  border-radius:22px;padding:24px;color:#fff;margin-bottom:24px;
-  box-shadow:0 6px 28px rgba(76,175,131,.3);}
-.prog-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+/* ── NAV ── */
+nav{
+  background:rgba(255,255,255,.94);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:0 20px;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);
+}
+.nav-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+.nav-links a{
+  padding:8px 12px;border-radius:16px;text-decoration:none;
+  font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;
+  min-height:44px;display:inline-flex;align-items:center;
+}
+.nav-links a:hover{background:var(--mint-light);color:var(--green-dark);}
+main{max-width:860px;margin:0 auto;padding:20px 16px;}
+
+/* ── ПРОГРЕСС ── */
+.prog-card{
+  background:linear-gradient(135deg,var(--green) 0%,var(--green-soft) 100%);
+  border-radius:22px;padding:22px;color:#fff;margin-bottom:20px;
+  box-shadow:0 6px 28px rgba(76,175,131,.3);
+}
+.prog-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
 .prog-eaten{font-size:44px;font-weight:900;line-height:1;}
 .prog-goal{font-size:13px;opacity:.85;margin-top:3px;}
 .prog-rem-num{font-size:22px;font-weight:800;text-align:right;}
@@ -40,147 +58,252 @@ main{max-width:860px;margin:0 auto;padding:24px 16px;}
 .bju-lbl{font-size:10px;opacity:.8;text-transform:uppercase;letter-spacing:.3px;}
 .bju-val{font-size:16px;font-weight:800;margin-top:2px;}
 
-/* ПРИЁМ ПИЩИ */
-.meal-card{background:#fff;border-radius:20px;border:1.5px solid var(--border);
-  box-shadow:0 3px 16px var(--shadow);margin-bottom:14px;overflow:hidden;}
-.meal-hdr{display:flex;align-items:center;gap:10px;padding:16px 18px 12px;
-  border-bottom:1.5px solid var(--mint-light);cursor:pointer;user-select:none;}
-.meal-ico{font-size:24px;}
+/* ── ПРИЁМ ПИЩИ ── */
+.meal-card{
+  background:#fff;border-radius:20px;border:1.5px solid var(--border);
+  box-shadow:0 3px 16px var(--shadow);margin-bottom:14px;overflow:hidden;
+}
+.meal-hdr{
+  display:flex;align-items:center;gap:10px;padding:15px 18px 12px;
+  border-bottom:1.5px solid var(--mint-light);cursor:pointer;user-select:none;
+  min-height:56px;
+}
+.meal-ico{font-size:24px;flex-shrink:0;}
 .meal-nm{font-weight:800;font-size:15px;flex:1;}
-.meal-kcal-badge{font-size:14px;font-weight:800;color:var(--green-dark);
-  background:var(--mint-light);padding:4px 10px;border-radius:20px;}
-.meal-arr{font-size:16px;color:var(--text-light);transition:transform .2s;}
+.meal-kcal-badge{
+  font-size:13px;font-weight:800;color:var(--green-dark);
+  background:var(--mint-light);padding:4px 10px;border-radius:20px;
+  white-space:nowrap;
+}
+.meal-arr{font-size:16px;color:var(--text-light);transition:transform .2s;flex-shrink:0;}
 .meal-arr.open{transform:rotate(180deg);}
 
-/* ЗАПИСИ */
+/* ── ЗАПИСИ ── */
 .meal-entries{padding:0 18px;}
-.entry-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--mint-light);}
+.entry-row{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0;border-bottom:1px solid var(--mint-light);
+}
 .entry-row:last-child{border-bottom:none;}
 .e-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .d-breakfast{background:#ffb74d;} .d-lunch{background:#81c784;}
 .d-dinner{background:#64b5f6;} .d-snack{background:#f06292;} .d-other{background:#b0bec5;}
-.e-name{font-size:14px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.e-name{
+  font-size:14px;font-weight:600;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 .e-sub{font-size:11px;color:var(--text-light);}
 .e-cal{font-size:13px;font-weight:800;color:var(--green-dark);white-space:nowrap;}
-.e-del{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:20px;
-  padding:2px 6px;border-radius:8px;transition:all .15s;flex-shrink:0;line-height:1;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;}
+.e-del{
+  background:none;border:none;cursor:pointer;color:var(--text-light);
+  font-size:20px;border-radius:8px;transition:all .15s;flex-shrink:0;line-height:1;
+  /* Минимальный tap-target: 44×44 */
+  min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;
+}
 .e-del:hover{color:#e57373;background:#fff0f0;}
 
-/* ПАНЕЛЬ ДОБАВЛЕНИЯ */
+/* ── ПАНЕЛЬ ДОБАВЛЕНИЯ ── */
 .add-panel{padding:12px 18px 16px;}
-.add-btn{display:flex;align-items:center;gap:8px;width:100%;padding:12px 16px;
-  border:2px dashed var(--border);border-radius:12px;background:var(--mint-light);
-  color:var(--green-dark);font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;
-  cursor:pointer;transition:all .2s;min-height:44px;touch-action:manipulation;}
+.add-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:12px 16px;border:2px dashed var(--border);border-radius:12px;
+  background:var(--mint-light);color:var(--green-dark);
+  font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .2s;
+  /* Минимум 44px */
+  min-height:50px;
+}
 .add-btn:hover{border-color:var(--green);background:#fff;}
 .add-btn:active{transform:scale(0.98);}
 
-/* ПОИСК */
+/* ── ПОИСК ── */
 .search-box{position:relative;}
-.s-input{width:100%;padding:12px 14px;border:2px solid var(--green);border-radius:12px;
+.s-input{
+  /* 100% ширина — на всю панель поиска */
+  width:100%;padding:12px 14px;border:2px solid var(--green);border-radius:12px;
+  /* 16px — предотвращает zoom на iOS */
   font-size:16px;font-family:'Nunito',sans-serif;outline:none;
-  background:#fff;margin-bottom:8px;min-height:44px;}
+  background:#fff;margin-bottom:8px;min-height:48px;
+}
 
-/* КАТЕГОРИИ ФИЛЬТР */
-.cat-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;overflow-x:auto;padding-bottom:4px;}
-.cat-chip{padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;
+/* ── КАТЕГОРИИ ФИЛЬТР ── */
+.cat-filter{
+  display:flex;gap:6px;flex-wrap:nowrap;margin-bottom:8px;
+  overflow-x:auto;padding-bottom:4px;
+  /* Плавный скролл на iOS */
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.cat-filter::-webkit-scrollbar{display:none;}
+.cat-chip{
+  padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;
   background:#fff;color:var(--text-soft);font-size:13px;font-weight:700;
-  font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;min-height:32px;display:flex;align-items:center;touch-action:manipulation;}
+  font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;
+  white-space:nowrap;
+  /* Минимум 44px высота для тапа */
+  min-height:36px;display:inline-flex;align-items:center;flex-shrink:0;
+}
 .cat-chip:hover{border-color:var(--green);color:var(--green-dark);}
 .cat-chip.active{background:var(--green);color:#fff;border-color:var(--green);}
 
-/* РЕЗУЛЬТАТЫ */
-.s-results{background:#fff;border-radius:12px;border:1.5px solid var(--border);
-  box-shadow:0 6px 24px var(--shadow);max-height:260px;overflow-y:auto;}
-.s-item{display:flex;align-items:center;gap:8px;padding:12px 14px;
-  cursor:pointer;border-bottom:1px solid var(--mint-light);transition:background .12s;min-height:50px;}
+/* ── РЕЗУЛЬТАТЫ ПОИСКА ── */
+.s-results{
+  background:#fff;border-radius:12px;border:1.5px solid var(--border);
+  box-shadow:0 6px 24px var(--shadow);max-height:260px;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.s-item{
+  display:flex;align-items:center;gap:8px;padding:12px 14px;
+  cursor:pointer;border-bottom:1px solid var(--mint-light);transition:background .12s;
+  min-height:52px;
+}
 .s-item:last-child{border-bottom:none;}
 .s-item:hover{background:var(--mint-light);}
 .s-name{font-size:14px;font-weight:700;color:var(--text);}
 .s-meta{font-size:12px;color:var(--text-light);margin-top:2px;}
 .s-cal{font-size:13px;font-weight:800;color:var(--green-dark);white-space:nowrap;margin-left:auto;}
-.s-plus{background:var(--green);color:#fff;border:none;border-radius:8px;
+.s-plus{
+  background:var(--green);color:#fff;border:none;border-radius:8px;
   padding:6px 12px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;
-  cursor:pointer;flex-shrink:0;transition:all .15s;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
+  cursor:pointer;flex-shrink:0;transition:all .15s;
+  min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;
+}
 .s-plus:hover{background:var(--green-dark);}
 .s-empty{padding:18px;text-align:center;color:var(--text-light);font-size:13px;}
 .s-loading{padding:14px;text-align:center;color:var(--text-soft);font-size:13px;}
 
-/* ГРАММОВКА */
-.grams-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 14px;
-  background:var(--mint-light);border-radius:12px;flex-wrap:wrap;min-height:50px;}
-.g-selected{font-size:13px;font-weight:700;color:var(--text);flex:1;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:120px;}
-.g-input{width:72px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;
-  font-size:14px;font-family:'Nunito',sans-serif;outline:none;text-align:center;background:#fff;min-height:44px;}
+/* ── ГРАММОВКА ── */
+.grams-row{
+  display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 14px;
+  background:var(--mint-light);border-radius:12px;flex-wrap:wrap;min-height:56px;
+}
+.g-selected{
+  font-size:13px;font-weight:700;color:var(--text);
+  flex:1 1 100%; /* на мобиле — на всю строку */
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  min-width:0;
+}
+.g-input{
+  width:80px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;
+  font-size:16px;font-family:'Nunito',sans-serif;outline:none;
+  text-align:center;background:#fff;min-height:44px;flex-shrink:0;
+}
 .g-input:focus{border-color:var(--green);}
-.g-preview{font-size:12px;color:var(--text-soft);}
-.g-ok{padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:9px;
-  font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;min-height:44px;min-width:44px;touch-action:manipulation;}
+.g-preview{font-size:12px;color:var(--text-soft);flex:1;min-width:60px;}
+.g-ok{
+  padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:9px;
+  font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;
+  min-height:44px;min-width:50px;flex-shrink:0;
+}
 .g-ok:hover{background:var(--green-dark);}
-.g-cancel{background:none;border:none;color:var(--text-light);font-size:20px;cursor:pointer;padding:8px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
-.s-close{background:none;border:none;color:var(--text-light);font-size:13px;
-  cursor:pointer;margin-top:6px;font-family:'Nunito',sans-serif;display:block;min-height:44px;padding:6px 12px;touch-action:manipulation;}
+.g-cancel{
+  background:none;border:none;color:var(--text-light);font-size:20px;cursor:pointer;
+  padding:4px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;
+}
+.s-close{
+  background:none;border:none;color:var(--text-light);font-size:13px;
+  cursor:pointer;margin-top:6px;font-family:'Nunito',sans-serif;display:block;
+  min-height:44px;padding:6px 12px;width:100%;text-align:center;
+}
 
-/* BOTTOM NAV */
-.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+/* ── BOTTOM NAV ── */
+.bnav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
   background:rgba(255,255,255,.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-top:1px solid var(--border);padding:6px 8px max(6px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(76,175,131,.1);}
-@media(max-width:700px){
-  .bnav{display:flex;}
-  .nav-links{display:none!important;}
-  main{padding:16px 12px;padding-bottom:max(90px,calc(90px+env(safe-area-inset-bottom)));}
-  body{padding-bottom:0;}
-  .prog-eaten{font-size:36px;}
-  .prog-card{padding:18px;border-radius:18px;}
-  .meal-card{margin-bottom:12px;}
-  .add-btn{font-size:13px;min-height:44px;}
-  .s-input{font-size:16px;min-height:44px;}
-  .cat-filter{gap:5px;}
-  .cat-chip{padding:5px 11px;font-size:12px;}
+  border-top:1px solid var(--border);
+  padding:6px 8px max(6px,env(safe-area-inset-bottom));
+  box-shadow:0 -4px 20px rgba(76,175,131,.1);
 }
-@media(max-width:480px){
-  main{padding:12px 8px;}
-  .prog-eaten{font-size:32px;}
-  .prog-rem-num{font-size:20px;}
-  .prog-card{padding:16px 14px;margin-bottom:16px;}
-  .bju-grid{gap:6px;}
-  .bju-chip{padding:7px;}
-  .meal-hdr{padding:14px 14px 10px;gap:8px;}
-  .meal-ico{font-size:22px;}
-  .meal-nm{font-size:14px;}
-  .meal-kcal-badge{font-size:13px;padding:3px 8px;}
-  .entry-row{padding:8px 0;gap:6px;}
-  .e-name{font-size:13px;}
-  .e-sub{font-size:11px;}
-  .e-cal{font-size:12px;}
-  .meal-entries{padding:0 14px;}
-  .add-panel{padding:10px 14px 14px;}
-  .s-item{padding:10px 12px;min-height:48px;}
-  .s-name{font-size:13px;}
-  .s-meta{font-size:11px;}
-  .grams-row{padding:8px 12px;gap:6px;min-height:48px;}
-  .g-input{width:65px;padding:6px 8px;font-size:13px;}
-  .bn-item{min-height:48px;}
-  .bnav{padding:4px 6px max(4px,env(safe-area-inset-bottom));}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  text-decoration:none;color:var(--text-light);font-weight:700;
+  padding:4px 2px;border-radius:10px;margin:0 2px;transition:all .18s;
+  min-height:50px;justify-content:center;
 }
-@media(max-width:320px){
-  main{padding:10px 6px;}
-  .prog-card{padding:14px 12px;}
-  .prog-eaten{font-size:28px;}
-  .meal-hdr{padding:12px 12px 9px;}
-  .meal-nm{font-size:13px;}
-  .add-panel{padding:8px 12px;}
-  .add-btn{padding:10px 12px;font-size:12px;}
-  .cat-chip{padding:4px 9px;font-size:11px;}
-}
-
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-  text-decoration:none;color:var(--text-light);font-weight:700;padding:4px 2px;
-  border-radius:10px;margin:0 2px;transition:all .18s;touch-action:manipulation;min-height:50px;justify-content:center;}
 .bn-item.active{color:var(--green-dark);background:rgba(181,234,215,.35);}
 .bn-ico{font-size:21px;line-height:1;}
 .bn-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.3px;}
+
+/* ── RESPONSIVE BREAKPOINTS ── */
+@media(max-width:700px){
+  .bnav{display:flex;}
+  .nav-links{display:none!important;}
+
+  main{
+    padding:14px 12px;
+    /* Отступ снизу под nav на мобиле */
+    padding-bottom:max(90px,calc(88px + env(safe-area-inset-bottom)));
+  }
+  body{padding-bottom:0;}
+
+  .prog-card{padding:18px 16px;border-radius:18px;}
+  .prog-eaten{font-size:38px;}
+  .prog-rem-num{font-size:20px;}
+  .bju-grid{gap:6px;}
+  .bju-chip{padding:8px 6px;}
+  .bju-val{font-size:15px;}
+
+  .meal-card{margin-bottom:10px;border-radius:16px;}
+  .meal-hdr{padding:14px 14px 10px;}
+  .meal-entries{padding:0 14px;}
+  .add-panel{padding:10px 14px 14px;}
+  .add-btn{font-size:13px;min-height:48px;}
+
+  /* Граммовка на мобиле — имя на всю строку сверху */
+  .grams-row{gap:6px;}
+  .g-selected{flex:1 1 100%;margin-bottom:2px;}
+}
+
+@media(max-width:480px){
+  main{padding:10px 10px;}
+  .prog-card{padding:16px 14px;margin-bottom:16px;}
+  .prog-eaten{font-size:32px;}
+  .prog-rem-num{font-size:18px;}
+  .prog-goal,.prog-rem-lbl{font-size:11px;}
+  .bju-chip{padding:7px 5px;}
+  .bju-val{font-size:14px;}
+  .bju-lbl{font-size:9px;}
+
+  .meal-hdr{min-height:52px;padding:12px 14px 10px;gap:7px;}
+  .meal-ico{font-size:20px;}
+  .meal-nm{font-size:14px;}
+  .meal-kcal-badge{font-size:12px;padding:3px 8px;}
+
+  .entry-row{gap:6px;padding:9px 0;}
+  .e-name{font-size:13px;}
+  .e-sub{font-size:10px;}
+  .e-cal{font-size:12px;}
+
+  .s-item{min-height:50px;padding:10px 12px;}
+  .s-name{font-size:13px;}
+  .s-meta{font-size:11px;}
+
+  .g-input{width:72px;font-size:16px;}
+  .g-preview{font-size:11px;}
+
+  .bnav{padding:4px 6px max(4px,env(safe-area-inset-bottom));}
+  .bn-item{min-height:48px;}
+}
+
+@media(max-width:360px){
+  main{padding:8px 8px;}
+  .prog-card{padding:14px 12px;}
+  .prog-eaten{font-size:28px;}
+  .meal-hdr{padding:12px 12px 9px;gap:6px;}
+  .meal-nm{font-size:13px;}
+  .meal-ico{font-size:19px;}
+  .add-panel{padding:8px 12px 12px;}
+  .add-btn{padding:10px 12px;font-size:12px;min-height:46px;}
+  .cat-chip{padding:5px 9px;font-size:11px;min-height:34px;}
+}
+
+@media(max-width:320px){
+  main{padding:6px 6px;}
+  .prog-card{padding:12px 10px;border-radius:14px;}
+  .meal-card{border-radius:14px;}
+  .add-btn{font-size:11px;min-height:44px;}
+  .g-input{width:65px;}
+}
 </style>
 </head>
 <body>
@@ -265,7 +388,8 @@ main{max-width:860px;margin:0 auto;padding:24px 16px;}
         <div class="search-box">
           <input type="text" class="s-input" id="si-{{ meal_key }}"
             placeholder="🔍 Введите название продукта..."
-            oninput="onInput('{{ meal_key }}')" autocomplete="off">
+            oninput="onInput('{{ meal_key }}')" autocomplete="off"
+            autocorrect="off" autocapitalize="off" spellcheck="false">
 
           <!-- ФИЛЬТР КАТЕГОРИЙ -->
           <div class="cat-filter" id="catfilter-{{ meal_key }}">
@@ -304,7 +428,7 @@ main{max-width:860px;margin:0 auto;padding:24px 16px;}
               oninput="updPreview('{{ meal_key }}')"
               onkeydown="if(event.key==='Enter')doAdd('{{ meal_key }}')">
             <span class="g-preview" id="gprev-{{ meal_key }}"></span>
-            <button class="g-ok" onclick="doAdd('{{ meal_key }}')">✓ Добавить</button>
+            <button class="g-ok" onclick="doAdd('{{ meal_key }}')">✓</button>
             <button class="g-cancel" onclick="cancelSel('{{ meal_key }}')">×</button>
           </div>
 
@@ -317,9 +441,9 @@ main{max-width:860px;margin:0 auto;padding:24px 16px;}
 </main>
 
 <nav class="bnav">
-  <a href="/" class="bn-item active"><span class="bn-ico">🏠</span><span class="bn-lbl">Сегодня</span></a>
-  <a href="/history" class="bn-item"><span class="bn-ico">📊</span><span class="bn-lbl">История</span></a>
-  <a href="/goals" class="bn-item"><span class="bn-ico">🎯</span><span class="bn-lbl">Цели</span></a>
+  <a href="/" class="bn-item active"><span class="bn-ico">🏠</span><span class="bn-lbl">{{ t.today }}</span></a>
+  <a href="/history" class="bn-item"><span class="bn-ico">📊</span><span class="bn-lbl">{{ t.history }}</span></a>
+  <a href="/goals" class="bn-item"><span class="bn-ico">🎯</span><span class="bn-lbl">{{ t.goals }}</span></a>
   <a href="/premium" class="bn-item"><span class="bn-ico">⭐</span><span class="bn-lbl">Premium</span></a>
 </nav>
 
@@ -336,13 +460,11 @@ let totals = {
   carb: {{ total_carbs }},
 };
 
-// State per meal
 const state = {};
 ['breakfast','lunch','dinner','snack'].forEach(m => {
   state[m] = { food: null, cat: '', timer: null };
 });
 
-// ── Toggle ──
 function toggleMeal(meal) {
   const body = document.getElementById('body-' + meal);
   const arr  = document.getElementById('arr-' + meal);
@@ -351,7 +473,6 @@ function toggleMeal(meal) {
   arr.classList.toggle('open', !open);
 }
 
-// ── Open/Close search ──
 function openSearch(meal, label) {
   if (!IS_AUTH) { alert('Войдите в аккаунт'); return; }
   document.getElementById('addpanel-' + meal).style.display = 'none';
@@ -370,13 +491,11 @@ function closeSearch(meal) {
   if (hint) hint.style.display = 'none';
   state[meal].food = null;
   state[meal].cat  = '';
-  // сброс категорий
   document.querySelectorAll('#catfilter-' + meal + ' .cat-chip').forEach((c,i) => {
     c.classList.toggle('active', i === 0);
   });
 }
 
-// ── Категория ──
 function setCat(meal, cat, btn) {
   state[meal].cat = cat;
   document.querySelectorAll('#catfilter-' + meal + ' .cat-chip').forEach(c => c.classList.remove('active'));
@@ -385,7 +504,6 @@ function setCat(meal, cat, btn) {
   loadResults(meal, q, cat);
 }
 
-// ── Input ──
 function onInput(meal) {
   clearTimeout(state[meal].timer);
   state[meal].timer = setTimeout(() => {
@@ -393,7 +511,6 @@ function onInput(meal) {
   }, 280);
 }
 
-// ── Load results ──
 async function loadResults(meal, q, cat) {
   const el = document.getElementById('sr-' + meal);
   el.style.display = '';
@@ -414,7 +531,7 @@ function renderResults(meal, foods) {
   const el = document.getElementById('sr-' + meal);
   const hint = document.getElementById('custom-food-hint-' + meal);
   if (!foods.length) {
-    el.innerHTML = '<div class="s-empty">Ничего не найдено 🤷<br><a href="/categories" style="color:var(--green-dark);font-size:12px;font-weight:700;">Открыть каталог продуктов →</a></div>';
+    el.innerHTML = '<div class="s-empty">Ничего не найдено 🤷<br><a href="/categories" style="color:var(--green-dark);font-size:12px;font-weight:700;">Открыть каталог →</a></div>';
     el.style.display = '';
     if (hint) hint.style.display = '';
     return;
@@ -445,7 +562,6 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ── Выбор продукта ──
 function selectFood(meal, el) {
   const id   = el.dataset.id;
   const name = el.dataset.name;
@@ -480,7 +596,6 @@ function updPreview(meal) {
     '🔥 ' + Math.round(f.cal * g / 100) + ' ' + KCAL;
 }
 
-// ── Добавить ──
 async function doAdd(meal) {
   const f = state[meal].food;
   if (!f) return;
@@ -511,7 +626,6 @@ async function doAdd(meal) {
     const fat  = +(f.fat  * r).toFixed(1);
     const carb = +(f.carb * r).toFixed(1);
 
-    // Добавляем строку
     const dots = {breakfast:'d-breakfast',lunch:'d-lunch',dinner:'d-dinner',snack:'d-snack'};
     const row = document.createElement('div');
     row.className = 'entry-row';
@@ -527,7 +641,6 @@ async function doAdd(meal) {
     `;
     document.getElementById('entries-' + meal).appendChild(row);
 
-    // Обновляем счётчики
     const badge = document.getElementById('kcal-' + meal);
     const cur = parseInt(badge.textContent) || 0;
     badge.textContent = (cur + cal) + ' ' + KCAL;
@@ -542,7 +655,6 @@ async function doAdd(meal) {
   }
 }
 
-// ── Удалить ──
 async function delEntry(id, meal, cal, prot, fat, carb) {
   if (!confirm('Удалить?')) return;
   try {
@@ -552,7 +664,6 @@ async function delEntry(id, meal, cal, prot, fat, carb) {
     const row = document.getElementById('er-' + id);
     if (row) row.remove();
 
-    // Обновляем badge
     const badge = document.getElementById('kcal-' + meal);
     const cur = parseInt(badge.textContent) || 0;
     badge.textContent = Math.max(0, cur - (cal||0)) + ' ' + KCAL;
@@ -569,7 +680,6 @@ async function delEntry(id, meal, cal, prot, fat, carb) {
   }
 }
 
-// ── Обновить шапку ──
 function updTotals() {
   const pct = Math.min(100, Math.round(totals.cal / GOAL * 100));
   document.getElementById('totalCal').textContent = Math.round(totals.cal);
@@ -580,6 +690,7 @@ function updTotals() {
   document.getElementById('totC').textContent = totals.carb.toFixed(1) + 'г';
 }
 </script>
+
 <!-- МОДАЛ: СОЗДАТЬ СВОЙ ПРОДУКТ -->
 <div id="customFoodModal" class="cf-overlay" style="display:none;" onclick="if(event.target===this)closeCustomModal()">
   <div class="cf-modal">
@@ -634,26 +745,58 @@ function updTotals() {
 
 <style>
 .custom-food-hint{margin-top:8px;text-align:center;}
-.create-custom-btn{background:none;border:1.5px dashed var(--green);color:var(--green);border-radius:10px;padding:8px 18px;font-size:13px;cursor:pointer;width:100%;transition:.2s;min-height:44px;font-family:'Nunito',sans-serif;font-weight:700;touch-action:manipulation;}
+.create-custom-btn{
+  background:none;border:1.5px dashed var(--green);color:var(--green);
+  border-radius:10px;padding:8px 18px;font-size:13px;cursor:pointer;width:100%;
+  transition:.2s;min-height:44px;font-family:'Nunito',sans-serif;font-weight:700;
+}
 .create-custom-btn:hover{background:var(--green);color:#fff;}
-.cf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
-.cf-modal{background:#fff;border-radius:18px;padding:24px 20px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,.18);}
+.cf-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:0;
+}
+@media(min-width:500px){
+  .cf-overlay{align-items:center;padding:16px;}
+}
+.cf-modal{
+  background:#fff;
+  border-radius:20px 20px 0 0;
+  padding:28px 20px max(28px,env(safe-area-inset-bottom));
+  width:100%;max-width:480px;
+  box-shadow:0 -8px 40px rgba(0,0,0,.18);
+}
+@media(min-width:500px){
+  .cf-modal{border-radius:20px;padding:28px 24px;}
+}
 .cf-title{font-size:17px;font-weight:700;margin-bottom:16px;color:#222;}
 .cf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .cf-field{display:flex;flex-direction:column;gap:4px;}
 .cf-label{font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
-.cf-input{border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;transition:.2s;width:100%;box-sizing:border-box;margin-bottom:10px;min-height:44px;font-family:'Nunito',sans-serif;}
+.cf-input{
+  border:1.5px solid #e0e0e0;border-radius:10px;padding:10px 12px;
+  /* 16px — без zoom на iOS */
+  font-size:16px;outline:none;transition:.2s;width:100%;box-sizing:border-box;
+  margin-bottom:10px;min-height:48px;font-family:'Nunito',sans-serif;
+}
 .cf-input:focus{border-color:var(--green);}
 .cf-select{margin-bottom:10px;}
 .cf-error{color:#e53935;font-size:13px;margin-bottom:8px;padding:8px 12px;background:#ffeaea;border-radius:8px;}
 .cf-btns{display:flex;gap:10px;margin-top:4px;}
-.cf-save{flex:1;background:var(--green);color:#fff;border:none;border-radius:10px;padding:11px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;min-height:44px;touch-action:manipulation;}
+.cf-save{
+  flex:1;background:var(--green);color:#fff;border:none;border-radius:10px;
+  padding:12px;font-size:15px;font-weight:600;cursor:pointer;
+  font-family:'Nunito',sans-serif;min-height:50px;
+}
 .cf-save:hover{opacity:.9;}
-.cf-cancel{background:#f5f5f5;color:#666;border:none;border-radius:10px;padding:11px 16px;font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;min-height:44px;touch-action:manipulation;}
+.cf-cancel{
+  background:#f5f5f5;color:#666;border:none;border-radius:10px;
+  padding:12px 16px;font-size:14px;cursor:pointer;
+  font-family:'Nunito',sans-serif;min-height:50px;
+}
 </style>
 
 <script>
-// ── Кастомные продукты ──
 let _customMeal = null;
 
 function openCustomModal(meal) {
@@ -697,7 +840,6 @@ async function saveCustomFood() {
 
     closeCustomModal();
 
-    // Автоматически выбрать только что созданный продукт
     if (_customMeal && data.food) {
       const f = data.food;
       state[_customMeal].food = { id: f.id, name: f.name, cal: f.calories, prot: f.protein, fat: f.fat, carb: f.carbs };

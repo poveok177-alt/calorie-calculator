@@ -7,41 +7,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{--mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;--green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;--text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;--border:#c8eedd;--shadow:rgba(76,175,131,.12);--danger:#e57373;}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;padding-bottom:60px;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
+  body{
+    font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
+    min-height:100vh;overflow-x:hidden;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+  button, a{touch-action:manipulation;}
+
   nav{background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);}
-  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px;}
-  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark);text-decoration:none;}
-  .nav-link{padding:7px 14px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;color:var(--text-soft);transition:all .2s;}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;gap:12px;}
+  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+  .nav-link{padding:7px 12px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;color:var(--text-soft);transition:all .2s;min-height:44px;display:inline-flex;align-items:center;}
   .nav-link:hover{background:var(--mint-light);color:var(--green-dark);}
   .admin-badge{background:linear-gradient(135deg,#e65c00,#f9a825);color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;}
 
-  main{max-width:1100px;margin:0 auto;padding:24px 16px;}
-  .page-title{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
-  .page-sub{color:var(--text-soft);font-size:14px;margin-bottom:24px;}
+  main{max-width:1100px;margin:0 auto;padding:22px 14px;}
+  .page-title{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+  .page-sub{color:var(--text-soft);font-size:14px;margin-bottom:22px;}
 
   /* STATS */
-  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
-  @media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr);}}
-  .stat-card{background:white;border-radius:16px;padding:18px;border:1.5px solid var(--border);box-shadow:0 3px 14px var(--shadow);text-align:center;}
-  .stat-val{font-size:28px;font-weight:800;color:var(--green-dark);}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+  .stat-card{background:white;border-radius:16px;padding:16px;border:1.5px solid var(--border);box-shadow:0 3px 14px var(--shadow);text-align:center;}
+  .stat-val{font-size:26px;font-weight:800;color:var(--green-dark);}
   .stat-lbl{font-size:12px;color:var(--text-soft);font-weight:700;margin-top:3px;}
 
   /* SEARCH */
-  .search-row{display:flex;gap:10px;margin-bottom:20px;}
-  .search-input{flex:1;padding:10px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:'Nunito',sans-serif;background:var(--mint-light);color:var(--text);outline:none;min-height:44px;}
+  .search-row{display:flex;gap:10px;margin-bottom:18px;align-items:center;}
+  .search-input{flex:1;padding:10px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;font-family:'Nunito',sans-serif;background:var(--mint-light);color:var(--text);outline:none;min-height:48px;}
   .search-input:focus{border-color:var(--green);background:white;}
-  .btn-search{background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;min-height:44px;}
+  .btn-search{background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;min-height:48px;}
 
   /* TABLE */
   .table-wrap{background:white;border-radius:20px;border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);overflow:hidden;}
-  .table-head{display:grid;grid-template-columns:2fr 2fr 1fr 1.5fr 2fr;gap:0;background:var(--mint-light);padding:12px 16px;font-size:12px;font-weight:800;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;}
-  @media(max-width:860px){
-    .table-head{display:none;}
-    .user-row{grid-template-columns:1fr!important;}
-    .user-cell::before{content:attr(data-label)": ";font-weight:800;color:var(--text-soft);font-size:11px;display:block;margin-bottom:2px;}
-  }
-  .user-row{display:grid;grid-template-columns:2fr 2fr 1fr 1.5fr 2fr;gap:0;padding:14px 16px;border-bottom:1px solid var(--mint-light);align-items:center;transition:background .15s;}
+  .table-head{display:grid;grid-template-columns:2fr 2fr 1fr 1.5fr 2fr;background:var(--mint-light);padding:12px 16px;font-size:12px;font-weight:800;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;}
+  .user-row{display:grid;grid-template-columns:2fr 2fr 1fr 1.5fr 2fr;padding:14px 16px;border-bottom:1px solid var(--mint-light);align-items:center;transition:background .15s;}
   .user-row:last-child{border-bottom:none;}
   .user-row:hover{background:var(--mint-light);}
   .user-cell{font-size:13px;padding:0 4px;}
@@ -50,37 +51,34 @@
   .badge-pm{display:inline-block;background:linear-gradient(135deg,#2d8a63,#4caf83);color:white;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;}
   .badge-free{display:inline-block;background:var(--mint-light);color:var(--text-soft);font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;}
   .badge-su{display:inline-block;background:linear-gradient(135deg,#e65c00,#f9a825);color:white;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;margin-left:4px;}
-  .ends-note{font-size:11px;color:var(--text-light);margin-top:2px;}
-
-  /* ACTIONS */
   .actions-cell{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .btn-grant{background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border:none;border-radius:10px;padding:6px 11px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;min-height:32px;}
-  .btn-grant:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(76,175,131,.3);}
-  .btn-revoke{background:#fff0f0;color:var(--danger);border:1.5px solid var(--danger);border-radius:10px;padding:5px 11px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;min-height:32px;}
+  .btn-grant{background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;border:none;border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;min-height:36px;}
+  .btn-grant:hover{transform:translateY(-1px);}
+  .btn-revoke{background:#fff0f0;color:var(--danger);border:1.5px solid var(--danger);border-radius:10px;padding:5px 12px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;min-height:36px;}
   .btn-revoke:hover{background:var(--danger);color:white;}
-  .select-dur{border:1.5px solid var(--border);border-radius:10px;padding:5px 8px;font-size:12px;font-family:'Nunito',sans-serif;background:var(--mint-light);color:var(--text);outline:none;cursor:pointer;min-height:32px;}
-
+  .select-dur{border:1.5px solid var(--border);border-radius:10px;padding:5px 8px;font-size:12px;font-family:'Nunito',sans-serif;background:var(--mint-light);color:var(--text);outline:none;cursor:pointer;min-height:36px;}
   .empty{text-align:center;padding:50px;color:var(--text-light);}
   .flash-ok{background:var(--mint);color:var(--green-dark);padding:12px 18px;border-radius:14px;margin-bottom:16px;font-weight:700;font-size:14px;}
 
+  @media(max-width:860px){
+    .stats-row{grid-template-columns:repeat(2,1fr);}
+  }
+
   @media(max-width:640px){
-    .page-title { font-size:22px!important; }
-    .table-wrap { overflow-x:auto; }
-    .table-head { display:none!important; }
-    .user-row {
-      display:block!important;
-      padding:16px!important;
-      border:1px solid var(--border);
-      border-radius:14px;
-      margin:8px;
-      box-shadow:0 2px 10px var(--shadow);
-    }
-    .user-cell { display:block!important; padding:4px 0!important; font-size:13px; }
-    .user-cell::before { content:attr(data-label)": "; font-weight:800; color:var(--text-soft); font-size:11px; }
-    .actions-cell { flex-direction:column!important; align-items:flex-start!important; }
-    .btn-grant, .btn-revoke { min-height:40px!important; padding:8px 14px!important; }
-    .stats-row { grid-template-columns:repeat(2,1fr)!important; }
-    body { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+    .page-title{font-size:22px;}
+    .table-head{display:none;}
+    .user-row{display:block;padding:16px;border:1px solid var(--border);border-radius:14px;margin:8px;box-shadow:0 2px 10px var(--shadow);}
+    .user-cell{display:block;padding:4px 0;font-size:13px;}
+    .user-cell::before{content:attr(data-label)": ";font-weight:800;color:var(--text-soft);font-size:11px;}
+    .actions-cell{flex-direction:column;align-items:flex-start;}
+    .btn-grant,.btn-revoke{min-height:44px;padding:10px 16px;}
+    .select-dur{min-height:44px;font-size:14px;}
+    .search-input{font-size:16px;}
+  }
+
+  @media(max-width:400px){
+    main{padding:14px 10px;}
+    .stat-val{font-size:22px;}
   }
 </style>
 </head>
@@ -102,22 +100,10 @@
 
   <!-- STATS -->
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-val">{{ users|length }}</div>
-      <div class="stat-lbl">Всего юзеров</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">{{ users|selectattr('is_premium')|list|length }}</div>
-      <div class="stat-lbl">Premium</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">{{ users|selectattr('trial_used')|list|length }}</div>
-      <div class="stat-lbl">Пробовали</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">{{ users|rejectattr('is_premium')|list|length }}</div>
-      <div class="stat-lbl">Бесплатных</div>
-    </div>
+    <div class="stat-card"><div class="stat-val">{{ users|length }}</div><div class="stat-lbl">Всего юзеров</div></div>
+    <div class="stat-card"><div class="stat-val">{{ users|selectattr('is_premium')|list|length }}</div><div class="stat-lbl">Premium</div></div>
+    <div class="stat-card"><div class="stat-val">{{ users|selectattr('trial_used')|list|length }}</div><div class="stat-lbl">Пробовали</div></div>
+    <div class="stat-card"><div class="stat-val">{{ users|rejectattr('is_premium')|list|length }}</div><div class="stat-lbl">Бесплатных</div></div>
   </div>
 
   <!-- SEARCH -->
@@ -125,7 +111,7 @@
     <div class="search-row">
       <input type="text" name="q" class="search-input" placeholder="🔍 Поиск по email или имени..." value="{{ query }}">
       <button type="submit" class="btn-search">Найти</button>
-      {% if query %}<a href="/admin" class="nav-link" style="min-height:44px;display:flex;align-items:center;">✕ Сбросить</a>{% endif %}
+      {% if query %}<a href="/admin" class="nav-link">✕ Сбросить</a>{% endif %}
     </div>
   </form>
 
@@ -142,30 +128,17 @@
     {% if users %}
       {% for user in users %}
       <div class="user-row">
-
         <div class="user-cell" data-label="Пользователь">
-          <div class="user-name">
-            {{ user.username }}
-            {% if user.is_superuser %}<span class="badge-su">SU</span>{% endif %}
-          </div>
+          <div class="user-name">{{ user.username }}{% if user.is_superuser %}<span class="badge-su">SU</span>{% endif %}</div>
           <div class="user-email">Рег: {{ user.created_at.strftime('%d.%m.%Y') if user.created_at else '—' }}</div>
         </div>
-
         <div class="user-cell" data-label="Email">
           <div style="font-size:13px;word-break:break-all;">{{ user.email }}</div>
         </div>
-
         <div class="user-cell" data-label="Статус">
-          {% if user.is_premium %}
-            <span class="badge-pm">⭐ Premium</span>
-          {% else %}
-            <span class="badge-free">Free</span>
-          {% endif %}
-          {% if user.trial_used %}
-            <div style="font-size:10px;color:var(--text-light);margin-top:2px;">trial использован</div>
-          {% endif %}
+          {% if user.is_premium %}<span class="badge-pm">⭐ Premium</span>{% else %}<span class="badge-free">Free</span>{% endif %}
+          {% if user.trial_used %}<div style="font-size:10px;color:var(--text-light);margin-top:2px;">trial использован</div>{% endif %}
         </div>
-
         <div class="user-cell" data-label="До когда">
           {% if user.premium_ends %}
             {% if user.premium_ends > now %}
@@ -185,7 +158,6 @@
             <div style="font-size:12px;color:var(--text-light);">—</div>
           {% endif %}
         </div>
-
         <div class="user-cell" data-label="Действия">
           <div class="actions-cell">
             {% if not user.is_premium %}
@@ -217,16 +189,18 @@
             {% endif %}
           </div>
         </div>
-
       </div>
       {% endfor %}
     {% else %}
-    <div class="empty">Пользователи не найдены</div>
+      <div class="empty">Пользователи не найдены</div>
     {% endif %}
   </div>
 
-  <!-- HOW TO BECOME SUPERUSER -->
-  <div style="margin-top:24px;background:white;border-radius:16px;padding:20px;border:1.5px solid var(--border);font-size:13px;color:var(--text-soft);line-height:1.7;">
+  <div style="margin-top:22px;background:white;border-radius:16px;padding:18px;border:1.5px solid var(--border);font-size:13px;color:var(--text-soft);line-height:1.7;">
     <strong style="color:var(--text);">🛡 Как назначить первого суперпользователя:</strong><br>
     В консоли сервера: <code style="background:var(--mint-light);padding:2px 7px;border-radius:6px;font-size:12px;color:var(--green-dark);">flask shell</code> →
-    <code style="background:var(--mint-light);padding:2px 7px;border-radius:6px;font-size:12px;color:var(--green-dark);">u = User.query.filter_by(email='<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9d0c6dcdbe9ccc4c8c0c587cac6c4">[ema
+    <code style="background:var(--mint-light);padding:2px 7px;border-radius:6px;font-size:12px;color:var(--green-dark);">u = User.query.filter_by(email='you@mail.com').first(); u.is_superuser = True; db.session.commit()</code>
+  </div>
+</main>
+</body>
+</html>
