@@ -241,9 +241,17 @@ main{max-width:860px;margin:0 auto;padding:24px 16px;}
             <button class="cat-chip" onclick="setCat('{{ meal_key }}','oils',this)">🫙 Масла</button>
             <button class="cat-chip" onclick="setCat('{{ meal_key }}','sauces',this)">🥫 Соусы</button>
             <button class="cat-chip" onclick="setCat('{{ meal_key }}','sports',this)">💪 Спортпит</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','supplements',this)">💊 Добавки</button>
           </div>
 
           <div id="sr-{{ meal_key }}" class="s-results" style="display:none;"></div>
+
+          <!-- СОЗДАТЬ СВОЙ ПРОДУКТ -->
+          <div id="custom-food-hint-{{ meal_key }}" class="custom-food-hint" style="display:none;">
+            <button class="create-custom-btn" onclick="openCustomModal('{{ meal_key }}')">
+              ✏️ Создать свой продукт
+            </button>
+          </div>
 
           <!-- ГРАММОВКА -->
           <div id="gr-{{ meal_key }}" class="grams-row" style="display:none;">
@@ -314,6 +322,8 @@ function closeSearch(meal) {
   document.getElementById('sr-' + meal).style.display = 'none';
   document.getElementById('gr-' + meal).style.display = 'none';
   document.getElementById('si-' + meal).value = '';
+  const hint = document.getElementById('custom-food-hint-' + meal);
+  if (hint) hint.style.display = 'none';
   state[meal].food = null;
   state[meal].cat  = '';
   // сброс категорий
@@ -358,10 +368,14 @@ async function loadResults(meal, q, cat) {
 
 function renderResults(meal, foods) {
   const el = document.getElementById('sr-' + meal);
+  const hint = document.getElementById('custom-food-hint-' + meal);
   if (!foods.length) {
     el.innerHTML = '<div class="s-empty">Ничего не найдено 🤷</div>';
+    el.style.display = '';
+    if (hint) hint.style.display = '';
     return;
   }
+  if (hint) hint.style.display = '';
   el.innerHTML = foods.map(f => {
     // Безопасная сериализация данных — через data-атрибуты
     const safeId   = String(f.id).replace(/"/g,'');
@@ -433,6 +447,8 @@ async function doAdd(meal) {
   if (String(f.id).startsWith('off_')) {
     body = { food_id: f.id, grams, meal_type: meal,
              name: f.name, calories: f.cal, protein: f.prot, fat: f.fat, carbs: f.carb };
+  } else if (String(f.id).startsWith('custom_')) {
+    body = { food_id: f.id, grams, meal_type: meal };
   } else {
     body = { food_id: parseInt(f.id), grams, meal_type: meal };
   }
@@ -519,6 +535,141 @@ function updTotals() {
   document.getElementById('totP').textContent = totals.prot.toFixed(1) + 'г';
   document.getElementById('totF').textContent = totals.fat.toFixed(1)  + 'г';
   document.getElementById('totC').textContent = totals.carb.toFixed(1) + 'г';
+}
+</script>
+<!-- МОДАЛ: СОЗДАТЬ СВОЙ ПРОДУКТ -->
+<div id="customFoodModal" class="cf-overlay" style="display:none;" onclick="if(event.target===this)closeCustomModal()">
+  <div class="cf-modal">
+    <div class="cf-title">✏️ Создать свой продукт</div>
+    <input type="text" id="cf-name" class="cf-input" placeholder="Название продукта *" maxlength="200">
+    <div class="cf-row">
+      <div class="cf-field">
+        <label class="cf-label">Калории (на 100г) *</label>
+        <input type="number" id="cf-cal" class="cf-input" placeholder="0" min="0" max="9999" step="0.1">
+      </div>
+      <div class="cf-field">
+        <label class="cf-label">Белки (г)</label>
+        <input type="number" id="cf-prot" class="cf-input" placeholder="0" min="0" max="999" step="0.1">
+      </div>
+    </div>
+    <div class="cf-row">
+      <div class="cf-field">
+        <label class="cf-label">Жиры (г)</label>
+        <input type="number" id="cf-fat" class="cf-input" placeholder="0" min="0" max="999" step="0.1">
+      </div>
+      <div class="cf-field">
+        <label class="cf-label">Углеводы (г)</label>
+        <input type="number" id="cf-carb" class="cf-input" placeholder="0" min="0" max="999" step="0.1">
+      </div>
+    </div>
+    <select id="cf-cat" class="cf-input cf-select">
+      <option value="other">Категория (необязательно)</option>
+      <option value="fruits">🍎 Фрукты</option>
+      <option value="vegetables">🥦 Овощи</option>
+      <option value="meat">🥩 Мясо</option>
+      <option value="fish">🐟 Рыба</option>
+      <option value="dairy">🥛 Молочные</option>
+      <option value="grains">🌾 Злаки</option>
+      <option value="nuts">🌰 Орехи</option>
+      <option value="eggs">🥚 Яйца</option>
+      <option value="legumes">🫘 Бобовые</option>
+      <option value="fastfood">🍔 Фастфуд</option>
+      <option value="sweets">🍫 Сладкое</option>
+      <option value="drinks">🥤 Напитки</option>
+      <option value="oils">🫙 Масла</option>
+      <option value="sauces">🥫 Соусы</option>
+      <option value="sports">💪 Спортпит</option>
+      <option value="supplements">💊 Добавки</option>
+    </select>
+    <div id="cf-error" class="cf-error" style="display:none;"></div>
+    <div class="cf-btns">
+      <button class="cf-save" onclick="saveCustomFood()">💾 Сохранить</button>
+      <button class="cf-cancel" onclick="closeCustomModal()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.custom-food-hint{margin-top:8px;text-align:center;}
+.create-custom-btn{background:none;border:1.5px dashed var(--green);color:var(--green);border-radius:10px;padding:8px 18px;font-size:13px;cursor:pointer;width:100%;transition:.2s;}
+.create-custom-btn:hover{background:var(--green);color:#fff;}
+.cf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.cf-modal{background:#fff;border-radius:18px;padding:24px 20px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,.18);}
+.cf-title{font-size:17px;font-weight:700;margin-bottom:16px;color:#222;}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.cf-field{display:flex;flex-direction:column;gap:4px;}
+.cf-label{font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.cf-input{border:1.5px solid #e0e0e0;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;transition:.2s;width:100%;box-sizing:border-box;margin-bottom:10px;}
+.cf-input:focus{border-color:var(--green);}
+.cf-select{margin-bottom:10px;}
+.cf-error{color:#e53935;font-size:13px;margin-bottom:8px;padding:8px 12px;background:#ffeaea;border-radius:8px;}
+.cf-btns{display:flex;gap:10px;margin-top:4px;}
+.cf-save{flex:1;background:var(--green);color:#fff;border:none;border-radius:10px;padding:11px;font-size:15px;font-weight:600;cursor:pointer;}
+.cf-save:hover{opacity:.9;}
+.cf-cancel{background:#f5f5f5;color:#666;border:none;border-radius:10px;padding:11px 16px;font-size:14px;cursor:pointer;}
+</style>
+
+<script>
+// ── Кастомные продукты ──
+let _customMeal = null;
+
+function openCustomModal(meal) {
+  _customMeal = meal;
+  document.getElementById('cf-name').value = '';
+  document.getElementById('cf-cal').value = '';
+  document.getElementById('cf-prot').value = '';
+  document.getElementById('cf-fat').value = '';
+  document.getElementById('cf-carb').value = '';
+  document.getElementById('cf-cat').value = 'other';
+  document.getElementById('cf-error').style.display = 'none';
+  document.getElementById('customFoodModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('cf-name').focus(), 100);
+}
+
+function closeCustomModal() {
+  document.getElementById('customFoodModal').style.display = 'none';
+}
+
+async function saveCustomFood() {
+  const name = document.getElementById('cf-name').value.trim();
+  const cal  = parseFloat(document.getElementById('cf-cal').value);
+  const prot = parseFloat(document.getElementById('cf-prot').value) || 0;
+  const fat  = parseFloat(document.getElementById('cf-fat').value) || 0;
+  const carb = parseFloat(document.getElementById('cf-carb').value) || 0;
+  const cat  = document.getElementById('cf-cat').value;
+  const errEl = document.getElementById('cf-error');
+
+  if (!name) { errEl.textContent = 'Введите название продукта'; errEl.style.display=''; return; }
+  if (isNaN(cal) || cal < 0) { errEl.textContent = 'Введите калорийность'; errEl.style.display=''; return; }
+  errEl.style.display = 'none';
+
+  try {
+    const data = await fetch('/api/custom-foods', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name, calories: cal, protein: prot, fat, carbs: carb, category: cat })
+    }).then(r => r.json());
+
+    if (data.error) { errEl.textContent = data.error; errEl.style.display=''; return; }
+
+    closeCustomModal();
+
+    // Автоматически выбрать только что созданный продукт
+    if (_customMeal && data.food) {
+      const f = data.food;
+      state[_customMeal].food = { id: f.id, name: f.name, cal: f.calories, prot: f.protein, fat: f.fat, carb: f.carbs };
+      document.getElementById('sr-' + _customMeal).style.display = 'none';
+      document.getElementById('si-' + _customMeal).value = f.name;
+      document.getElementById('gname-' + _customMeal).textContent = f.name;
+      const gi = document.getElementById('gi-' + _customMeal);
+      gi.value = 100;
+      document.getElementById('gr-' + _customMeal).style.display = 'flex';
+      updPreview(_customMeal);
+      gi.focus(); gi.select();
+    }
+  } catch(e) {
+    errEl.textContent = 'Ошибка сохранения'; errEl.style.display='';
+  }
 }
 </script>
 </body>
