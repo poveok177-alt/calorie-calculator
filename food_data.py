@@ -406,3 +406,6 @@ FOODS = [
     {"name_ru": "Додстер (Додо)", "name_en": "Dodster (Dodo)", "name_uk": "Додстер (Додо)", "name_kk": "Додстер (Додо)", "calories": 310, "protein": 15.0, "fat": 14.0, "carbs": 32.0, "category": "other"},
     {"name_ru": "Стрипсы (Додо, 1 шт)", "name_en": "Strips (Dodo, 1pc)", "name_uk": "Стрипси (Додо, 1 шт)", "name_kk": "Стрипс (Додо, 1 дана)", "calories": 118, "protein": 9.0, "fat": 7.0, "carbs": 6.0, "category": "other"},
 ]
+
+# Alias for backward compatibility
+food_data = FOODS
