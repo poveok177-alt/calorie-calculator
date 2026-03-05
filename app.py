@@ -1058,34 +1058,70 @@ def admin_revoke_premium():
 @app.route('/api/search')
 def api_search():
     lang = session.get('language', 'ru')
-    q = request.args.get('q', '').strip().lower()
-    if not q:
-        return jsonify([])
+    q = request.args.get('q', '').strip()
+    limit = min(int(request.args.get('limit', 15)), 30)
 
     name_col = {'ru': Food.name_ru, 'en': Food.name_en, 'uk': Food.name_uk, 'kk': Food.name_kk}.get(lang, Food.name_ru)
-    foods = Food.query.filter(name_col.ilike(f'%{q}%')).limit(10).all()
 
-    if len(foods) < 2:
-        all_foods = Food.query.all()
-        def similarity(a, b):
-            a, b = a.lower(), b.lower()
-            if a in b or b in a: return 0.9
-            common = sum(1 for c in a if c in b)
-            return common / max(len(a), len(b), 1)
-        scored = [(similarity(q, get_food_name(f, lang)), f) for f in all_foods]
-        scored = [(s, f) for s, f in scored if s > 0.4]
-        scored.sort(reverse=True)
-        foods = [f for _, f in scored[:10]]
+    # Пустой запрос — возвращаем популярные продукты
+    if not q:
+        foods = Food.query.limit(limit).all()
+        return jsonify([{
+            'id': f.id, 'name': get_food_name(f, lang),
+            'calories': f.calories, 'protein': f.protein,
+            'fat': f.fat, 'carbs': f.carbs, 'category': f.category,
+        } for f in foods])
 
-    return jsonify([{
-        'id': f.id,
-        'name': get_food_name(f, lang),
-        'calories': f.calories,
-        'protein': f.protein,
-        'fat': f.fat,
-        'carbs': f.carbs,
-        'category': f.category,
-    } for f in foods])
+    # 1. Ищем в локальной БД
+    foods = Food.query.filter(name_col.ilike(f'%{q}%')).limit(limit).all()
+    result = [{
+        'id': f.id, 'name': get_food_name(f, lang),
+        'calories': round(f.calories, 1), 'protein': round(f.protein, 1),
+        'fat': round(f.fat, 1), 'carbs': round(f.carbs, 1), 'category': f.category,
+        'source': 'local'
+    } for f in foods]
+
+    # 2. Если мало результатов — ищем в Open Food Facts (3млн продуктов)
+    if len(result) < 5:
+        try:
+            import urllib.request, json as _json, urllib.parse
+            off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
+            query_enc = urllib.parse.quote(q)
+            url = (
+                f"https://world.openfoodfacts.org/cgi/search.pl"
+                f"?search_terms={query_enc}&search_simple=1&action=process"
+                f"&json=1&page_size=20&fields=id,product_name,product_name_{off_lang},"
+                f"nutriments,categories_tags"
+            )
+            req = urllib.request.Request(url, headers={'User-Agent': 'CaloriMint/1.0'})
+            with urllib.request.urlopen(req, timeout=3) as r:
+                data = _json.loads(r.read())
+            seen_names = {x['name'].lower() for x in result}
+            for p in data.get('products', []):
+                name = (p.get(f'product_name_{off_lang}') or p.get('product_name') or '').strip()
+                if not name or name.lower() in seen_names:
+                    continue
+                nut = p.get('nutriments', {})
+                cal = float(nut.get('energy-kcal_100g') or nut.get('energy_100g', 0) or 0)
+                if cal <= 0: continue
+                # Если энергия в кДж — конвертируем
+                if cal > 900: cal = round(cal / 4.184, 1)
+                prot = round(float(nut.get('proteins_100g', 0) or 0), 1)
+                fat  = round(float(nut.get('fat_100g', 0) or 0), 1)
+                carb = round(float(nut.get('carbohydrates_100g', 0) or 0), 1)
+                cal  = round(cal, 1)
+                result.append({
+                    'id': f'off_{p.get("id","")}',
+                    'name': name,
+                    'calories': cal, 'protein': prot, 'fat': fat, 'carbs': carb,
+                    'category': 'other', 'source': 'openfoodfacts'
+                })
+                seen_names.add(name.lower())
+                if len(result) >= limit: break
+        except Exception as e:
+            app.logger.warning(f'OpenFoodFacts search error: {e}')
+
+    return jsonify(result[:limit])
 
 @app.route('/api/recent')
 @login_required
@@ -1152,21 +1188,49 @@ def api_favorites():
 @login_required
 def api_add_entry():
     data = request.get_json()
-    food = Food.query.get(data['food_id'])
-    if not food:
-        return jsonify({'error': 'Food not found'}), 404
     lang = session.get('language', 'ru')
+    food_id = data.get('food_id', '')
     grams = float(data.get('grams', 100))
     ratio = grams / 100
+
+    # Продукт из Open Food Facts (id начинается с 'off_')
+    if str(food_id).startswith('off_'):
+        name = data.get('name', 'Продукт')
+        calories = float(data.get('calories', 0))
+        protein  = float(data.get('protein', 0))
+        fat      = float(data.get('fat', 0))
+        carbs    = float(data.get('carbs', 0))
+        # Сохраняем в локальную БД чтобы не терять
+        existing = Food.query.filter_by(name_ru=name).first()
+        if existing:
+            food = existing
+        else:
+            food = Food(
+                name_ru=name, name_en=name, name_uk=name, name_kk=name,
+                calories=calories, protein=protein, fat=fat, carbs=carbs,
+                category='other'
+            )
+            db.session.add(food)
+            db.session.flush()
+    else:
+        food = Food.query.get(int(food_id))
+        if not food:
+            return jsonify({'error': 'Food not found'}), 404
+        calories = food.calories
+        protein  = food.protein
+        fat      = food.fat
+        carbs    = food.carbs
+        name     = get_food_name(food, lang)
+
     entry = FoodEntry(
         user_id=current_user.id,
         food_id=food.id,
-        food_name=get_food_name(food, lang),
+        food_name=get_food_name(food, lang) if not str(food_id).startswith('off_') else name,
         grams=grams,
-        calories=round(food.calories * ratio, 1),
-        protein=round(food.protein * ratio, 1),
-        fat=round(food.fat * ratio, 1),
-        carbs=round(food.carbs * ratio, 1),
+        calories=round(calories * ratio, 1),
+        protein=round(protein * ratio, 1),
+        fat=round(fat * ratio, 1),
+        carbs=round(carbs * ratio, 1),
         meal_type=data.get('meal_type', 'other')
     )
     db.session.add(entry)
