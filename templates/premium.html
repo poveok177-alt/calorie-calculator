@@ -3,322 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ t.app_name }} — {{ t.premium }}</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234caf83' width='100' height='100' rx='22'/><text x='50' y='62' font-size='58' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<title>⭐ {{ t.get('premium','Premium') }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83;
-    --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9;
-    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e;
-    --border:#c8eedd; --shadow:rgba(76,175,131,0.12);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; padding-bottom:60px; }
-  nav { background:rgba(255,255,255,.95); backdrop-filter:blur(12px); border-bottom:1px solid var(--border);
-    padding:0 16px; position:sticky; top:0; z-index:100; box-shadow:0 2px 16px var(--shadow); }
-  .nav-inner { max-width:860px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:60px; }
-  .logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--green-dark); text-decoration:none; }
-  .nav-link { padding:7px 14px; border-radius:20px; text-decoration:none; font-size:13px; font-weight:700; color:var(--text-soft); transition:all .2s; }
-  .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
-
-  .wrap { max-width:860px; margin:0 auto; padding:0 16px; }
-
-  /* HERO */
-  .hero { text-align:center; padding:40px 20px 28px; background:linear-gradient(160deg,#e8f8f2 0%,#f9fdf9 100%); }
-  .hero-icon { font-size:52px; display:block; margin-bottom:12px; animation:float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-  .hero h1 { font-family:'Playfair Display',serif; font-size:32px; color:var(--text); margin-bottom:8px; }
-  @media(max-width:480px){ .hero h1{font-size:26px;} }
-  .hero p { font-size:15px; color:var(--text-soft); max-width:420px; margin:0 auto; line-height:1.6; }
-
-  /* SUCCESS */
-  .success-banner { background:linear-gradient(135deg,var(--green),var(--green-soft)); color:white;
-    text-align:center; padding:16px 24px; font-size:15px; font-weight:700; }
-
-  /* FEATURES GRID */
-  .features-wrap { padding:28px 0 0; }
-  .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  @media(max-width:540px){ .features-grid{grid-template-columns:1fr;} }
-  .feature-card { background:white; border-radius:18px; padding:20px; border:1.5px solid var(--border); box-shadow:0 4px 18px var(--shadow); transition:all .2s; }
-  .feature-card:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(76,175,131,.18); }
-  .badge { font-size:11px; font-weight:800; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
-  .badge-free { background:var(--mint); color:var(--green-dark); }
-  .badge-premium { background:linear-gradient(135deg,#2d8a63,#4caf83); color:white; }
-  .feature-icon { font-size:32px; margin-bottom:8px; display:block; }
-  .feature-title { font-family:'Playfair Display',serif; font-size:15px; color:var(--text); margin-bottom:4px; }
-  .feature-desc { font-size:13px; color:var(--text-soft); line-height:1.5; }
-
-  /* PRICING */
-  .pricing-wrap { max-width:440px; margin:28px auto 0; padding:0; }
-
-  /* TRIAL CARD */
-  .trial-card { background:linear-gradient(135deg,#e65c00,#f9a825); border-radius:22px; padding:26px 24px 22px; color:white; margin-bottom:14px; position:relative; overflow:hidden; box-shadow:0 8px 28px rgba(230,92,0,.28); }
-  .trial-card::after { content:'🎁'; position:absolute; font-size:72px; right:-8px; top:-8px; opacity:.14; }
-  .trial-badge { font-size:11px; font-weight:900; background:rgba(255,255,255,.22); padding:3px 11px; border-radius:20px; display:inline-block; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
-  .trial-title { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:4px; }
-  .trial-price { font-size:46px; font-weight:900; line-height:1; }
-  .trial-price span { font-size:18px; }
-  .trial-desc { font-size:13px; opacity:.9; margin:5px 0 14px; }
-  .trial-feats { margin-bottom:16px; }
-  .trial-feat { font-size:13px; padding:3px 0; opacity:.95; }
-  .trial-feat::before { content:'✓  '; font-weight:900; }
-  .btn-trial { display:block; width:100%; padding:15px; border:none; border-radius:14px; background:white; color:#c94a00; font-size:15px; font-weight:900; font-family:'Nunito',sans-serif; cursor:pointer; transition:all .2s; text-decoration:none; text-align:center; }
-  .btn-trial:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.15); }
-  .trial-note { font-size:11px; opacity:.75; text-align:center; margin-top:9px; }
-
-  /* MAIN PRICE */
-  .price-card { background:linear-gradient(135deg,#2d8a63,#4caf83,#6dc49a); border-radius:22px; padding:28px 24px; color:white; position:relative; overflow:hidden; box-shadow:0 10px 36px rgba(76,175,131,.28); margin-bottom:14px; }
-  .price-card::before { content:'🌿'; position:absolute; font-size:90px; right:-12px; top:-12px; opacity:.11; }
-  .price-label { font-size:13px; opacity:.85; font-weight:600; margin-bottom:4px; }
-  .price-amount { font-size:50px; font-weight:900; line-height:1; }
-  .price-amount span { font-size:20px; }
-  .price-period { font-size:13px; opacity:.8; margin-bottom:16px; }
-  .price-feats { margin:16px 0; }
-  .price-feat { font-size:13px; padding:5px 0; opacity:.95; }
-  .price-feat::before { content:'✓  '; font-weight:800; }
-  .btn-buy { display:block; background:white; color:var(--green-dark); text-decoration:none; border-radius:14px; padding:14px; font-weight:900; font-size:15px; transition:all .2s; text-align:center; border:none; cursor:pointer; font-family:'Nunito',sans-serif; width:100%; }
-  .btn-buy:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.15); }
-  .payment-note { font-size:11px; opacity:.7; text-align:center; margin-top:9px; }
-
-  /* ACTIVE */
-  .active-card { background:linear-gradient(135deg,var(--green),var(--green-soft)); border-radius:22px; padding:28px; color:white; text-align:center; box-shadow:0 10px 36px rgba(76,175,131,.28); margin-bottom:14px; }
-  .active-icon { font-size:48px; margin-bottom:10px; }
-  .active-title { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:6px; }
-  .active-desc { font-size:14px; opacity:.9; line-height:1.6; }
-
-  /* PROFILE PREMIUM SECTION */
-  .profile-section { background:white; border-radius:20px; padding:24px; margin-top:24px; border:1.5px solid var(--border); box-shadow:0 4px 20px var(--shadow); }
-  .profile-section-title { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:8px; }
-  .pm-feature-list { margin:16px 0; }
-  .pm-feat-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--mint-light); font-size:14px; }
-  .pm-feat-row:last-child { border-bottom:none; }
-  .pm-feat-icon { font-size:20px; width:28px; text-align:center; flex-shrink:0; }
-
-  /* ═══ MOBILE GLOBAL FIXES ═══ */
-  /* iOS safe area */
-  body { padding-bottom: max(60px, calc(60px + env(safe-area-inset-bottom))); }
-  /* Prevent double-tap zoom on buttons */
-  button, a { touch-action: manipulation; }
-  /* Scrollable lists scroll smoothly */
-  .meal-products, .category-scroll { -webkit-overflow-scrolling: touch; }
-  /* Bottom nav padding */
-  @media(max-width:860px){
-    body { padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom))); }
-    /* Hide top nav links on mobile — use bottom nav instead */
-    .nav-links { display:none!important; }
-    .lang-switcher { display:flex!important; }
-    /* Bigger tap targets */
-    .entry-remove { min-width:40px!important; min-height:40px!important; }
-    .cat-btn { min-height:36px!important; padding:6px 14px!important; }
-    .modal-quick-btn { min-height:40px!important; padding:8px 16px!important; }
-    /* Product list full width on mobile */
-    .meal-products { margin:0 10px 10px!important; }
-    /* Meal header wraps nicely */
-    .meal-header { padding:12px 14px 10px!important; }
-    /* Search row */
-    .meal-search-wrap { padding:0 10px 10px!important; }
-    /* Modal full width on mobile */
-    .modal-box { padding:22px 16px 28px!important; }
-  }
-  @media(max-width:480px){
-    .modal-meal-selector { gap:4px!important; }
-    .modal-meal-btn { min-width:60px!important; padding:7px 6px!important; font-size:11px!important; }
-    .modal-meal-btn span { font-size:9px!important; }
-    .search-tabs { overflow-x:auto; scrollbar-width:none; padding-bottom:0; }
-    .search-tabs::-webkit-scrollbar { display:none; }
-    .search-tab { font-size:12px!important; padding:6px 10px!important; white-space:nowrap; }
-  }
-
+body{
+font-family:'Nunito',sans-serif;
+background:#f9fdf9;
+color:#2d4a3e;
+text-align:center;
+padding:40px 20px;
+}
+.card{
+max-width:500px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 4px 20px rgba(76,175,131,.15);
+}
+h1{margin-bottom:20px}
+.feature{
+margin:15px 0;
+font-size:16px;
+}
+.badge{
+margin-top:20px;
+padding:12px;
+background:#e8f8f2;
+border-radius:12px;
+font-weight:700;
+}
 </style>
 </head>
 <body>
-<nav>
-  <div class="nav-inner">
-    <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <a href="/" class="nav-link">← {{ t['today'] }}</a>
-  </div>
-</nav>
 
-{% if trial_success is defined and trial_success %}
-<div class="success-banner">{{ t['trial_success_msg'] }}</div>
+<div class="card">
+<h1>⭐ {{ t.get('premium','Premium') }}</h1>
+
+<div class="feature">📈 {{ t.get('weight_chart','График веса') }}</div>
+<div class="feature">🔥 Streak</div>
+<div class="feature">📊 {{ t.get('weekly_reports','Недельные отчёты') }}</div>
+<div class="feature">👤 {{ t.get('custom_foods','Свои продукты') }}</div>
+
+{% if current_user.is_premium %}
+<div class="badge">
+🌿 Premium активен до {{ current_user.premium_until }}
+</div>
+{% else %}
+<div class="badge">
+⭐ {{ t.get('upgrade','Перейти на Premium') }}
+</div>
 {% endif %}
 
-<div class="hero">
-  <span class="hero-icon">⭐</span>
-  <h1>{{ t.premium }}</h1>
-  <p>{{ t['premium_desc'] }}</p>
 </div>
-
-<div class="wrap">
-
-  <!-- FEATURES -->
-  <div class="features-wrap">
-    <div class="features-grid">
-      <div class="feature-card">
-        <span class="badge badge-free">{{ t['free_badge'] }}</span>
-        <span class="feature-icon">🔍</span>
-        <div class="feature-title">{{ t['food_search_feat'] }}</div>
-        <div class="feature-desc">{{ t['food_search_desc'] }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-free">{{ t['free_badge'] }}</span>
-        <span class="feature-icon">🔥</span>
-        <div class="feature-title">{{ t['cal_counter_feat'] }}</div>
-        <div class="feature-desc">{{ t['cal_counter_desc'] }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-free">{{ t['free_badge'] }}</span>
-        <span class="feature-icon">🔥</span>
-        <div class="feature-title">Streak</div>
-        <div class="feature-desc">{{ t.get('streak_label','Дней подряд') }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
-        <span class="feature-icon">📅</span>
-        <div class="feature-title">{{ t['month_history'] }}</div>
-        <div class="feature-desc">{{ t['hist_feat_desc'] }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
-        <span class="feature-icon">📈</span>
-        <div class="feature-title">{{ t.get('weight_chart_title','График веса') }}</div>
-        <div class="feature-desc">{{ t.get('pm_weight_chart','Динамика за 30 дней') }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
-        <span class="feature-icon">📊</span>
-        <div class="feature-title">{{ t['bju_counter'] }}</div>
-        <div class="feature-desc">{{ t['bju_feat_desc'] }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
-        <span class="feature-icon">👤</span>
-        <div class="feature-title">{{ t.get('create_food','Свои продукты') }}</div>
-        <div class="feature-desc">{{ t.get('pm_custom_limit','Безлимит своих блюд') }}</div>
-      </div>
-      <div class="feature-card">
-        <span class="badge badge-premium">{{ t['premium_badge'] }}</span>
-        <span class="feature-icon">💧</span>
-        <div class="feature-title">{{ t['water_feat'] }}</div>
-        <div class="feature-desc">{{ t['water_feat_desc'] }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PRICING -->
-  <div class="pricing-wrap">
-
-    {% if current_user.is_authenticated and current_user.is_premium and not (trial_success is defined and trial_success) %}
-    <div class="active-card">
-      <div class="active-icon">🌿</div>
-      <div class="active-title">{{ t['premium_active'] }}</div>
-      <div class="active-desc">
-        {% if current_user.trial_ends and current_user.trial_ends > now %}
-          {{ t.get('pm_active_until','Premium активен до') }} {{ (current_user.trial_ends.strftime('%d.%m.%Y') if current_user.trial_ends else '') }}
-        {% else %}
-          {{ t['all_features'] }}
-        {% endif %}
-      </div>
-    </div>
-
-    {% else %}
-
-    {% if trial_available %}
-    <div class="trial-card">
-      <span class="trial-badge">🔥 {{ t['special_offer'] }}</span>
-      <div class="trial-title">{{ t['trial_period'] }}</div>
-      <div class="trial-price">11<span>₽</span></div>
-      <div class="trial-desc">{{ t['new_users_only'] }}</div>
-      <div class="trial-feats">
-        <div class="trial-feat">{{ t['trial_all_feat'] }}</div>
-        <div class="trial-feat">{{ t['trial_hist'] }}</div>
-        <div class="trial-feat">{{ t['trial_bju'] }}</div>
-      </div>
-      <a href="/start-trial" class="btn-trial">{{ t['trial_btn'] }}</a>
-      <div class="trial-note">{{ t['after_trial'] }}</div>
-    </div>
-    {% endif %}
-
-    <div class="price-card">
-      <div class="price-label">{{ t['sub_label'] }}</div>
-      <div class="price-amount">129<span>₽</span></div>
-      <div class="price-period">{{ t['per_month'] }}</div>
-      <div class="price-feats">
-        <div class="price-feat">{{ t['hist_price_feat'] }}</div>
-        <div class="price-feat">{{ t['bju_price_feat'] }}</div>
-        <div class="price-feat">{{ t['weight_price_feat'] }}</div>
-        <div class="price-feat">{{ t['water_price_feat'] }}</div>
-        <div class="price-feat">{{ t.get('create_food','Свои продукты') }} (безлимит)</div>
-        <div class="price-feat">{{ t.get('pm_export','Экспорт данных') }}</div>
-      </div>
-      <a href="/start-trial" class="btn-buy">{{ t['buy_btn'] }}</a>
-      <div class="payment-note">{{ t['secure_pay'] }}</div>
-    </div>
-
-    {% endif %}
-  </div>
-
-  <!-- PROFILE PREMIUM SECTION -->
-  {% if current_user.is_authenticated and current_user.is_premium %}
-  <div class="profile-section">
-    <div class="profile-section-title">{{ t.get('pm_profile_section','⭐ Premium возможности') }}</div>
-    <div style="font-size:13px;color:var(--text-soft);margin-bottom:12px;">{{ t.get('pm_profile_desc','Все функции разблокированы') }}</div>
-    <div class="pm-feature-list">
-      <div class="pm-feat-row"><span class="pm-feat-icon">📅</span> {{ t['month_history'] }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">📈</span> {{ t.get('weight_chart_title','График веса') }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">📊</span> {{ t.get('weekly_title','Недельные сводки') }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">👤</span> {{ t.get('create_food','Свои продукты') }} (безлимит)</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">💧</span> {{ t['water_feat'] }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">🔥</span> Streak</div>
-    </div>
-  </div>
-  {% else %}
-  <div class="profile-section">
-    <div class="profile-section-title">{{ t.get('pm_profile_section','⭐ Premium возможности') }}</div>
-    <div style="font-size:13px;color:var(--text-soft);margin-bottom:16px;">{{ t.get('pm_profile_desc','Разблокируйте весь потенциал приложения') }}</div>
-    <div class="pm-feature-list">
-      <div class="pm-feat-row"><span class="pm-feat-icon">📅</span> {{ t['month_history'] }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">📈</span> {{ t.get('weight_chart_title','График веса') }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">📊</span> {{ t.get('weekly_title','Недельные сводки') }}</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">👤</span> {{ t.get('create_food','Свои продукты') }} — безлимит</div>
-      <div class="pm-feat-row"><span class="pm-feat-icon">📤</span> {{ t.get('pm_export','Экспорт данных') }}</div>
-    </div>
-    <a href="/start-trial" style="display:block;text-align:center;margin-top:16px;background:linear-gradient(135deg,var(--green),var(--green-soft));color:white;padding:13px;border-radius:14px;font-weight:800;font-size:14px;text-decoration:none;">{{ t.get('pm_profile_btn','Подключить Premium') }}</a>
-  </div>
-  {% endif %}
-
-</div>
-
-<!-- BOTTOM NAV (mobile only) -->
-<nav class="bottom-nav">
-  <a href="/" class="bnav-item ">
-    <span class="bnav-icon">🏠</span>
-    <span class="bnav-label">{{ t.get('today','Сегодня') }}</span>
-  </a>
-  <a href="/history" class="bnav-item ">
-    <span class="bnav-icon">📊</span>
-    <span class="bnav-label">{{ t.get('history','История') }}</span>
-  </a>
-  <a href="/goals" class="bnav-item ">
-    <span class="bnav-icon">🎯</span>
-    <span class="bnav-label">{{ t.get('goals','Цели') }}</span>
-  </a>
-  <a href="/premium" class="bnav-item bnav-premium active">
-    <span class="bnav-icon">⭐</span>
-    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
-  </a>
-</nav>
-<style>
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
-@media(max-width:860px){.bottom-nav{display:flex;}}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
-.bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
-.bnav-item.bnav-premium{color:#e65c00;}
-.bnav-item.bnav-premium.active{background:rgba(255,107,53,.1);}
-.bnav-icon{font-size:22px;line-height:1;}
-.bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
-</style>
 
 </body>
 </html>

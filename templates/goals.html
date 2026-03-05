@@ -5,86 +5,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ t.app_name }} — {{ t.goals }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+--mint:#b5ead7;
+--mint-light:#e8f8f2;
+--green:#4caf83;
+--green-dark:#2d8a63;
+--text:#2d4a3e;
+--border:#c8eedd;
+--shadow:rgba(76,175,131,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+font-family:'Nunito',sans-serif;
+background:#f9fdf9;
+color:var(--text);
+}
+nav{
+background:white;
+border-bottom:1px solid var(--border);
+padding:16px 24px;
+}
+.logo{
+font-family:'Playfair Display',serif;
+font-size:22px;
+color:var(--green-dark);
+text-decoration:none;
+font-weight:600;
+}
+main{max-width:700px;margin:40px auto;padding:0 20px}
+.page-title{
+font-family:'Playfair Display',serif;
+font-size:30px;
+margin-bottom:30px;
+}
+.card{
+background:white;
+border-radius:20px;
+padding:28px;
+border:1px solid var(--border);
+box-shadow:0 4px 20px var(--shadow);
+}
+.form-group{margin-bottom:18px}
+label{
+display:block;
+font-size:13px;
+font-weight:700;
+margin-bottom:6px;
+color:#5a7a6e;
+}
+input,select{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:2px solid var(--border);
+background:var(--mint-light);
+font-size:15px;
+}
+input:focus,select:focus{
+outline:none;
+border-color:var(--green);
+background:white;
+}
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:18px;
+font-weight:800;
+cursor:pointer;
+margin-top:10px;
+}
+.btn-primary{
+background:linear-gradient(135deg,var(--green),#6dc49a);
+color:white;
+}
+.btn-secondary{
+background:var(--mint);
+color:var(--green-dark);
+}
+.progress{
+margin-top:25px;
+background:var(--mint-light);
+padding:18px;
+border-radius:14px;
+}
+</style>
 </head>
 
 <body>
 
-<h1>🎯 {{ t.goals }}</h1>
+<nav>
+<a href="/" class="logo">🌿 {{ t.app_name }}</a>
+</nav>
 
+<main>
+<div class="page-title">🎯 {{ t.goals }}</div>
+
+<div class="card">
 <form method="POST">
 
-<h3>⚖️ Вес и параметры</h3>
-
+<div class="form-group">
 <label>{{ t.get('current_weight','Текущий вес') }}</label>
 <input type="number" name="current_weight" step="0.1"
-       value="{{ last_weight or current_user.current_weight or '' }}" required>
+value="{{ last_weight or current_user.current_weight or '' }}" required>
+</div>
 
+<div class="form-group">
 <label>{{ t.get('goal_weight','Целевой вес') }}</label>
 <input type="number" name="goal_weight" step="0.1"
-       value="{{ current_user.goal_weight or '' }}" required>
+value="{{ current_user.goal_weight or '' }}" required>
+</div>
 
+<div class="form-group">
 <label>{{ t.get('height','Рост') }}</label>
 <input type="number" name="height"
-       value="{{ current_user.height or '' }}" required>
+value="{{ current_user.height or '' }}" required>
+</div>
 
+<div class="form-group">
 <label>{{ t.get('age','Возраст') }}</label>
 <input type="number" name="age"
-       value="{{ current_user.age or 25 }}" required>
+value="{{ current_user.age or 25 }}" required>
+</div>
 
-<label>{{ t.get('gender','Пол') }}</label>
-<select name="gender" required>
-<option value="">{{ t.get('select','Выберите') }}</option>
-<option value="male">{{ t.get('gender_male','Мужской') }}</option>
-<option value="female">{{ t.get('gender_female','Женский') }}</option>
-</select>
-
+<div class="form-group">
 <label>{{ t.get('daily_goal','Калории в день') }}</label>
 <input type="number" name="daily_calorie_goal"
-       value="{{ current_user.daily_calorie_goal or 2000 }}" required>
+value="{{ current_user.daily_calorie_goal or 2000 }}" required>
+</div>
 
-<label>{{ t.get('protein_goal_label','Белки (г)') }}</label>
-<input type="number" name="protein_goal"
-       value="{{ current_user.protein_goal or 150 }}" required>
-
-<label>{{ t.get('fat_goal_label','Жиры (г)') }}</label>
-<input type="number" name="fat_goal"
-       value="{{ current_user.fat_goal or 70 }}" required>
-
-<label>{{ t.get('carbs_goal_label','Углеводы (г)') }}</label>
-<input type="number" name="carbs_goal"
-       value="{{ current_user.carbs_goal or 250 }}" required>
-
-<label>{{ t.get('water_goal_label','Вода (стаканы)') }}</label>
-<input type="number" name="water_goal"
-       value="{{ current_user.water_goal or 8 }}" required>
-
-<br><br>
-
-<button type="submit">💾 {{ t.get('save','Сохранить') }}</button>
+<button type="submit" class="btn-primary">
+💾 {{ t.get('save','Сохранить') }}
+</button>
 
 </form>
 
-
 {% if current_user.current_weight and current_user.goal_weight %}
-<hr>
-<h3>📊 Прогресс</h3>
-
-<p>
+<div class="progress">
 {{ t.get('now','Сейчас') }}: {{ current_user.current_weight }} кг →
 {{ t.get('goal','Цель') }}: {{ current_user.goal_weight }} кг
-</p>
-
-{% set diff = (current_user.current_weight - current_user.goal_weight)|abs %}
-
-{% if current_user.current_weight > current_user.goal_weight %}
-<p>{{ t.get('to_goal_lose','Осталось сбросить {d} кг').replace('{d}', diff|round(1)|string) }}</p>
-{% elif current_user.current_weight < current_user.goal_weight %}
-<p>{{ t.get('to_goal_gain','Осталось набрать {d} кг').replace('{d}', diff|round(1)|string) }}</p>
-{% else %}
-<p>{{ t.get('goal_reached','Цель достигнута 🎉') }}</p>
+</div>
 {% endif %}
 
-{% endif %}
-
+</div>
+</main>
 </body>
 </html>
