@@ -157,7 +157,109 @@ def init_db():
         except Exception as e:
             pass
 
-# ===================== OPEN FOOD FACTS API (3млн продуктов) =====================
+# ===================== TRANSLATIONS =====================
+
+TRANSLATIONS = {
+    'ru': {
+        'app_name': 'CaloriMint',
+        'tagline': 'Ваше тело - ваша забота',
+        'login': 'Вход',
+        'register': 'Регистрация',
+        'email': 'Email',
+        'password': 'Пароль',
+        'username': 'Имя пользователя',
+        'no_account': 'Нет аккаунта?',
+        'have_account': 'Есть аккаунт?',
+        'today': 'Сегодня',
+        'history': 'История',
+        'goals': 'Цели',
+        'premium': 'Premium',
+        'logout': 'Выход',
+        'calories': 'Калории',
+        'protein': 'Белки',
+        'fat': 'Жиры',
+        'carbs': 'Углеводы',
+        'kcal': 'ккал',
+        'g': 'г',
+        'ml': 'мл',
+        'of': 'из',
+        'water': 'Вода',
+        'cups': 'чашек',
+        'breakfast': 'Завтрак',
+        'lunch': 'Обед',
+        'dinner': 'Ужин',
+        'snack': 'Перекус',
+        'search_placeholder': 'Ищите продукты...',
+        'all': 'Все',
+        'categories': 'Категории',
+        'clear': 'Очистить',
+        'clear_day': 'Очистить день',
+        'delete_entry_confirm': 'Удалить этот продукт?',
+        'clear_meal_confirm': 'Очистить этот приём пищи?',
+        'clear_day_confirm': 'Очистить весь день?',
+        'quick_loading': 'Загрузка...',
+        'not_found': 'Ничего не найдено',
+        'load_error': 'Ошибка загрузки',
+        'weight_label': 'Вес (г)',
+        'volume_label': 'Объём (мл)',
+        'total': 'Итого',
+        'confirm_add': 'Добавить',
+        'cancel': 'Отмена',
+    },
+    'en': {
+        'app_name': 'CaloriMint',
+        'tagline': 'Your body, your care',
+        'login': 'Login',
+        'register': 'Register',
+        'email': 'Email',
+        'password': 'Password',
+        'username': 'Username',
+        'no_account': 'No account?',
+        'have_account': 'Have an account?',
+        'today': 'Today',
+        'history': 'History',
+        'goals': 'Goals',
+        'premium': 'Premium',
+        'logout': 'Logout',
+        'calories': 'Calories',
+        'protein': 'Protein',
+        'fat': 'Fat',
+        'carbs': 'Carbs',
+        'kcal': 'kcal',
+        'g': 'g',
+        'ml': 'ml',
+        'of': 'of',
+        'water': 'Water',
+        'cups': 'cups',
+        'breakfast': 'Breakfast',
+        'lunch': 'Lunch',
+        'dinner': 'Dinner',
+        'snack': 'Snack',
+        'search_placeholder': 'Search products...',
+        'all': 'All',
+        'categories': 'Categories',
+        'clear': 'Clear',
+        'clear_day': 'Clear day',
+        'delete_entry_confirm': 'Delete this product?',
+        'clear_meal_confirm': 'Clear this meal?',
+        'clear_day_confirm': 'Clear entire day?',
+        'quick_loading': 'Loading...',
+        'not_found': 'Nothing found',
+        'load_error': 'Load error',
+        'weight_label': 'Weight (g)',
+        'volume_label': 'Volume (ml)',
+        'total': 'Total',
+        'confirm_add': 'Add',
+        'cancel': 'Cancel',
+    }
+}
+
+def get_lang():
+    if current_user.is_authenticated:
+        return current_user.language or 'ru'
+    return session.get('lang', 'ru')
+
+# ===================== OPEN FOOD FACTS API =====================
 
 _off_cache = {}
 _cache_timestamps = {}
@@ -308,7 +410,9 @@ def index():
             check = check - timedelta(days=1)
         else:
             break
-    return render_template('index.html', meals=meals, total_calories=int(total_calories), total_protein=int(total_protein), total_fat=int(total_fat), total_carbs=int(total_carbs), lang=lang, streak=streak)
+    
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    return render_template('index.html', meals=meals, total_calories=int(total_calories), total_protein=int(total_protein), total_fat=int(total_fat), total_carbs=int(total_carbs), lang=lang, streak=streak, t=t, current_user=current_user)
 
 @app.route('/api/search', methods=['GET'])
 @login_required
@@ -585,7 +689,10 @@ def weekly_summary():
     days_logged = len(day_map)
     days_on_goal = sum(1 for d in day_map.values() if d['cal'] <= goal)
     avg_cal = round(sum(d['cal'] for d in day_map.values()) / max(days_logged, 1))
-    return jsonify({'days_logged': days_logged, 'days_on_goal': days_on_goal, 'avg_cal': avg_cal, 'goal': goal})
+    avg_protein = round(sum(d['protein'] for d in day_map.values()) / max(days_logged, 1))
+    avg_fat = round(sum(d['fat'] for d in day_map.values()) / max(days_logged, 1))
+    avg_carbs = round(sum(d['carbs'] for d in day_map.values()) / max(days_logged, 1))
+    return jsonify({'days_logged': days_logged, 'days_on_goal': days_on_goal, 'avg_cal': avg_cal, 'avg_protein': avg_protein, 'avg_fat': avg_fat, 'avg_carbs': avg_carbs, 'goal': goal})
 
 @app.route('/history')
 @login_required
@@ -601,10 +708,15 @@ def history():
     for e in entries:
         ds = e.date.strftime('%d.%m.%Y')
         if ds not in days:
-            days[ds] = {'entries': [], 'total_cal': 0}
+            days[ds] = {'entries': [], 'total_cal': 0, 'total_protein': 0, 'total_fat': 0, 'total_carbs': 0}
         days[ds]['entries'].append({'food_name': e.food_name, 'grams': e.grams, 'calories': e.calories, 'meal_type': e.meal_type or 'other'})
         days[ds]['total_cal'] += e.calories
-    return render_template('history.html', days=days, lang=lang, is_premium=is_premium, goal=current_user.daily_calorie_goal or 2000)
+        days[ds]['total_protein'] += e.protein
+        days[ds]['total_fat'] += e.fat
+        days[ds]['total_carbs'] += e.carbs
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    now = datetime.utcnow()
+    return render_template('history.html', days=days, lang=lang, is_premium=is_premium, goal=current_user.daily_calorie_goal or 2000, t=t, current_user=current_user, now=now)
 
 @app.route('/goals', methods=['GET', 'POST'])
 @login_required
@@ -625,7 +737,9 @@ def goals():
         db.session.commit()
         flash('Goals updated!', 'success')
         return redirect(url_for('goals'))
-    return render_template('goals.html', user=current_user, lang=lang)
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    last_weight = None
+    return render_template('goals.html', user=current_user, lang=lang, t=t, last_weight=last_weight, current_user=current_user, now=datetime.utcnow())
 
 @app.route('/categories')
 @login_required
@@ -647,7 +761,8 @@ def categories():
     category_keys = [k for k in cat_labels if k in cats]
     current_cat = request.args.get('cat', category_keys[0] if category_keys else 'fruits')
     foods = sorted(cats.get(current_cat, []), key=lambda x: x['name'])
-    return render_template('categories.html', categories=cats, category_keys=category_keys, cat_labels=cat_labels, current_cat=current_cat, foods=foods, lang=lang)
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    return render_template('categories.html', categories=cats, category_keys=category_keys, cat_labels=cat_labels, current_cat=current_cat, foods=foods, lang=lang, t=t, current_user=current_user)
 
 @app.route('/premium')
 @login_required
@@ -655,7 +770,9 @@ def premium():
     lang = current_user.language or 'ru'
     trial_available = not current_user.trial_used and not current_user.is_premium
     trial_active = bool(current_user.trial_ends and current_user.trial_ends > datetime.utcnow())
-    return render_template('premium.html', lang=lang, trial_available=trial_available, trial_active=trial_active)
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    now = datetime.utcnow()
+    return render_template('premium.html', lang=lang, trial_available=trial_available, trial_active=trial_active, t=t, current_user=current_user, now=now)
 
 @app.route('/start-trial')
 @login_required
@@ -689,14 +806,16 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
             return redirect(url_for('index'))
         flash('Invalid credentials', 'error')
-    return render_template('login.html')
+    lang = session.get('lang', 'ru')
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    return render_template('login.html', t=t)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -724,7 +843,9 @@ def register():
         db.session.commit()
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html')
+    lang = session.get('lang', 'ru')
+    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
+    return render_template('register.html', t=t)
 
 @app.route('/logout')
 @login_required
@@ -738,10 +859,20 @@ def admin():
     if not current_user.is_superuser:
         return 'Forbidden', 403
     users = User.query.all()
-    return render_template('admin.html', users=users)
+    return render_template('admin.html', users=users, now=datetime.utcnow())
 
 @app.route('/set-language/<lang>')
 def set_language(lang):
+    if lang in ['ru', 'en', 'uk', 'kk']:
+        if current_user.is_authenticated:
+            current_user.language = lang
+            db.session.commit()
+        session['lang'] = lang
+    return redirect(request.referrer or url_for('index'))
+
+@app.route('/language', methods=['POST'])
+def change_language():
+    lang = request.form.get('lang', 'ru')
     if lang in ['ru', 'en', 'uk', 'kk']:
         if current_user.is_authenticated:
             current_user.language = lang
