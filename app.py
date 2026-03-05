@@ -247,6 +247,15 @@ TRANSLATIONS = {
         'sports_nutrition': 'Спортпит 💪',
         'recent': 'Недавние',
         'favorites': 'Избранные',
+        'eggs': '🥚 Яйца',
+        'legumes': '🫘 Бобовые',
+        'fastfood': '🍔 Фастфуд',
+        'oils': '🫙 Масла',
+        'sauces': '🥫 Соусы',
+        'sports': '💪 Спортпит',
+        'baby': '👶 Детское',
+        'other': '🍽 Прочее',
+        'all_categories': 'Все',
     },
     'en': {
         'app_name': 'CaloriMint',
@@ -384,6 +393,15 @@ TRANSLATIONS = {
         'sports_nutrition': 'Sports nutrition 💪',
         'recent': 'Recent',
         'favorites': 'Favorites',
+        'eggs': '🥚 Eggs',
+        'legumes': '🫘 Legumes',
+        'fastfood': '🍔 Fast food',
+        'oils': '🫙 Oils',
+        'sauces': '🥫 Sauces',
+        'sports': '💪 Sports nutrition',
+        'baby': '👶 Baby food',
+        'other': '🍽 Other',
+        'all_categories': 'All',
     },
     'uk': {
         'app_name': "КалоріМ'ята",
@@ -661,7 +679,7 @@ TRANSLATIONS = {
     }
 }
 
-CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'dairy', 'grains', 'nuts', 'fish', 'sweets', 'drinks', 'other']
+CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'fish', 'dairy', 'grains', 'nuts', 'eggs', 'legumes', 'fastfood', 'sweets', 'drinks', 'oils', 'sauces', 'sports', 'baby', 'other']
 
 def get_t():
     lang = session.get('language', 'ru')
@@ -1059,30 +1077,38 @@ def admin_revoke_premium():
 def api_search():
     lang = session.get('language', 'ru')
     q = request.args.get('q', '').strip()
-    limit = min(int(request.args.get('limit', 15)), 30)
+    cat = request.args.get('cat', '').strip()
+    limit = min(int(request.args.get('limit', 20)), 50)
 
     name_col = {'ru': Food.name_ru, 'en': Food.name_en, 'uk': Food.name_uk, 'kk': Food.name_kk}.get(lang, Food.name_ru)
 
-    # Пустой запрос — возвращаем популярные продукты
+    def food_to_dict(f):
+        return {
+            'id': f.id,
+            'name': get_food_name(f, lang),
+            'calories': round(f.calories, 1),
+            'protein': round(f.protein, 1),
+            'fat': round(f.fat, 1),
+            'carbs': round(f.carbs, 1),
+            'category': f.category,
+        }
+
+    # Фильтр по категории
+    base_q = Food.query
+    if cat:
+        base_q = base_q.filter_by(category=cat)
+
+    # Пустой запрос — популярные/категория
     if not q:
-        foods = Food.query.limit(limit).all()
-        return jsonify([{
-            'id': f.id, 'name': get_food_name(f, lang),
-            'calories': f.calories, 'protein': f.protein,
-            'fat': f.fat, 'carbs': f.carbs, 'category': f.category,
-        } for f in foods])
+        foods = base_q.limit(limit).all()
+        return jsonify([food_to_dict(f) for f in foods])
 
-    # 1. Ищем в локальной БД
-    foods = Food.query.filter(name_col.ilike(f'%{q}%')).limit(limit).all()
-    result = [{
-        'id': f.id, 'name': get_food_name(f, lang),
-        'calories': round(f.calories, 1), 'protein': round(f.protein, 1),
-        'fat': round(f.fat, 1), 'carbs': round(f.carbs, 1), 'category': f.category,
-        'source': 'local'
-    } for f in foods]
+    # Ищем в локальной БД
+    foods = base_q.filter(name_col.ilike(f'%{q}%')).limit(limit).all()
+    result = [food_to_dict(f) for f in foods]
 
-    # 2. Если мало результатов — ищем в Open Food Facts (3млн продуктов)
-    if len(result) < 5:
+    # Если мало — ищем в Open Food Facts
+    if len(result) < 5 and not cat:
         try:
             import urllib.request, json as _json, urllib.parse
             off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
@@ -1090,11 +1116,10 @@ def api_search():
             url = (
                 f"https://world.openfoodfacts.org/cgi/search.pl"
                 f"?search_terms={query_enc}&search_simple=1&action=process"
-                f"&json=1&page_size=20&fields=id,product_name,product_name_{off_lang},"
-                f"nutriments,categories_tags"
+                f"&json=1&page_size=25&fields=id,product_name,product_name_{off_lang},nutriments"
             )
             req = urllib.request.Request(url, headers={'User-Agent': 'CaloriMint/1.0'})
-            with urllib.request.urlopen(req, timeout=3) as r:
+            with urllib.request.urlopen(req, timeout=4) as r:
                 data = _json.loads(r.read())
             seen_names = {x['name'].lower() for x in result}
             for p in data.get('products', []):
@@ -1103,18 +1128,15 @@ def api_search():
                     continue
                 nut = p.get('nutriments', {})
                 cal = float(nut.get('energy-kcal_100g') or nut.get('energy_100g', 0) or 0)
-                if cal <= 0: continue
-                # Если энергия в кДж — конвертируем
-                if cal > 900: cal = round(cal / 4.184, 1)
+                if cal <= 0 or cal > 1000: continue
                 prot = round(float(nut.get('proteins_100g', 0) or 0), 1)
                 fat  = round(float(nut.get('fat_100g', 0) or 0), 1)
                 carb = round(float(nut.get('carbohydrates_100g', 0) or 0), 1)
-                cal  = round(cal, 1)
                 result.append({
-                    'id': f'off_{p.get("id","")}',
+                    'id': f'off_{p.get("id","x")}',
                     'name': name,
-                    'calories': cal, 'protein': prot, 'fat': fat, 'carbs': carb,
-                    'category': 'other', 'source': 'openfoodfacts'
+                    'calories': round(cal, 1), 'protein': prot, 'fat': fat, 'carbs': carb,
+                    'category': 'other',
                 })
                 seen_names.add(name.lower())
                 if len(result) >= limit: break

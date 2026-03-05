@@ -2,185 +2,152 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234caf83' width='100' height='100' rx='22'/><text x='50' y='62' font-size='58' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ t.app_name }} — {{ t.today }}</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 :root{
   --mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;
   --green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;
   --text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;
-  --border:#c8eedd;--shadow:rgba(76,175,131,.12);--danger:#e57373;
+  --border:#c8eedd;--shadow:rgba(76,175,131,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{
-  font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
-  min-height:100vh;
-  background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
-  padding-bottom:max(80px,calc(80px + env(safe-area-inset-bottom)));
-}
-/* NAV */
-nav.top-nav{
-  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);padding:0 24px;
-  position:sticky;top:0;z-index:100;box-shadow:0 2px 20px var(--shadow);
-}
-.nav-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;}
-.logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:600;color:var(--green-dark);text-decoration:none;}
-.nav-links a{padding:7px 12px;border-radius:18px;text-decoration:none;font-size:13px;font-weight:600;color:var(--text-soft);transition:all .2s;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;
+  padding-bottom:80px;
+  background-image:radial-gradient(circle at 15% 15%,rgba(181,234,215,.25) 0%,transparent 50%);}
+nav{background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);}
+.nav-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--green-dark);text-decoration:none;}
+.nav-links a{padding:7px 12px;border-radius:16px;text-decoration:none;font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;}
 .nav-links a:hover{background:var(--mint-light);color:var(--green-dark);}
+main{max-width:860px;margin:0 auto;padding:24px 16px;}
 
-main{max-width:860px;margin:0 auto;padding:28px 20px;}
+/* ПРОГРЕСС */
+.prog-card{background:linear-gradient(135deg,var(--green) 0%,var(--green-soft) 100%);
+  border-radius:22px;padding:24px;color:#fff;margin-bottom:24px;
+  box-shadow:0 6px 28px rgba(76,175,131,.3);}
+.prog-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.prog-eaten{font-size:44px;font-weight:900;line-height:1;}
+.prog-goal{font-size:13px;opacity:.85;margin-top:3px;}
+.prog-rem-num{font-size:22px;font-weight:800;text-align:right;}
+.prog-rem-lbl{font-size:12px;opacity:.8;text-align:right;}
+.prog-bar{height:10px;border-radius:5px;background:rgba(255,255,255,.3);overflow:hidden;margin-bottom:14px;}
+.prog-fill{height:100%;background:#fff;border-radius:5px;transition:width .4s;}
+.bju-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.bju-chip{background:rgba(255,255,255,.18);border-radius:10px;padding:9px;text-align:center;}
+.bju-lbl{font-size:10px;opacity:.8;text-transform:uppercase;letter-spacing:.3px;}
+.bju-val{font-size:16px;font-weight:800;margin-top:2px;}
 
-/* PROGRESS CARD */
-.progress-card{
-  background:linear-gradient(135deg,var(--green),var(--green-soft));
-  border-radius:24px;padding:28px 28px 24px;color:white;
-  margin-bottom:28px;box-shadow:0 8px 32px rgba(76,175,131,.3);
-}
-.progress-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
-.cal-eaten{font-size:46px;font-weight:900;line-height:1;}
-.cal-goal{font-size:13px;opacity:.85;margin-top:4px;}
-.cal-remaining{text-align:right;}
-.cal-remaining-num{font-size:22px;font-weight:800;}
-.cal-remaining-lbl{font-size:12px;opacity:.85;}
-.progress-bar{height:10px;border-radius:5px;background:rgba(255,255,255,.3);overflow:hidden;margin-bottom:16px;}
-.progress-fill{height:100%;background:white;border-radius:5px;transition:width .4s;}
-.bju-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.bju-chip{background:rgba(255,255,255,.18);border-radius:12px;padding:10px;text-align:center;}
-.bju-chip-lbl{font-size:10px;opacity:.85;text-transform:uppercase;letter-spacing:.4px;}
-.bju-chip-val{font-size:17px;font-weight:800;margin-top:3px;}
+/* ПРИЁМ ПИЩИ */
+.meal-card{background:#fff;border-radius:20px;border:1.5px solid var(--border);
+  box-shadow:0 3px 16px var(--shadow);margin-bottom:14px;overflow:hidden;}
+.meal-hdr{display:flex;align-items:center;gap:10px;padding:16px 18px 12px;
+  border-bottom:1.5px solid var(--mint-light);cursor:pointer;user-select:none;}
+.meal-ico{font-size:24px;}
+.meal-nm{font-weight:800;font-size:15px;flex:1;}
+.meal-kcal-badge{font-size:14px;font-weight:800;color:var(--green-dark);
+  background:var(--mint-light);padding:4px 10px;border-radius:20px;}
+.meal-arr{font-size:16px;color:var(--text-light);transition:transform .2s;}
+.meal-arr.open{transform:rotate(180deg);}
 
-/* MEAL SECTIONS */
-.meal-card{
-  background:white;border-radius:22px;
-  border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);
-  margin-bottom:18px;overflow:hidden;
-}
-.meal-header{
-  display:flex;align-items:center;gap:10px;padding:18px 20px 14px;
-  border-bottom:1.5px solid var(--mint-light);cursor:pointer;
-  user-select:none;
-}
-.meal-icon{font-size:26px;line-height:1;}
-.meal-name{font-weight:800;font-size:16px;flex:1;}
-.meal-kcal{font-size:15px;font-weight:800;color:var(--green-dark);}
-.meal-toggle{font-size:18px;color:var(--text-light);transition:transform .2s;}
-.meal-toggle.open{transform:rotate(180deg);}
+/* ЗАПИСИ */
+.meal-entries{padding:0 18px;}
+.entry-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--mint-light);}
+.entry-row:last-child{border-bottom:none;}
+.e-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.d-breakfast{background:#ffb74d;} .d-lunch{background:#81c784;}
+.d-dinner{background:#64b5f6;} .d-snack{background:#f06292;} .d-other{background:#b0bec5;}
+.e-name{font-size:14px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.e-sub{font-size:11px;color:var(--text-light);}
+.e-cal{font-size:13px;font-weight:800;color:var(--green-dark);white-space:nowrap;}
+.e-del{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:20px;
+  padding:2px 6px;border-radius:8px;transition:all .15s;flex-shrink:0;line-height:1;}
+.e-del:hover{color:#e57373;background:#fff0f0;}
 
-/* ENTRIES LIST */
-.meal-entries{padding:0 20px;}
-.meal-entry-row{
-  display:flex;align-items:center;gap:10px;
-  padding:11px 0;border-bottom:1px solid var(--mint-light);
-}
-.meal-entry-row:last-child{border-bottom:none;}
-.entry-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.dot-breakfast{background:#ffb74d;}
-.dot-lunch{background:#81c784;}
-.dot-dinner{background:#64b5f6;}
-.dot-snack{background:#f06292;}
-.dot-other{background:#b0bec5;}
-.entry-info{flex:1;min-width:0;}
-.entry-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.entry-grams{font-size:12px;color:var(--text-light);}
-.entry-cal{font-size:13px;font-weight:700;color:var(--green-dark);white-space:nowrap;}
-.entry-del{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:18px;padding:4px 6px;border-radius:8px;transition:all .15s;flex-shrink:0;}
-.entry-del:hover{color:var(--danger);background:#fff0f0;}
+/* ПАНЕЛЬ ДОБАВЛЕНИЯ */
+.add-panel{padding:12px 18px 16px;}
+.add-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 16px;
+  border:2px dashed var(--border);border-radius:12px;background:var(--mint-light);
+  color:var(--green-dark);font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .2s;}
+.add-btn:hover{border-color:var(--green);background:#fff;}
 
-/* ADD FOOD PANEL */
-.add-food-panel{padding:14px 20px 18px;}
-.add-food-btn{
-  display:flex;align-items:center;gap:8px;width:100%;
-  padding:11px 16px;border:2px dashed var(--border);border-radius:14px;
-  background:var(--mint-light);color:var(--green-dark);
-  font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;
-  cursor:pointer;transition:all .2s;
-}
-.add-food-btn:hover{border-color:var(--green);background:white;}
+/* ПОИСК */
+.search-box{position:relative;}
+.s-input{width:100%;padding:11px 14px;border:2px solid var(--green);border-radius:12px;
+  font-size:15px;font-family:'Nunito',sans-serif;outline:none;
+  background:#fff;margin-bottom:8px;}
 
-/* SEARCH DROPDOWN */
-.search-wrap{position:relative;}
-.meal-search-input{
-  width:100%;padding:12px 16px;
-  border:2px solid var(--green);border-radius:14px;
-  font-size:15px;font-family:'Nunito',sans-serif;
-  outline:none;background:white;color:var(--text);
-  margin-bottom:10px;
-}
-.search-results-dropdown{
-  background:white;border-radius:14px;border:1.5px solid var(--border);
-  box-shadow:0 8px 30px var(--shadow);max-height:280px;overflow-y:auto;
-}
-.search-result-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;cursor:pointer;transition:background .15s;
-  border-bottom:1px solid var(--mint-light);
-}
-.search-result-item:last-child{border-bottom:none;}
-.search-result-item:hover{background:var(--mint-light);}
-.sr-name{font-size:14px;font-weight:600;color:var(--text);}
-.sr-meta{font-size:12px;color:var(--text-light);margin-top:2px;}
-.sr-cal{font-size:14px;font-weight:800;color:var(--green-dark);flex-shrink:0;margin-left:8px;}
-.sr-add{
-  background:linear-gradient(135deg,var(--green),var(--green-soft));
-  color:white;border:none;border-radius:10px;
-  padding:6px 12px;font-size:12px;font-weight:800;
-  font-family:'Nunito',sans-serif;cursor:pointer;flex-shrink:0;margin-left:8px;
-  transition:all .15s;
-}
-.sr-add:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(76,175,131,.3);}
-.search-empty{padding:20px;text-align:center;color:var(--text-light);font-size:13px;}
-.search-loading{padding:16px;text-align:center;color:var(--text-soft);font-size:13px;}
+/* КАТЕГОРИИ ФИЛЬТР */
+.cat-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.cat-chip{padding:5px 10px;border:1.5px solid var(--border);border-radius:20px;
+  background:#fff;color:var(--text-soft);font-size:12px;font-weight:700;
+  font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.cat-chip:hover{border-color:var(--green);color:var(--green-dark);}
+.cat-chip.active{background:var(--green);color:#fff;border-color:var(--green);}
 
-/* GRAMS MINI-INPUT */
-.grams-row{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 0 6px;
-}
-.grams-input{
-  width:80px;padding:8px 10px;border:2px solid var(--border);
-  border-radius:10px;font-size:14px;font-family:'Nunito',sans-serif;
-  outline:none;background:var(--mint-light);text-align:center;
-}
-.grams-input:focus{border-color:var(--green);background:white;}
-.grams-label{font-size:13px;color:var(--text-soft);}
-.grams-preview{font-size:12px;color:var(--text-light);flex:1;text-align:right;}
-.btn-confirm-add{
-  padding:8px 16px;background:linear-gradient(135deg,var(--green),var(--green-soft));
-  color:white;border:none;border-radius:10px;
-  font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;
-}
+/* РЕЗУЛЬТАТЫ */
+.s-results{background:#fff;border-radius:12px;border:1.5px solid var(--border);
+  box-shadow:0 6px 24px var(--shadow);max-height:260px;overflow-y:auto;}
+.s-item{display:flex;align-items:center;gap:8px;padding:11px 14px;
+  cursor:pointer;border-bottom:1px solid var(--mint-light);transition:background .12s;}
+.s-item:last-child{border-bottom:none;}
+.s-item:hover{background:var(--mint-light);}
+.s-name{font-size:14px;font-weight:700;color:var(--text);}
+.s-meta{font-size:11px;color:var(--text-light);margin-top:1px;}
+.s-cal{font-size:13px;font-weight:800;color:var(--green-dark);white-space:nowrap;margin-left:auto;}
+.s-plus{background:var(--green);color:#fff;border:none;border-radius:8px;
+  padding:5px 10px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;
+  cursor:pointer;flex-shrink:0;transition:all .15s;}
+.s-plus:hover{background:var(--green-dark);}
+.s-empty{padding:18px;text-align:center;color:var(--text-light);font-size:13px;}
+.s-loading{padding:14px;text-align:center;color:var(--text-soft);font-size:13px;}
+
+/* ГРАММОВКА */
+.grams-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 14px;
+  background:var(--mint-light);border-radius:12px;}
+.g-selected{font-size:13px;font-weight:700;color:var(--text);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.g-input{width:72px;padding:7px 10px;border:2px solid var(--border);border-radius:9px;
+  font-size:14px;font-family:'Nunito',sans-serif;outline:none;text-align:center;background:#fff;}
+.g-input:focus{border-color:var(--green);}
+.g-preview{font-size:12px;color:var(--text-soft);}
+.g-ok{padding:8px 14px;background:var(--green);color:#fff;border:none;border-radius:9px;
+  font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;}
+.g-ok:hover{background:var(--green-dark);}
+.g-cancel{background:none;border:none;color:var(--text-light);font-size:20px;cursor:pointer;padding:0 4px;}
+.s-close{background:none;border:none;color:var(--text-light);font-size:13px;
+  cursor:pointer;margin-top:6px;font-family:'Nunito',sans-serif;display:block;}
 
 /* BOTTOM NAV */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
-@media(max-width:860px){.bottom-nav{display:flex;}.nav-links{display:none!important;}}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
-.bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
-.bnav-item.bnav-premium{color:#e65c00;}
-.bnav-icon{font-size:22px;line-height:1;}
-.bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
-
-@media(max-width:540px){
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);padding:6px 8px 10px;}
+@media(max-width:700px){
+  .bnav{display:flex;}
+  .nav-links{display:none!important;}
   main{padding:16px 10px;}
-  .progress-card{padding:20px 18px 18px;border-radius:20px;}
-  .cal-eaten{font-size:36px;}
-  .meal-header{padding:14px 14px 12px;}
-  .meal-entries,.add-food-panel{padding-left:14px;padding-right:14px;}
+  .prog-eaten{font-size:36px;}
 }
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  text-decoration:none;color:var(--text-light);font-weight:700;padding:4px 2px;
+  border-radius:10px;margin:0 2px;transition:all .18s;}
+.bn-item.active{color:var(--green-dark);background:rgba(181,234,215,.35);}
+.bn-ico{font-size:21px;line-height:1;}
+.bn-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.3px;}
 </style>
 </head>
 <body>
-
-<nav class="top-nav">
+<nav>
   <div class="nav-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
     <div class="nav-links">
       {% if current_user.is_authenticated %}
         <a href="/goals">🎯 {{ t.goals }}</a>
         <a href="/history">📅 {{ t.history }}</a>
-        <a href="/premium">⭐ {{ t.premium }}</a>
+        <a href="/premium">⭐ Premium</a>
         <a href="/logout">{{ t.logout }}</a>
       {% else %}
         <a href="/login">{{ t.login }}</a>
@@ -191,355 +158,368 @@ main{max-width:860px;margin:0 auto;padding:28px 20px;}
 </nav>
 
 <main>
-
   <!-- ПРОГРЕСС -->
-  <div class="progress-card">
-    <div class="progress-top">
+  <div class="prog-card">
+    <div class="prog-top">
       <div>
-        <div class="cal-eaten" id="totalCal">{{ total_cal|int }}</div>
-        <div class="cal-goal">/ {{ daily_goal }} {{ t.kcal }} · {{ t.daily_goal }}</div>
+        <div class="prog-eaten" id="totalCal">{{ total_cal|int }}</div>
+        <div class="prog-goal">/ {{ daily_goal }} {{ t.kcal }} · {{ t.daily_goal }}</div>
       </div>
-      <div class="cal-remaining">
-        <div class="cal-remaining-num" id="remCal">{{ remaining|int }}</div>
-        <div class="cal-remaining-lbl">{{ t.remaining }}</div>
+      <div>
+        <div class="prog-rem-num" id="remCal">{{ remaining|int }}</div>
+        <div class="prog-rem-lbl">{{ t.remaining }}</div>
       </div>
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progFill" style="width:{{ progress_percent }}%"></div>
-    </div>
-    <div class="bju-row">
-      <div class="bju-chip">
-        <div class="bju-chip-lbl">{{ t.protein }}</div>
-        <div class="bju-chip-val" id="totP">{{ total_protein }}г</div>
-      </div>
-      <div class="bju-chip">
-        <div class="bju-chip-lbl">{{ t.fat }}</div>
-        <div class="bju-chip-val" id="totF">{{ total_fat }}г</div>
-      </div>
-      <div class="bju-chip">
-        <div class="bju-chip-lbl">{{ t.carbs }}</div>
-        <div class="bju-chip-val" id="totC">{{ total_carbs }}г</div>
-      </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:{{ progress_percent }}%"></div></div>
+    <div class="bju-grid">
+      <div class="bju-chip"><div class="bju-lbl">{{ t.protein }}</div><div class="bju-val" id="totP">{{ total_protein }}г</div></div>
+      <div class="bju-chip"><div class="bju-lbl">{{ t.fat }}</div><div class="bju-val" id="totF">{{ total_fat }}г</div></div>
+      <div class="bju-chip"><div class="bju-lbl">{{ t.carbs }}</div><div class="bju-val" id="totC">{{ total_carbs }}г</div></div>
     </div>
   </div>
 
   <!-- ПРИЁМЫ ПИЩИ -->
-  {% set meal_list = [
-    ('breakfast', '🌅', t.breakfast, 'dot-breakfast'),
-    ('lunch',     '☀️', t.lunch,     'dot-lunch'),
-    ('dinner',    '🌙', t.dinner,    'dot-dinner'),
-    ('snack',     '🍿', t.snack,     'dot-snack'),
+  {% for meal_key, meal_ico, meal_lbl, dot in [
+    ('breakfast','🌅', t.breakfast, 'd-breakfast'),
+    ('lunch',    '☀️', t.lunch,     'd-lunch'),
+    ('dinner',   '🌙', t.dinner,    'd-dinner'),
+    ('snack',    '🍿', t.snack,     'd-snack'),
   ] %}
-
-  {% for meal_key, meal_icon, meal_label, dot_class in meal_list %}
-  <div class="meal-card" id="card-{{ meal_key }}">
-    <div class="meal-header" onclick="toggleMeal('{{ meal_key }}')">
-      <span class="meal-icon">{{ meal_icon }}</span>
-      <span class="meal-name">{{ meal_label }}</span>
-      <span class="meal-kcal" id="kcal-{{ meal_key }}">
-        {{ meal_totals.get(meal_key, 0)|int }} {{ t.kcal }}
-      </span>
-      <span class="meal-toggle" id="toggle-{{ meal_key }}">▾</span>
+  <div class="meal-card">
+    <div class="meal-hdr" onclick="toggleMeal('{{ meal_key }}')">
+      <span class="meal-ico">{{ meal_ico }}</span>
+      <span class="meal-nm">{{ meal_lbl }}</span>
+      <span class="meal-kcal-badge" id="kcal-{{ meal_key }}">{{ meal_totals.get(meal_key,0)|int }} {{ t.kcal }}</span>
+      <span class="meal-arr open" id="arr-{{ meal_key }}">▾</span>
     </div>
 
     <div id="body-{{ meal_key }}">
-      <!-- ЗАПИСИ -->
       <div class="meal-entries" id="entries-{{ meal_key }}">
-        {% if meals[meal_key] %}
-          {% for entry in meals[meal_key] %}
-          <div class="meal-entry-row" id="entry-row-{{ entry.id }}">
-            <div class="entry-dot {{ dot_class }}"></div>
-            <div class="entry-info">
-              <div class="entry-name">{{ entry.food_name }}</div>
-              <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
-            </div>
-            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
-            <button class="entry-del" onclick="deleteEntry({{ entry.id }}, '{{ meal_key }}')" title="Удалить">×</button>
+        {% for e in meals[meal_key] %}
+        <div class="entry-row" id="er-{{ e.id }}">
+          <div class="e-dot {{ dot }}"></div>
+          <div style="flex:1;min-width:0;">
+            <div class="e-name">{{ e.food_name }}</div>
+            <div class="e-sub">{{ e.grams|int }} {{ t.g }}</div>
           </div>
-          {% endfor %}
-        {% endif %}
+          <div class="e-cal">{{ e.calories|int }} {{ t.kcal }}</div>
+          <button class="e-del" onclick="delEntry({{ e.id }},'{{ meal_key }}',{{ e.calories }},{{ e.protein }},{{ e.fat }},{{ e.carbs }})">×</button>
+        </div>
+        {% endfor %}
       </div>
 
       <!-- КНОПКА ДОБАВИТЬ -->
-      <div class="add-food-panel" id="panel-{{ meal_key }}">
-        <button class="add-food-btn" onclick="openSearch('{{ meal_key }}')">
-          <span style="font-size:18px;">+</span>
-          {{ t.add_food }} в {{ meal_label }}
+      <div class="add-panel" id="addpanel-{{ meal_key }}">
+        <button class="add-btn" onclick="openSearch('{{ meal_key }}','{{ meal_lbl }}')">
+          <span style="font-size:18px;line-height:1;">＋</span>
+          {{ t.add_food }} — {{ meal_lbl }}
         </button>
       </div>
 
-      <!-- ПОИСК (скрыт по умолчанию) -->
-      <div class="add-food-panel" id="search-panel-{{ meal_key }}" style="display:none;">
-        <div class="search-wrap">
-          <input
-            type="text"
-            class="meal-search-input"
-            id="search-input-{{ meal_key }}"
-            placeholder="🔍 Поиск продукта..."
-            oninput="onSearchInput('{{ meal_key }}')"
-            autocomplete="off"
-          >
-          <div id="search-results-{{ meal_key }}" class="search-results-dropdown" style="display:none;"></div>
+      <!-- ПАНЕЛЬ ПОИСКА -->
+      <div class="add-panel" id="searchpanel-{{ meal_key }}" style="display:none;">
+        <div class="search-box">
+          <input type="text" class="s-input" id="si-{{ meal_key }}"
+            placeholder="🔍 Введите название продукта..."
+            oninput="onInput('{{ meal_key }}')" autocomplete="off">
 
-          <!-- Граммовка (скрыта до выбора продукта) -->
-          <div id="grams-row-{{ meal_key }}" class="grams-row" style="display:none;">
-            <input type="number" class="grams-input" id="grams-{{ meal_key }}" value="100" min="1" max="9999"
-                   oninput="updateGramsPreview('{{ meal_key }}')" onkeydown="if(event.key==='Enter')confirmAdd('{{ meal_key }}')">
-            <span class="grams-label">{{ t.g }}</span>
-            <span class="grams-preview" id="grams-preview-{{ meal_key }}"></span>
-            <button class="btn-confirm-add" onclick="confirmAdd('{{ meal_key }}')">✓ {{ t.add_food }}</button>
-            <button class="entry-del" onclick="cancelFood('{{ meal_key }}')">×</button>
+          <!-- ФИЛЬТР КАТЕГОРИЙ -->
+          <div class="cat-filter" id="catfilter-{{ meal_key }}">
+            <button class="cat-chip active" onclick="setCat('{{ meal_key }}','',this)">Все</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','fruits',this)">🍎 {{ t.fruits }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','vegetables',this)">🥦 {{ t.vegetables }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','meat',this)">🥩 {{ t.meat }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','fish',this)">🐟 {{ t.fish }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','dairy',this)">🥛 {{ t.dairy }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','grains',this)">🌾 {{ t.grains }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','nuts',this)">🌰 {{ t.nuts }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','eggs',this)">🥚 Яйца</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','legumes',this)">🫘 Бобовые</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','fastfood',this)">🍔 Фастфуд</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','sweets',this)">🍫 {{ t.sweets }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','drinks',this)">🥤 {{ t.drinks }}</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','oils',this)">🫙 Масла</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','sauces',this)">🥫 Соусы</button>
+            <button class="cat-chip" onclick="setCat('{{ meal_key }}','sports',this)">💪 Спортпит</button>
           </div>
 
-          <button style="background:none;border:none;color:var(--text-light);font-size:13px;cursor:pointer;margin-top:6px;font-family:'Nunito',sans-serif;" onclick="closeSearch('{{ meal_key }}')">
-            ✕ Отмена
-          </button>
+          <div id="sr-{{ meal_key }}" class="s-results" style="display:none;"></div>
+
+          <!-- ГРАММОВКА -->
+          <div id="gr-{{ meal_key }}" class="grams-row" style="display:none;">
+            <div class="g-selected" id="gname-{{ meal_key }}"></div>
+            <input type="number" class="g-input" id="gi-{{ meal_key }}" value="100" min="1" max="9999"
+              oninput="updPreview('{{ meal_key }}')"
+              onkeydown="if(event.key==='Enter')doAdd('{{ meal_key }}')">
+            <span class="g-preview" id="gprev-{{ meal_key }}"></span>
+            <button class="g-ok" onclick="doAdd('{{ meal_key }}')">✓ Добавить</button>
+            <button class="g-cancel" onclick="cancelSel('{{ meal_key }}')">×</button>
+          </div>
+
+          <button class="s-close" onclick="closeSearch('{{ meal_key }}')">✕ Отмена</button>
         </div>
       </div>
     </div>
   </div>
   {% endfor %}
-
 </main>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <a href="/" class="bnav-item active">
-    <span class="bnav-icon">🏠</span>
-    <span class="bnav-label">{{ t.today }}</span>
-  </a>
-  <a href="/history" class="bnav-item">
-    <span class="bnav-icon">📊</span>
-    <span class="bnav-label">{{ t.get('history','История') }}</span>
-  </a>
-  <a href="/goals" class="bnav-item">
-    <span class="bnav-icon">🎯</span>
-    <span class="bnav-label">{{ t.goals }}</span>
-  </a>
-  <a href="/premium" class="bnav-item bnav-premium">
-    <span class="bnav-icon">⭐</span>
-    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
-  </a>
+<nav class="bnav">
+  <a href="/" class="bn-item active"><span class="bn-ico">🏠</span><span class="bn-lbl">Сегодня</span></a>
+  <a href="/history" class="bn-item"><span class="bn-ico">📊</span><span class="bn-lbl">История</span></a>
+  <a href="/goals" class="bn-item"><span class="bn-ico">🎯</span><span class="bn-lbl">Цели</span></a>
+  <a href="/premium" class="bn-item"><span class="bn-ico">⭐</span><span class="bn-lbl">Premium</span></a>
 </nav>
 
 <script>
-const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
-const DAILY_GOAL = {{ daily_goal }};
-const T = {
-  kcal: {{ t.kcal|tojson }},
-  g: {{ t.g|tojson }},
-  add_food: {{ t.add_food|tojson }},
-  login_required: {{ t.get('login_required','Войдите в аккаунт')|tojson }},
-};
+const IS_AUTH = {{ 'true' if current_user.is_authenticated else 'false' }};
+const GOAL    = {{ daily_goal }};
+const KCAL    = {{ t.kcal|tojson }};
+const G_LBL   = {{ t.g|tojson }};
 
-// Состояние
-let selectedFood = {}; // meal_key -> {id, name, calories, protein, fat, carbs}
-let searchTimers = {};
 let totals = {
-  cal: {{ total_cal }},
-  protein: {{ total_protein }},
-  fat: {{ total_fat }},
-  carbs: {{ total_carbs }},
+  cal:  {{ total_cal }},
+  prot: {{ total_protein }},
+  fat:  {{ total_fat }},
+  carb: {{ total_carbs }},
 };
 
-// ── Toggle meal открыть/закрыть ──
+// State per meal
+const state = {};
+['breakfast','lunch','dinner','snack'].forEach(m => {
+  state[m] = { food: null, cat: '', timer: null };
+});
+
+// ── Toggle ──
 function toggleMeal(meal) {
   const body = document.getElementById('body-' + meal);
-  const toggle = document.getElementById('toggle-' + meal);
-  if (body.style.display === 'none') {
-    body.style.display = '';
-    toggle.classList.add('open');
-  } else {
-    body.style.display = 'none';
-    toggle.classList.remove('open');
-  }
+  const arr  = document.getElementById('arr-' + meal);
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  arr.classList.toggle('open', !open);
 }
 
-// ── Открыть поиск ──
-function openSearch(meal) {
-  if (!isAuth) { alert(T.login_required); return; }
-  document.getElementById('panel-' + meal).style.display = 'none';
-  document.getElementById('search-panel-' + meal).style.display = '';
-  document.getElementById('search-input-' + meal).focus();
-  // Показываем популярные продукты сразу
-  doSearch(meal, '');
+// ── Open/Close search ──
+function openSearch(meal, label) {
+  if (!IS_AUTH) { alert('Войдите в аккаунт'); return; }
+  document.getElementById('addpanel-' + meal).style.display = 'none';
+  document.getElementById('searchpanel-' + meal).style.display = '';
+  document.getElementById('si-' + meal).focus();
+  loadResults(meal, '', '');
 }
 
 function closeSearch(meal) {
-  document.getElementById('search-panel-' + meal).style.display = 'none';
-  document.getElementById('panel-' + meal).style.display = '';
-  document.getElementById('search-results-' + meal).style.display = 'none';
-  document.getElementById('grams-row-' + meal).style.display = 'none';
-  document.getElementById('search-input-' + meal).value = '';
-  selectedFood[meal] = null;
+  document.getElementById('searchpanel-' + meal).style.display = 'none';
+  document.getElementById('addpanel-' + meal).style.display   = '';
+  document.getElementById('sr-' + meal).style.display = 'none';
+  document.getElementById('gr-' + meal).style.display = 'none';
+  document.getElementById('si-' + meal).value = '';
+  state[meal].food = null;
+  state[meal].cat  = '';
+  // сброс категорий
+  document.querySelectorAll('#catfilter-' + meal + ' .cat-chip').forEach((c,i) => {
+    c.classList.toggle('active', i === 0);
+  });
 }
 
-function cancelFood(meal) {
-  selectedFood[meal] = null;
-  document.getElementById('grams-row-' + meal).style.display = 'none';
-  document.getElementById('search-results-' + meal).style.display = '';
+// ── Категория ──
+function setCat(meal, cat, btn) {
+  state[meal].cat = cat;
+  document.querySelectorAll('#catfilter-' + meal + ' .cat-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const q = document.getElementById('si-' + meal).value;
+  loadResults(meal, q, cat);
 }
 
-// ── Поиск ──
-function onSearchInput(meal) {
-  clearTimeout(searchTimers[meal]);
-  const q = document.getElementById('search-input-' + meal).value;
-  searchTimers[meal] = setTimeout(() => doSearch(meal, q), 300);
+// ── Input ──
+function onInput(meal) {
+  clearTimeout(state[meal].timer);
+  state[meal].timer = setTimeout(() => {
+    loadResults(meal, document.getElementById('si-' + meal).value, state[meal].cat);
+  }, 280);
 }
 
-async function doSearch(meal, q) {
-  const resultsEl = document.getElementById('search-results-' + meal);
-  resultsEl.style.display = '';
-  resultsEl.innerHTML = '<div class="search-loading">🔍 Поиск...</div>';
+// ── Load results ──
+async function loadResults(meal, q, cat) {
+  const el = document.getElementById('sr-' + meal);
+  el.style.display = '';
+  el.innerHTML = '<div class="s-loading">🔍 Поиск...</div>';
+  document.getElementById('gr-' + meal).style.display = 'none';
+  state[meal].food = null;
 
   try {
-    const res = await fetch('/api/search?q=' + encodeURIComponent(q) + '&limit=15');
-    const foods = await res.json();
+    const url = '/api/search?q=' + encodeURIComponent(q.trim()) + '&cat=' + encodeURIComponent(cat) + '&limit=20';
+    const foods = await fetch(url).then(r => r.json());
     renderResults(meal, foods);
   } catch(e) {
-    resultsEl.innerHTML = '<div class="search-empty">Ошибка поиска</div>';
+    el.innerHTML = '<div class="s-empty">Ошибка поиска</div>';
   }
 }
 
 function renderResults(meal, foods) {
-  const el = document.getElementById('search-results-' + meal);
+  const el = document.getElementById('sr-' + meal);
   if (!foods.length) {
-    el.innerHTML = '<div class="search-empty">Ничего не найдено</div>';
+    el.innerHTML = '<div class="s-empty">Ничего не найдено 🤷</div>';
     return;
   }
-  el.innerHTML = foods.map(f => `
-    <div class="search-result-item" onclick="selectFood('${meal}', ${f.id}, ${JSON.stringify(f.name).replace(/</g,'&lt;')}, ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
+  el.innerHTML = foods.map(f => {
+    // Безопасная сериализация данных — через data-атрибуты
+    const safeId   = String(f.id).replace(/"/g,'');
+    const safeName = esc(f.name);
+    return `<div class="s-item"
+      data-id="${safeId}"
+      data-name="${safeName}"
+      data-cal="${f.calories}"
+      data-prot="${f.protein}"
+      data-fat="${f.fat}"
+      data-carb="${f.carbs}"
+      onclick="selectFood('${meal}',this)">
       <div style="flex:1;min-width:0;">
-        <div class="sr-name">${escHtml(f.name)}</div>
-        <div class="sr-meta">Б:${f.protein}г · Ж:${f.fat}г · У:${f.carbs}г / 100г</div>
+        <div class="s-name">${safeName}</div>
+        <div class="s-meta">Б:${f.protein} Ж:${f.fat} У:${f.carbs} г / 100г</div>
       </div>
-      <div class="sr-cal">${f.calories} ${T.kcal}</div>
-      <button class="sr-add" onclick="event.stopPropagation();selectFood('${meal}',${f.id},${JSON.stringify(f.name)},${f.calories},${f.protein},${f.fat},${f.carbs})">+</button>
-    </div>
-  `).join('');
+      <div class="s-cal">${f.calories} ${KCAL}</div>
+      <button class="s-plus" onclick="event.stopPropagation();selectFood('${meal}',this.closest('.s-item'))">+</button>
+    </div>`;
+  }).join('');
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ── Выбор продукта ──
-function selectFood(meal, id, name, cal, protein, fat, carbs) {
-  selectedFood[meal] = { id, name, cal, protein, fat, carbs };
-  document.getElementById('search-results-' + meal).style.display = 'none';
-  document.getElementById('search-input-' + meal).value = name;
-  document.getElementById('grams-' + meal).value = 100;
-  document.getElementById('grams-row-' + meal).style.display = 'flex';
-  updateGramsPreview(meal);
-  document.getElementById('grams-' + meal).focus();
-  document.getElementById('grams-' + meal).select();
+// ── Выбор продукта через data-атрибуты (никакого eval!) ──
+function selectFood(meal, el) {
+  const id   = el.dataset.id;
+  const name = el.dataset.name;
+  const cal  = parseFloat(el.dataset.cal);
+  const prot = parseFloat(el.dataset.prot);
+  const fat  = parseFloat(el.dataset.fat);
+  const carb = parseFloat(el.dataset.carb);
+
+  state[meal].food = { id, name, cal, prot, fat, carb };
+
+  document.getElementById('sr-' + meal).style.display = 'none';
+  document.getElementById('si-' + meal).value = name;
+  document.getElementById('gname-' + meal).textContent = name;
+  const gi = document.getElementById('gi-' + meal);
+  gi.value = 100;
+  document.getElementById('gr-' + meal).style.display = 'flex';
+  updPreview(meal);
+  gi.focus(); gi.select();
 }
 
-function updateGramsPreview(meal) {
-  const f = selectedFood[meal];
+function cancelSel(meal) {
+  state[meal].food = null;
+  document.getElementById('gr-' + meal).style.display = 'none';
+  document.getElementById('sr-' + meal).style.display = '';
+}
+
+function updPreview(meal) {
+  const f = state[meal].food;
   if (!f) return;
-  const g = parseFloat(document.getElementById('grams-' + meal).value) || 100;
-  const r = g / 100;
-  document.getElementById('grams-preview-' + meal).textContent =
-    `🔥 ${Math.round(f.cal * r)} ${T.kcal}`;
+  const g = parseFloat(document.getElementById('gi-' + meal).value) || 100;
+  document.getElementById('gprev-' + meal).textContent =
+    '🔥 ' + Math.round(f.cal * g / 100) + ' ' + KCAL;
 }
 
-// ── Добавить запись ──
-async function confirmAdd(meal) {
-  const f = selectedFood[meal];
+// ── Добавить ──
+async function doAdd(meal) {
+  const f = state[meal].food;
   if (!f) return;
-  const grams = parseFloat(document.getElementById('grams-' + meal).value) || 100;
+  const grams = parseFloat(document.getElementById('gi-' + meal).value) || 100;
 
-  const res = await fetch('/api/add-entry', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      food_id: f.id, grams, meal_type: meal,
-      // Передаём нутриенты для OFF продуктов
-      name: f.name, calories: f.cal,
-      protein: f.protein, fat: f.fat, carbs: f.carbs
-    })
-  });
-  const data = await res.json();
-  if (!data.success) { alert('Ошибка'); return; }
+  let body;
+  if (String(f.id).startsWith('off_')) {
+    body = { food_id: f.id, grams, meal_type: meal,
+             name: f.name, calories: f.cal, protein: f.prot, fat: f.fat, carbs: f.carb };
+  } else {
+    body = { food_id: parseInt(f.id), grams, meal_type: meal };
+  }
 
-  const r = grams / 100;
-  const cal = Math.round(f.cal * r);
-  const prot = parseFloat((f.protein * r).toFixed(1));
-  const fat  = parseFloat((f.fat    * r).toFixed(1));
-  const carb = parseFloat((f.carbs  * r).toFixed(1));
+  try {
+    const data = await fetch('/api/add-entry', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    }).then(r => r.json());
 
-  // Добавляем строку в список
-  const entriesEl = document.getElementById('entries-' + meal);
-  const dot = {breakfast:'dot-breakfast',lunch:'dot-lunch',dinner:'dot-dinner',snack:'dot-snack',other:'dot-other'}[meal]||'dot-other';
-  const row = document.createElement('div');
-  row.className = 'meal-entry-row';
-  row.id = 'entry-row-' + data.entry_id;
-  row.innerHTML = `
-    <div class="entry-dot ${dot}"></div>
-    <div class="entry-info">
-      <div class="entry-name">${escHtml(f.name)}</div>
-      <div class="entry-grams">${Math.round(grams)} ${T.g}</div>
-    </div>
-    <div class="entry-cal">${cal} ${T.kcal}</div>
-    <button class="entry-del" onclick="deleteEntry(${data.entry_id},'${meal}',${cal},${prot},${fat},${carb})" title="Удалить">×</button>
-  `;
-  entriesEl.appendChild(row);
+    if (!data.success) { alert('Ошибка сохранения'); return; }
 
-  // Обновляем счётчики
-  updateMealKcal(meal, cal);
-  totals.cal     += cal;
-  totals.protein += prot;
-  totals.fat     += fat;
-  totals.carbs   += carb;
-  updateTotals();
+    const r   = grams / 100;
+    const cal  = Math.round(f.cal  * r);
+    const prot = +(f.prot * r).toFixed(1);
+    const fat  = +(f.fat  * r).toFixed(1);
+    const carb = +(f.carb * r).toFixed(1);
 
-  closeSearch(meal);
+    // Добавляем строку
+    const dots = {breakfast:'d-breakfast',lunch:'d-lunch',dinner:'d-dinner',snack:'d-snack'};
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.id = 'er-' + data.entry_id;
+    row.innerHTML = `
+      <div class="e-dot ${dots[meal]||'d-other'}"></div>
+      <div style="flex:1;min-width:0;">
+        <div class="e-name">${esc(f.name)}</div>
+        <div class="e-sub">${Math.round(grams)} ${G_LBL}</div>
+      </div>
+      <div class="e-cal">${cal} ${KCAL}</div>
+      <button class="e-del" onclick="delEntry(${data.entry_id},'${meal}',${cal},${prot},${fat},${carb})">×</button>
+    `;
+    document.getElementById('entries-' + meal).appendChild(row);
+
+    // Обновляем счётчики
+    const badge = document.getElementById('kcal-' + meal);
+    const cur = parseInt(badge.textContent) || 0;
+    badge.textContent = (cur + cal) + ' ' + KCAL;
+
+    totals.cal  += cal; totals.prot += prot;
+    totals.fat  += fat; totals.carb += carb;
+    updTotals();
+    closeSearch(meal);
+
+  } catch(e) {
+    alert('Ошибка соединения');
+  }
 }
 
-// ── Удалить запись ──
-async function deleteEntry(entryId, meal, cal, prot, fat, carb) {
+// ── Удалить ──
+async function delEntry(id, meal, cal, prot, fat, carb) {
   if (!confirm('Удалить?')) return;
-  const res = await fetch('/api/remove-entry/' + entryId, {method:'DELETE'});
-  if (!(await res.json()).success) { alert('Ошибка'); return; }
+  try {
+    const data = await fetch('/api/remove-entry/' + id, {method:'DELETE'}).then(r=>r.json());
+    if (!data.success) { alert('Ошибка'); return; }
 
-  const row = document.getElementById('entry-row-' + entryId);
-  if (row) row.remove();
+    const row = document.getElementById('er-' + id);
+    if (row) row.remove();
 
-  // Если cal не передан — перезагружаем страницу (fallback для серверно-рендеренных записей)
-  if (cal === undefined) { location.reload(); return; }
+    // Обновляем badge
+    const badge = document.getElementById('kcal-' + meal);
+    const cur = parseInt(badge.textContent) || 0;
+    badge.textContent = Math.max(0, cur - (cal||0)) + ' ' + KCAL;
 
-  updateMealKcal(meal, -cal);
-  totals.cal     -= cal;
-  totals.protein -= prot;
-  totals.fat     -= fat;
-  totals.carbs   -= carb;
-  updateTotals();
+    if (cal !== undefined) {
+      totals.cal  -= cal;  totals.prot -= (prot||0);
+      totals.fat  -= (fat||0); totals.carb -= (carb||0);
+      updTotals();
+    } else {
+      location.reload();
+    }
+  } catch(e) {
+    location.reload();
+  }
 }
 
-// ── Обновление счётчиков ──
-function updateMealKcal(meal, delta) {
-  const el = document.getElementById('kcal-' + meal);
-  const cur = parseInt(el.textContent) || 0;
-  el.textContent = Math.max(0, cur + delta) + ' ' + T.kcal;
-}
-
-function updateTotals() {
-  const pct = Math.min(100, Math.round(totals.cal / DAILY_GOAL * 100));
+// ── Обновить шапку ──
+function updTotals() {
+  const pct = Math.min(100, Math.round(totals.cal / GOAL * 100));
   document.getElementById('totalCal').textContent = Math.round(totals.cal);
-  document.getElementById('remCal').textContent = Math.max(0, Math.round(DAILY_GOAL - totals.cal));
+  document.getElementById('remCal').textContent   = Math.max(0, Math.round(GOAL - totals.cal));
   document.getElementById('progFill').style.width = pct + '%';
-  document.getElementById('totP').textContent = totals.protein.toFixed(1) + 'г';
-  document.getElementById('totF').textContent = totals.fat.toFixed(1) + 'г';
-  document.getElementById('totC').textContent = totals.carbs.toFixed(1) + 'г';
+  document.getElementById('totP').textContent = totals.prot.toFixed(1) + 'г';
+  document.getElementById('totF').textContent = totals.fat.toFixed(1)  + 'г';
+  document.getElementById('totC').textContent = totals.carb.toFixed(1) + 'г';
 }
-
-// Кнопка удалить из серверного HTML — нет cal, fallback reload
-// Переписываем все кнопки удаления для серверно-рендеренных записей
-document.querySelectorAll('.entry-del[onclick*="deleteEntry"]').forEach(btn => {
-  // оставляем как есть — fallback через location.reload
-});
 </script>
-
 </body>
 </html>
