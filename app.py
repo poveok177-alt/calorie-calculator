@@ -720,6 +720,20 @@ def index():
 
     progress_pct = min(100, int(total_cal / daily_goal * 100)) if daily_goal > 0 else 0
 
+    remaining = max(0, daily_goal - total_cal)
+    protein_goal = current_user.protein_goal if current_user.is_authenticated else 150
+    fat_goal = current_user.fat_goal if current_user.is_authenticated else 70
+    carbs_goal = current_user.carbs_goal if current_user.is_authenticated else 250
+    water_goal = current_user.water_goal if current_user.is_authenticated else 8
+    is_premium = current_user.is_premium if current_user.is_authenticated else False
+    progress_percent = min(100, int(total_cal / daily_goal * 100)) if daily_goal > 0 else 0
+
+    # Считаем итоги по приёмам пищи
+    meal_totals = {'breakfast': 0, 'lunch': 0, 'dinner': 0, 'snack': 0, 'other': 0}
+    for e in today_entries:
+        meal = e.meal_type if e.meal_type in meal_totals else 'other'
+        meal_totals[meal] += e.calories
+
     return render_template('index.html', t=t, lang=lang,
                            today_entries=today_entries,
                            total_cal=round(total_cal),
@@ -727,8 +741,17 @@ def index():
                            total_fat=round(total_fat, 1),
                            total_carbs=round(total_carbs, 1),
                            daily_goal=daily_goal,
+                           remaining=round(remaining),
                            progress_pct=progress_pct,
-                           category_keys=CATEGORY_KEYS)
+                           protein_goal=protein_goal,
+                           fat_goal=fat_goal,
+                           carbs_goal=carbs_goal,
+                           water_goal=water_goal,
+                           is_premium=is_premium,
+                           progress_percent=progress_percent,
+                           meal_totals=meal_totals,
+                           category_keys=CATEGORY_KEYS,
+                           now=datetime.utcnow())
 
 @app.route('/set-language/<lang>')
 def set_language(lang):
