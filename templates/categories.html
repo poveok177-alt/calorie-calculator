@@ -329,13 +329,17 @@ function showToast(msg) {
   if (!t) {
     t = document.createElement('div');
     t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2d8a63;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:opacity .3s;white-space:nowrap;max-width:90vw;text-overflow:ellipsis;overflow:hidden;';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2d8a63;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:opacity .3s;white-space:nowrap;max-width:90vw;text-overflow:ellipsis;overflow:hidden;pointer-events:none;';
     document.body.appendChild(t);
   }
   t.textContent = msg;
   t.style.opacity = '1';
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+  t._timer = setTimeout(() => {
+    t.style.opacity = '0';
+    setTimeout(() => { if (t.style.opacity === '0') t.style.display = 'none'; }, 350);
+  }, 2500);
+  t.style.display = '';
 }
 </script>
 </body>

@@ -77,7 +77,7 @@
     background:linear-gradient(135deg,var(--green),var(--green-soft));
     color:white; border:none; border-radius:18px;
     font-size:16px; font-weight:800; font-family:'Nunito',sans-serif;
-    cursor:pointer; transition:all .2s; min-height:52px;
+    cursor:pointer; transition:all .2s; min-height:52px; margin-top:8px;
   }
   .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(76,175,131,.3); }
   .btn-submit:active { transform:scale(0.98); }
@@ -121,8 +121,9 @@
     main { padding:16px 12px; }
     .card { padding:18px 14px; border-radius:16px; }
     /* Все строки в 1 колонку */
-    .form-row { grid-template-columns:1fr; gap:0; }
-    .form-row .form-group { margin-bottom:14px; }
+    .form-row { grid-template-columns:1fr; gap:14px; }
+    /* Восстанавливаем отступы, которые были обнулены для grid */
+    .form-row .form-group { margin-bottom:0; }
     /* bju-grid: 2 колонки */
     .bju-grid { grid-template-columns:repeat(2,1fr); }
     .page-title { font-size:24px; }

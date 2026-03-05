@@ -175,13 +175,13 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
 /* ── ГРАММОВКА ── */
 .grams-row{
   display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 14px;
-  background:var(--mint-light);border-radius:12px;flex-wrap:wrap;min-height:56px;
+  background:var(--mint-light);border-radius:12px;min-height:56px;
 }
 .g-selected{
   font-size:13px;font-weight:700;color:var(--text);
-  flex:1 1 100%; /* на мобиле — на всю строку */
+  flex:1 1 auto;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  min-width:0;
+  min-width:80px;
 }
 .g-input{
   width:80px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;
@@ -250,8 +250,8 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
   .add-btn{font-size:13px;min-height:48px;}
 
   /* Граммовка на мобиле — имя на всю строку сверху */
-  .grams-row{gap:6px;}
-  .g-selected{flex:1 1 100%;margin-bottom:2px;}
+  .grams-row{gap:6px;flex-wrap:wrap;}
+  .g-selected{flex:1 1 100%;margin-bottom:0;min-width:0;}
 }
 
 @media(max-width:480px){
@@ -428,7 +428,7 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
               oninput="updPreview('{{ meal_key }}')"
               onkeydown="if(event.key==='Enter')doAdd('{{ meal_key }}')">
             <span class="g-preview" id="gprev-{{ meal_key }}"></span>
-            <button class="g-ok" onclick="doAdd('{{ meal_key }}')">✓</button>
+            <button class="g-ok" onclick="doAdd('{{ meal_key }}')">✓ Добавить</button>
             <button class="g-cancel" onclick="cancelSel('{{ meal_key }}')">×</button>
           </div>
 

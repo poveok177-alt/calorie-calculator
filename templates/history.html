@@ -88,7 +88,7 @@
   .day-detail{background:var(--mint-light);border-radius:12px;padding:12px;margin-top:12px;display:none;}
   .day-detail.show{display:block;}
   .day-detail-title{font-weight:800;font-size:13px;color:var(--green-dark);margin-bottom:8px;}
-  .day-food-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+  .day-food-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;min-height:32px;}
   .day-food-row:last-child{border-bottom:none;}
   .dot-meal{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-right:6px;}
   .dot-breakfast{background:#ffb74d;}.dot-lunch{background:#81c784;}.dot-dinner{background:#64b5f6;}.dot-snack{background:#f06292;}.dot-other{background:#b0bec5;}
@@ -126,8 +126,9 @@
     .card{padding:16px 14px;border-radius:16px;}
     .streak-banner{padding:14px 16px;border-radius:16px;}
     .streak-num{font-size:28px;}
-    .weekly-grid{grid-template-columns:repeat(2,1fr);}
-    /* Маленький streak — убираем 3ю плитку на 2 колонки */
+    /* weekly-grid оставляем 3 колонки, уменьшаем шрифт */
+    .weekly-val{font-size:17px;}
+    .weekly-lbl{font-size:9px;}
     .page-title{font-size:22px;}
     .chart-wrap{height:170px;}
     .day-card{padding:12px;}
@@ -139,11 +140,12 @@
   @media(max-width:360px){
     main{padding:10px 8px;}
     .card{padding:14px 12px;}
-    .weekly-val{font-size:18px;}
+    .weekly-val{font-size:17px;}
+    .weekly-lbl{font-size:9px;}
     .streak-num{font-size:24px;}
     .streak-icon{font-size:28px;}
     .bju-chip{font-size:11px;padding:3px 7px;}
-    .cal-bar-wrap{width:20px;}
+    .cal-bar-wrap{width:18px;}
   }
 
   @media(max-width:320px){
