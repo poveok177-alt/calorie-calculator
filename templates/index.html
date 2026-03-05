@@ -370,7 +370,7 @@ function renderResults(meal, foods) {
   const el = document.getElementById('sr-' + meal);
   const hint = document.getElementById('custom-food-hint-' + meal);
   if (!foods.length) {
-    el.innerHTML = '<div class="s-empty">Ничего не найдено 🤷</div>';
+    el.innerHTML = '<div class="s-empty">Ничего не найдено 🤷<br><a href="/categories" style="color:var(--green-dark);font-size:12px;font-weight:700;">Открыть каталог продуктов →</a></div>';
     el.style.display = '';
     if (hint) hint.style.display = '';
     return;

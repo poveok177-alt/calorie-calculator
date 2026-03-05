@@ -1167,11 +1167,35 @@ def api_search():
     # Пустой запрос — популярные/категория
     if not q:
         foods = base_q.limit(limit).all()
-        return jsonify([food_to_dict(f) for f in foods])
+        result = [food_to_dict(f) for f in foods]
+        # Если БД пустая — подгружаем данные
+        if not result:
+            try:
+                from food_data import FOODS
+                for f_data in FOODS:
+                    db.session.add(Food(**f_data))
+                db.session.commit()
+                foods = base_q.limit(limit).all()
+                result = [food_to_dict(f) for f in foods]
+            except Exception:
+                pass
+        return jsonify(result)
 
     # Ищем в локальной БД
     foods = base_q.filter(name_col.ilike(f'%{q}%')).limit(limit).all()
     result = [food_to_dict(f) for f in foods]
+
+    # Если БД пустая — подгружаем данные и повторяем поиск
+    if not result and Food.query.count() == 0:
+        try:
+            from food_data import FOODS
+            for f_data in FOODS:
+                db.session.add(Food(**f_data))
+            db.session.commit()
+            foods = base_q.filter(name_col.ilike(f'%{q}%')).limit(limit).all()
+            result = [food_to_dict(f) for f in foods]
+        except Exception:
+            pass
 
     # Если мало — ищем в Open Food Facts
     if len(result) < 5 and not cat:
@@ -1532,15 +1556,38 @@ def init_db():
         except Exception as e:
             print(f"Migration note: {e}")
 
-        if Food.query.count() == 0:
+        food_count = Food.query.count()
+        if food_count < 10:
             try:
                 from food_data import FOODS
+                if food_count > 0:
+                    Food.query.delete()
+                    db.session.commit()
                 for f in FOODS:
                     db.session.add(Food(**f))
                 db.session.commit()
                 print(f"✅ Добавлено {len(FOODS)} продуктов")
             except Exception as e:
                 print(f"⚠️ food_data import error: {e}")
+                # Добавляем базовые продукты если food_data не загрузился
+                fallback = [
+                    {"name_ru":"Яблоко","name_en":"Apple","name_uk":"Яблуко","name_kk":"Алма","calories":52,"protein":0.3,"fat":0.2,"carbs":14.0,"category":"fruits"},
+                    {"name_ru":"Банан","name_en":"Banana","name_uk":"Банан","name_kk":"Банан","calories":89,"protein":1.1,"fat":0.3,"carbs":22.8,"category":"fruits"},
+                    {"name_ru":"Куриная грудка","name_en":"Chicken breast","name_uk":"Куряча грудка","name_kk":"Тауық еті","calories":165,"protein":31.0,"fat":3.6,"carbs":0.0,"category":"meat"},
+                    {"name_ru":"Говядина","name_en":"Beef","name_uk":"Яловичина","name_kk":"Сиыр еті","calories":187,"protein":18.9,"fat":12.4,"carbs":0.0,"category":"meat"},
+                    {"name_ru":"Молоко","name_en":"Milk","name_uk":"Молоко","name_kk":"Сүт","calories":52,"protein":2.8,"fat":2.5,"carbs":4.7,"category":"dairy"},
+                    {"name_ru":"Творог","name_en":"Cottage cheese","name_uk":"Сир","name_kk":"Іркіт","calories":121,"protein":17.0,"fat":5.0,"carbs":3.0,"category":"dairy"},
+                    {"name_ru":"Рис","name_en":"Rice","name_uk":"Рис","name_kk":"Күріш","calories":344,"protein":7.0,"fat":0.6,"carbs":78.9,"category":"grains"},
+                    {"name_ru":"Гречка","name_en":"Buckwheat","name_uk":"Гречка","name_kk":"Қарақұмық","calories":308,"protein":12.6,"fat":3.3,"carbs":57.1,"category":"grains"},
+                    {"name_ru":"Морковь","name_en":"Carrot","name_uk":"Морква","name_kk":"Сәбіз","calories":41,"protein":0.9,"fat":0.2,"carbs":9.6,"category":"vegetables"},
+                    {"name_ru":"Помидор","name_en":"Tomato","name_uk":"Помідор","name_kk":"Қызанақ","calories":18,"protein":0.9,"fat":0.2,"carbs":3.8,"category":"vegetables"},
+                    {"name_ru":"Яйцо куриное","name_en":"Chicken egg","name_uk":"Куряче яйце","name_kk":"Тауық жұмыртқасы","calories":155,"protein":12.7,"fat":10.9,"carbs":0.7,"category":"eggs"},
+                    {"name_ru":"Семга","name_en":"Salmon","name_uk":"Лосось","name_kk":"Лосось","calories":208,"protein":20.0,"fat":13.0,"carbs":0.0,"category":"fish"},
+                ]
+                for f in fallback:
+                    db.session.add(Food(**f))
+                db.session.commit()
+                print(f"✅ Добавлено {len(fallback)} базовых продуктов")
 
 init_db()
 
