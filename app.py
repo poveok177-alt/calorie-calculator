@@ -45,6 +45,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(200), nullable=False)
     language = db.Column(db.String(10), default='ru')
     is_premium = db.Column(db.Boolean, default=False)
+    is_superuser = db.Column(db.Boolean, default=False)
+    premium_ends = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Цели
@@ -98,6 +100,25 @@ class FoodEntry(db.Model):
 
     food = db.relationship('Food')
 
+class CustomFood(db.Model):
+    """User-created custom foods."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    calories = db.Column(db.Float, nullable=False)
+    protein = db.Column(db.Float, default=0)
+    fat = db.Column(db.Float, default=0)
+    carbs = db.Column(db.Float, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class WeightLog(db.Model):
+    """Daily weight entries for weight chart."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    date = db.Column(db.Date, default=date.today, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -122,6 +143,8 @@ def init_db():
                 ('trial_ends',      'TIMESTAMP'),
                 ('email_reminders', 'BOOLEAN DEFAULT TRUE'),
                 ('is_premium',      'BOOLEAN DEFAULT FALSE'),
+                ('is_superuser',    'BOOLEAN DEFAULT FALSE'),
+                ('premium_ends',    'TIMESTAMP'),
                 ('current_weight',  'FLOAT'),
                 ('goal_weight',     'FLOAT'),
                 ('height',          'FLOAT'),
@@ -257,6 +280,47 @@ translations = {
         'calc_profile': 'Профиль',
         'calc_activity_label': 'Активность',
         'calc_male': 'мужчина', 'calc_female': 'женщина',
+        # Premium modal texts (contextual, one per feature)
+        'pm_history': '🔒 Полная история — это Premium',
+        'pm_weight_chart': '📈 График динамики веса доступен в Premium',
+        'pm_weekly': '📅 Месячные сводки — это Premium',
+        'pm_custom_limit': '⭐️ Безлимитные свои продукты доступны в Premium',
+        'pm_export': '📤 Экспорт данных доступен в Premium',
+        'pm_meals': '🥗 Разбивка по приёмам пищи доступна в Premium',
+        'pm_macros': '💪 Серьёзный инструмент для серьёзного подхода. Premium',
+        'pm_generic': '👑 Весь потенциал приложения открыт в Premium',
+        'pm_data': '🌿 Больше данных — лучше результат. Premium',
+        'pm_no_thanks': 'Нет, спасибо',
+        'pm_try_btn': 'Попробовать — 11 ₽ / неделя',
+        'pm_monthly_note': 'или 129 ₽ / месяц',
+        'pm_profile_section': '⭐ Premium возможности',
+        'pm_profile_desc': 'Разблокируйте всё — история за всё время, графики, экспорт, безлимитные продукты.',
+        'pm_profile_btn': 'Подключить Premium',
+        'pm_active_until': 'Premium активен до',
+        'pm_active_forever': 'Premium активен навсегда',
+        'streak_label': '🔥 дней подряд', 'streak_zero': 'Начните вести дневник!',
+        'weight_chart_title': '📈 График веса', 'weight_log_today': 'Внести вес сегодня',
+        'weight_placeholder': 'кг', 'weight_save_btn': 'Записать',
+        'weekly_title': '📊 Неделя', 'avg_cal_label': 'Среднее ккал',
+        'days_on_goal_label': 'Дней в норме', 'days_logged_label': 'Дней с записями',
+        'cal_history_title': '📅 История калорий', 'click_day_hint': 'Нажмите на день — список продуктов',
+        'history_premium_msg': 'Полная история доступна в Premium',
+        'foods_that_day': 'Продукты за этот день', 'no_foods_day': 'Нет записей',
+        'weight_chart_premium': '📈 График веса доступен в Premium',
+        'tab_search': 'Поиск', 'tab_recent': 'Недавние', 'tab_favorites': 'Избранные', 'tab_custom': 'Мои',
+        'nothing_recent': 'Ещё нет недавних продуктов', 'nothing_favorites': 'Нет избранных продуктов',
+        'nothing_custom': 'Нет своих продуктов — создайте первый!',
+        'custom_limit_msg': 'Бесплатно: до 3 своих продуктов. Для безлимита — Premium',
+        'limit_reached_msg': 'Лимит (3 продукта). Получите Premium для безлимита.',
+        'create_food': 'Создать свой продукт', 'save_food': 'Сохранить',
+        'product_name_label': 'Название', 'product_name_ph': 'Например: Мой омлет',
+        'meal_type_label': 'Приём пищи', 'recent_label': 'Последние добавленные',
+        'favorites_label': 'Избранные продукты', 'custom_label': 'Мои продукты',
+        'off_source': 'Open Food Facts',
+        'cat_fruits': 'Фрукты', 'cat_vegetables': 'Овощи', 'cat_meat': 'Мясо',
+        'cat_dairy': 'Молочное', 'cat_grains': 'Злаки', 'cat_nuts': 'Орехи',
+        'cat_fish': 'Рыба', 'cat_sweets': 'Сладкое', 'cat_drinks': 'Напитки',
+        'cat_supplements': 'Витамины', 'cat_sports': 'Спортпит',
     },
     'en': {
         'app_name': 'CaloriMint', 'home': 'Home', 'history': 'History',
@@ -350,6 +414,46 @@ translations = {
         'calc_profile': 'Profile',
         'calc_activity_label': 'Activity',
         'calc_male': 'male', 'calc_female': 'female',
+        'pm_history': '🔒 Full history is a Premium feature',
+        'pm_weight_chart': '📈 Weight progress chart is available in Premium',
+        'pm_weekly': '📅 Monthly summaries are a Premium feature',
+        'pm_custom_limit': '⭐️ Unlimited custom foods available in Premium',
+        'pm_export': '📤 Data export available in Premium',
+        'pm_meals': '🥗 Meal breakdown available in Premium',
+        'pm_macros': '💪 A serious tool for a serious approach. Premium',
+        'pm_generic': '👑 Unlock the full potential in Premium',
+        'pm_data': '🌿 More data — better results. Premium',
+        'pm_no_thanks': 'No thanks',
+        'pm_try_btn': 'Try — 11 ₽ / week',
+        'pm_monthly_note': 'or 129 ₽ / month',
+        'pm_profile_section': '⭐ Premium features',
+        'pm_profile_desc': 'Unlock everything — full history, charts, export, unlimited foods.',
+        'pm_profile_btn': 'Get Premium',
+        'pm_active_until': 'Premium active until',
+        'pm_active_forever': 'Premium active forever',
+        'streak_label': '🔥 days in a row', 'streak_zero': 'Start your diary!',
+        'weight_chart_title': '📈 Weight chart', 'weight_log_today': 'Log weight today',
+        'weight_placeholder': 'kg', 'weight_save_btn': 'Save',
+        'weekly_title': '📊 This week', 'avg_cal_label': 'Avg kcal',
+        'days_on_goal_label': 'Days on target', 'days_logged_label': 'Days logged',
+        'cal_history_title': '📅 Calorie history', 'click_day_hint': 'Click a day to see foods',
+        'history_premium_msg': 'Full history available in Premium',
+        'foods_that_day': 'Foods that day', 'no_foods_day': 'No entries',
+        'weight_chart_premium': '📈 Weight chart available in Premium',
+        'tab_search': 'Search', 'tab_recent': 'Recent', 'tab_favorites': 'Favorites', 'tab_custom': 'Mine',
+        'nothing_recent': 'No recent foods yet', 'nothing_favorites': 'No favorites yet',
+        'nothing_custom': 'No custom foods — create your first!',
+        'custom_limit_msg': 'Free: up to 3 custom foods. Unlimited with Premium',
+        'limit_reached_msg': 'Limit reached (3 foods). Get Premium for unlimited.',
+        'create_food': 'Create custom food', 'save_food': 'Save',
+        'product_name_label': 'Name', 'product_name_ph': 'e.g. My omelette',
+        'meal_type_label': 'Meal', 'recent_label': 'Recently added',
+        'favorites_label': 'Favorite foods', 'custom_label': 'My foods',
+        'off_source': 'Open Food Facts',
+        'cat_fruits': 'Fruits', 'cat_vegetables': 'Vegetables', 'cat_meat': 'Meat',
+        'cat_dairy': 'Dairy', 'cat_grains': 'Grains', 'cat_nuts': 'Nuts',
+        'cat_fish': 'Fish', 'cat_sweets': 'Sweets', 'cat_drinks': 'Drinks',
+        'cat_supplements': 'Vitamins', 'cat_sports': 'Sports nutrition',
     },
     'uk': {
         'app_name': 'CaloriMint', 'home': 'Головна', 'history': 'Історія',
@@ -443,6 +547,46 @@ translations = {
         'calc_profile': 'Профіль',
         'calc_activity_label': 'Активність',
         'calc_male': 'чоловік', 'calc_female': 'жінка',
+        'pm_history': '🔒 Повна історія — це Premium',
+        'pm_weight_chart': '📈 Графік динаміки ваги доступний в Premium',
+        'pm_weekly': '📅 Місячні зведення — це Premium',
+        'pm_custom_limit': '⭐️ Безліміт своїх продуктів доступний в Premium',
+        'pm_export': '📤 Експорт даних доступний в Premium',
+        'pm_meals': '🥗 Розбивка по прийомах їжі доступна в Premium',
+        'pm_macros': '💪 Серйозний інструмент для серйозного підходу. Premium',
+        'pm_generic': '👑 Весь потенціал застосунку відкритий в Premium',
+        'pm_data': '🌿 Більше даних — кращий результат. Premium',
+        'pm_no_thanks': 'Ні, дякую',
+        'pm_try_btn': 'Спробувати — 11 ₽ / тиждень',
+        'pm_monthly_note': 'або 129 ₽ / місяць',
+        'pm_profile_section': '⭐ Premium можливості',
+        'pm_profile_desc': 'Розблокуйте все — повна історія, графіки, експорт, безліміт продуктів.',
+        'pm_profile_btn': 'Підключити Premium',
+        'pm_active_until': 'Premium активний до',
+        'pm_active_forever': 'Premium активний назавжди',
+        'streak_label': '🔥 днів підряд', 'streak_zero': 'Почніть вести щоденник!',
+        'weight_chart_title': '📈 Графік ваги', 'weight_log_today': 'Внести вагу сьогодні',
+        'weight_placeholder': 'кг', 'weight_save_btn': 'Записати',
+        'weekly_title': '📊 Тиждень', 'avg_cal_label': 'Середнє ккал',
+        'days_on_goal_label': 'Днів у нормі', 'days_logged_label': 'Днів із записами',
+        'cal_history_title': '📅 Історія калорій', 'click_day_hint': 'Натисніть на день — список продуктів',
+        'history_premium_msg': 'Повна історія доступна в Premium',
+        'foods_that_day': 'Продукти за цей день', 'no_foods_day': 'Немає записів',
+        'weight_chart_premium': '📈 Графік ваги доступний в Premium',
+        'tab_search': 'Пошук', 'tab_recent': 'Недавні', 'tab_favorites': 'Вибрані', 'tab_custom': 'Мої',
+        'nothing_recent': 'Ще немає недавніх продуктів', 'nothing_favorites': 'Немає вибраних',
+        'nothing_custom': 'Немає своїх продуктів — створіть перший!',
+        'custom_limit_msg': 'Безкоштовно: до 3 своїх продуктів. Безліміт — Premium',
+        'limit_reached_msg': 'Ліміт (3 продукти). Отримайте Premium для безліміту.',
+        'create_food': 'Створити свій продукт', 'save_food': 'Зберегти',
+        'product_name_label': 'Назва', 'product_name_ph': 'Наприклад: Мій омлет',
+        'meal_type_label': 'Прийом їжі', 'recent_label': 'Останні додані',
+        'favorites_label': 'Вибрані продукти', 'custom_label': 'Мої продукти',
+        'off_source': 'Open Food Facts',
+        'cat_fruits': 'Фрукти', 'cat_vegetables': 'Овочі', 'cat_meat': 'Мʼясо',
+        'cat_dairy': 'Молочне', 'cat_grains': 'Злаки', 'cat_nuts': 'Горіхи',
+        'cat_fish': 'Риба', 'cat_sweets': 'Солодке', 'cat_drinks': 'Напої',
+        'cat_supplements': 'Вітаміни', 'cat_sports': 'Спортхарч',
     },
     'kk': {
         'app_name': 'CaloriMint', 'home': 'Басты бет', 'history': 'Тарихы',
@@ -536,6 +680,46 @@ translations = {
         'calc_profile': 'Профиль',
         'calc_activity_label': 'Белсенділік',
         'calc_male': 'ер', 'calc_female': 'әйел',
+        'pm_history': '🔒 Толық тарих — бұл Premium',
+        'pm_weight_chart': '📈 Салмақ динамикасы графигі Premium-да',
+        'pm_weekly': '📅 Айлық есептер Premium-да',
+        'pm_custom_limit': '⭐️ Шексіз өз өнімдер Premium-да',
+        'pm_export': '📤 Деректерді экспорттау Premium-да',
+        'pm_meals': '🥗 Тамақ бойынша бөлу Premium-да',
+        'pm_macros': '💪 Байыпты тәсіл үшін байыпты құрал. Premium',
+        'pm_generic': '👑 Қолданбаның толық мүмкіндіктері Premium-да',
+        'pm_data': '🌿 Көбірек деректер — жақсырақ нәтиже. Premium',
+        'pm_no_thanks': 'Жоқ, рахмет',
+        'pm_try_btn': 'Сынап көру — 11 ₽ / апта',
+        'pm_monthly_note': 'немесе 129 ₽ / ай',
+        'pm_profile_section': '⭐ Premium мүмкіндіктер',
+        'pm_profile_desc': 'Барлығын ашыңыз — толық тарих, графиктер, экспорт, шексіз өнімдер.',
+        'pm_profile_btn': 'Premium қосу',
+        'pm_active_until': 'Premium белсенді',
+        'pm_active_forever': 'Premium мәңгі белсенді',
+        'streak_label': '🔥 күн қатарынан', 'streak_zero': 'Күнделік жүргізуді бастаңыз!',
+        'weight_chart_title': '📈 Салмақ графигі', 'weight_log_today': 'Бүгін салмақты енгізу',
+        'weight_placeholder': 'кг', 'weight_save_btn': 'Жазу',
+        'weekly_title': '📊 Апта', 'avg_cal_label': 'Орт. ккал',
+        'days_on_goal_label': 'Нормадағы күндер', 'days_logged_label': 'Жазбалы күндер',
+        'cal_history_title': '📅 Калория тарихы', 'click_day_hint': 'Күнді басыңыз — өнімдер тізімі',
+        'history_premium_msg': 'Толық тарих Premium-да қол жетімді',
+        'foods_that_day': 'Сол күнгі өнімдер', 'no_foods_day': 'Жазба жоқ',
+        'weight_chart_premium': '📈 Салмақ графигі Premium-да қол жетімді',
+        'tab_search': 'Іздеу', 'tab_recent': 'Соңғы', 'tab_favorites': 'Таңдаулы', 'tab_custom': 'Менің',
+        'nothing_recent': 'Әзірше соңғы өнімдер жоқ', 'nothing_favorites': 'Таңдаулылар жоқ',
+        'nothing_custom': 'Өз өнімдерім жоқ — бірінші жасаңыз!',
+        'custom_limit_msg': 'Тегін: 3 өз өнімге дейін. Шексіз — Premium',
+        'limit_reached_msg': 'Шек жетті (3 өнім). Premium алыңыз.',
+        'create_food': 'Өз өнімді жасау', 'save_food': 'Сақтау',
+        'product_name_label': 'Атауы', 'product_name_ph': 'Мысалы: Менің омлетім',
+        'meal_type_label': 'Тамақ қабылдау', 'recent_label': 'Соңғы қосылған',
+        'favorites_label': 'Таңдаулы өнімдер', 'custom_label': 'Менің өнімдерім',
+        'off_source': 'Open Food Facts',
+        'cat_fruits': 'Жемістер', 'cat_vegetables': 'Көкөністер', 'cat_meat': 'Ет',
+        'cat_dairy': 'Сүт өнімдері', 'cat_grains': 'Астық', 'cat_nuts': 'Жаңғақтар',
+        'cat_fish': 'Балық', 'cat_sweets': 'Тәттілер', 'cat_drinks': 'Сусындар',
+        'cat_supplements': 'Витаминдер', 'cat_sports': 'Спорт тамағы',
     }
 }
 
@@ -545,6 +729,12 @@ translations = {
 @app.before_request
 def before_request():
     session['lang'] = current_user.language if current_user.is_authenticated else session.get('lang', 'ru')
+    # Auto-expire premium if premium_ends has passed
+    if current_user.is_authenticated and current_user.is_premium:
+        if current_user.premium_ends and current_user.premium_ends < datetime.utcnow():
+            current_user.is_premium = False
+            current_user.premium_ends = None
+            db.session.commit()
 
 @app.route('/')
 def index():
@@ -585,6 +775,18 @@ def index():
         total_fat += entry.fat
         total_carbs += entry.carbs
     
+    # Calculate streak
+    from datetime import timedelta
+    streak = 0
+    check = today
+    while True:
+        has_entry = FoodEntry.query.filter_by(user_id=current_user.id, date=check).first()
+        if has_entry:
+            streak += 1
+            check = check - timedelta(days=1)
+        else:
+            break
+
     return render_template('index.html', 
         t=t, 
         meals=meals,
@@ -592,8 +794,58 @@ def index():
         total_protein=int(total_protein),
         total_fat=int(total_fat),
         total_carbs=int(total_carbs),
-        lang=lang
+        lang=lang,
+        streak=streak
     )
+
+# ===================== OPEN FOOD FACTS API =====================
+
+def search_openfoodfacts(query, lang='ru'):
+    """Search Open Food Facts API. Returns list of food dicts compatible with local format."""
+    import requests as req
+    try:
+        url = 'https://world.openfoodfacts.org/cgi/search.pl'
+        params = {
+            'search_terms': query,
+            'search_simple': 1,
+            'action': 'process',
+            'json': 1,
+            'page_size': 10,
+            'fields': 'product_name,product_name_ru,product_name_en,nutriments,categories_tags'
+        }
+        resp = req.get(url, params=params, timeout=5)
+        if resp.status_code != 200:
+            return []
+        data = resp.json()
+        results = []
+        for p in data.get('products', []):
+            n = p.get('nutriments', {})
+            cal = n.get('energy-kcal_100g') or n.get('energy-kcal') or 0
+            protein = n.get('proteins_100g', 0) or 0
+            fat = n.get('fat_100g', 0) or 0
+            carbs = n.get('carbohydrates_100g', 0) or 0
+            if not cal:
+                continue
+            name_ru = p.get('product_name_ru') or p.get('product_name') or ''
+            name_en = p.get('product_name_en') or p.get('product_name') or name_ru
+            if not name_ru and not name_en:
+                continue
+            display_name = name_ru if name_ru else name_en
+            results.append({
+                'id': f'off_{p.get("code","")[:13]}',
+                'name_ru': display_name,
+                'name_en': name_en,
+                'calories': round(float(cal), 1),
+                'protein': round(float(protein), 1),
+                'fat': round(float(fat), 1),
+                'carbs': round(float(carbs), 1),
+                'category': 'other',
+                'source': 'off'
+            })
+        return results
+    except Exception as e:
+        print(f'[OFF] Error: {e}')
+        return []
 
 @app.route('/api/search', methods=['GET'])
 @login_required
@@ -614,7 +866,19 @@ def search_foods():
                 continue
         results.append({'id': idx, 'name_ru': food['name_ru'], 'name_en': food.get('name_en', food['name_ru']),
             'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0),
-            'carbs': food.get('carbs', 0), 'category': food.get('category', 'other')})
+            'carbs': food.get('carbs', 0), 'category': food.get('category', 'other'), 'source': 'local'})
+    
+    # If query provided and local results < 5, also search Open Food Facts
+    if query and len(results) < 5:
+        lang = current_user.language if current_user.is_authenticated else 'ru'
+        off_results = search_openfoodfacts(query, lang)
+        # Avoid duplicates by name
+        local_names = {r['name_ru'].lower() for r in results}
+        for item in off_results:
+            if item['name_ru'].lower() not in local_names:
+                results.append(item)
+                local_names.add(item['name_ru'].lower())
+    
     return jsonify(results[:30])
 
 @app.route('/api/add-entry', methods=['POST'])
@@ -625,8 +889,33 @@ def add_entry():
     grams = float(data.get('grams', 100))
     meal_type = data.get('meal_type', 'snack')
     
+    # Handle Open Food Facts or custom items — data passed inline
+    if isinstance(food_id, str) and (food_id.startswith('off_') or food_id.startswith('custom_')):
+        cal_per_100 = float(data.get('calories', 0))
+        protein_per_100 = float(data.get('protein', 0))
+        fat_per_100 = float(data.get('fat', 0))
+        carbs_per_100 = float(data.get('carbs', 0))
+        food_name = data.get('food_name', 'Unknown')
+        multiplier = grams / 100
+        entry = FoodEntry(
+            user_id=current_user.id,
+            food_id=0,  # store as 0 for OFF items
+            food_name=food_name,
+            grams=grams,
+            calories=cal_per_100 * multiplier,
+            protein=protein_per_100 * multiplier,
+            fat=fat_per_100 * multiplier,
+            carbs=carbs_per_100 * multiplier,
+            meal_type=meal_type,
+            date=date.today()
+        )
+        db.session.add(entry)
+        db.session.commit()
+        return jsonify({'success': True})
+    
     from food_data import food_data
     
+    food_id = int(food_id)
     if food_id < 0 or food_id >= len(food_data):
         return jsonify({'error': 'Invalid food'}), 400
     
@@ -777,23 +1066,235 @@ def remove_favorite(food_id):
     
     return jsonify({'success': True})
 
+# ===================== CUSTOM FOODS =====================
+
+@app.route('/api/custom-foods', methods=['GET'])
+@login_required
+def get_custom_foods():
+    foods = CustomFood.query.filter_by(user_id=current_user.id).order_by(CustomFood.created_at.desc()).all()
+    return jsonify([{
+        'id': f'custom_{f.id}',
+        'name_ru': f.name,
+        'calories': f.calories,
+        'protein': f.protein,
+        'fat': f.fat,
+        'carbs': f.carbs,
+        'source': 'custom'
+    } for f in foods])
+
+@app.route('/api/custom-foods', methods=['POST'])
+@login_required
+def create_custom_food():
+    # Free users can only have 3 custom foods; premium = unlimited
+    if not current_user.is_premium:
+        count = CustomFood.query.filter_by(user_id=current_user.id).count()
+        if count >= 3:
+            return jsonify({'error': 'limit_reached', 'limit': 3}), 403
+    data = request.get_json()
+    name = data.get('name', '').strip()
+    if not name:
+        return jsonify({'error': 'Name required'}), 400
+    f = CustomFood(
+        user_id=current_user.id,
+        name=name,
+        calories=float(data.get('calories', 0)),
+        protein=float(data.get('protein', 0)),
+        fat=float(data.get('fat', 0)),
+        carbs=float(data.get('carbs', 0))
+    )
+    db.session.add(f)
+    db.session.commit()
+    return jsonify({'success': True, 'id': f'custom_{f.id}'})
+
+@app.route('/api/custom-foods/<int:food_id>', methods=['DELETE'])
+@login_required
+def delete_custom_food(food_id):
+    f = CustomFood.query.filter_by(id=food_id, user_id=current_user.id).first()
+    if not f:
+        return jsonify({'error': 'Not found'}), 404
+    db.session.delete(f)
+    db.session.commit()
+    return jsonify({'success': True})
+
+# ===================== WEIGHT LOG API =====================
+
+@app.route('/api/weight-log', methods=['GET'])
+@login_required
+def get_weight_log():
+    days = int(request.args.get('days', 30))
+    from datetime import timedelta
+    since = date.today() - timedelta(days=days)
+    logs = WeightLog.query.filter(
+        WeightLog.user_id == current_user.id,
+        WeightLog.date >= since
+    ).order_by(WeightLog.date.asc()).all()
+    return jsonify([{'date': l.date.strftime('%Y-%m-%d'), 'weight': l.weight} for l in logs])
+
+@app.route('/api/weight-log', methods=['POST'])
+@login_required
+def add_weight_log():
+    data = request.get_json()
+    weight = float(data.get('weight', 0))
+    log_date = date.today()
+    if not weight:
+        return jsonify({'error': 'Weight required'}), 400
+    # Update today's entry if exists, else create
+    existing = WeightLog.query.filter_by(user_id=current_user.id, date=log_date).first()
+    if existing:
+        existing.weight = weight
+    else:
+        existing = WeightLog(user_id=current_user.id, weight=weight, date=log_date)
+        db.session.add(existing)
+    # Also update current_weight on user profile
+    current_user.current_weight = weight
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/last-weight', methods=['GET'])
+@login_required
+def get_last_weight():
+    last = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
+    return jsonify({'weight': last.weight if last else (current_user.current_weight or ''), 'date': last.date.strftime('%Y-%m-%d') if last else None})
+
+# ===================== HISTORY / PROGRESS API =====================
+
+@app.route('/api/history-data', methods=['GET'])
+@login_required
+def history_data():
+    """Returns calorie history per day for last N days."""
+    from datetime import timedelta
+    days = int(request.args.get('days', 30))
+    since = date.today() - timedelta(days=days)
+    entries = FoodEntry.query.filter(
+        FoodEntry.user_id == current_user.id,
+        FoodEntry.date >= since
+    ).all()
+    
+    day_map = {}
+    for e in entries:
+        ds = e.date.strftime('%Y-%m-%d')
+        if ds not in day_map:
+            day_map[ds] = {'calories': 0, 'protein': 0, 'fat': 0, 'carbs': 0, 'foods': []}
+        day_map[ds]['calories'] += e.calories
+        day_map[ds]['protein'] += e.protein
+        day_map[ds]['fat'] += e.fat
+        day_map[ds]['carbs'] += e.carbs
+        day_map[ds]['foods'].append({'name': e.food_name, 'grams': e.grams, 'calories': e.calories, 'meal': e.meal_type})
+    
+    return jsonify({'days': day_map, 'goal': current_user.daily_calorie_goal or 2000})
+
+@app.route('/api/streak', methods=['GET'])
+@login_required
+def get_streak():
+    """Calculate consecutive days the user logged food."""
+    from datetime import timedelta
+    today = date.today()
+    streak = 0
+    check = today
+    while True:
+        has_entry = FoodEntry.query.filter_by(user_id=current_user.id, date=check).first()
+        if has_entry:
+            streak += 1
+            check = check - timedelta(days=1)
+        else:
+            break
+    return jsonify({'streak': streak})
+
+@app.route('/api/weekly-summary', methods=['GET'])
+@login_required
+def weekly_summary():
+    """7-day average calories, macros, water days, days on target."""
+    from datetime import timedelta
+    today = date.today()
+    since = today - timedelta(days=6)
+    entries = FoodEntry.query.filter(
+        FoodEntry.user_id == current_user.id,
+        FoodEntry.date >= since
+    ).all()
+    goal = current_user.daily_calorie_goal or 2000
+    
+    day_map = {}
+    for e in entries:
+        ds = e.date.strftime('%Y-%m-%d')
+        if ds not in day_map:
+            day_map[ds] = {'cal': 0, 'protein': 0, 'fat': 0, 'carbs': 0}
+        day_map[ds]['cal'] += e.calories
+        day_map[ds]['protein'] += e.protein
+        day_map[ds]['fat'] += e.fat
+        day_map[ds]['carbs'] += e.carbs
+    
+    days_logged = len(day_map)
+    days_on_goal = sum(1 for d in day_map.values() if d['cal'] <= goal)
+    avg_cal = round(sum(d['cal'] for d in day_map.values()) / max(days_logged, 1))
+    avg_protein = round(sum(d['protein'] for d in day_map.values()) / max(days_logged, 1))
+    avg_fat = round(sum(d['fat'] for d in day_map.values()) / max(days_logged, 1))
+    avg_carbs = round(sum(d['carbs'] for d in day_map.values()) / max(days_logged, 1))
+    
+    return jsonify({
+        'days_logged': days_logged,
+        'days_on_goal': days_on_goal,
+        'avg_cal': avg_cal,
+        'avg_protein': avg_protein,
+        'avg_fat': avg_fat,
+        'avg_carbs': avg_carbs,
+        'goal': goal
+    })
+
 @app.route('/history')
 @login_required
 def history():
+    from datetime import timedelta
     lang = current_user.language or 'ru'
     t = translations.get(lang, translations['ru'])
+    is_premium = current_user.is_premium
     
-    entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(
-        FoodEntry.date.desc()
-    ).all()
+    # Premium: all entries; Free: last 7 days
+    if is_premium:
+        entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(FoodEntry.date.desc()).all()
+    else:
+        since = date.today() - timedelta(days=6)
+        entries = FoodEntry.query.filter(
+            FoodEntry.user_id == current_user.id,
+            FoodEntry.date >= since
+        ).order_by(FoodEntry.date.desc()).all()
     
-    return render_template('history.html', entries=entries, t=t, lang=lang)
+    # Group by date
+    from collections import OrderedDict
+    days = OrderedDict()
+    for e in entries:
+        ds = e.date.strftime('%d.%m.%Y')
+        if ds not in days:
+            days[ds] = {'entries': [], 'total_cal': 0, 'total_protein': 0, 'total_fat': 0, 'total_carbs': 0}
+        days[ds]['entries'].append({'food_name': e.food_name, 'grams': e.grams, 'calories': e.calories,
+            'protein': e.protein, 'fat': e.fat, 'carbs': e.carbs, 'meal_type': e.meal_type or 'other'})
+        days[ds]['total_cal'] += e.calories
+        days[ds]['total_protein'] += e.protein
+        days[ds]['total_fat'] += e.fat
+        days[ds]['total_carbs'] += e.carbs
+    
+    # Streak
+    streak = 0
+    check = date.today()
+    while True:
+        has_entry = FoodEntry.query.filter_by(user_id=current_user.id, date=check).first()
+        if has_entry:
+            streak += 1
+            check = check - timedelta(days=1)
+        else:
+            break
+    
+    return render_template('history.html', days=days, t=t, lang=lang, is_premium=is_premium,
+                           streak=streak, goal=current_user.daily_calorie_goal or 2000)
 
 @app.route('/goals', methods=['GET', 'POST'])
 @login_required
 def goals():
     lang = current_user.language or 'ru'
     t = translations.get(lang, translations['ru'])
+    
+    # Get last logged weight for pre-fill
+    last_weight_log = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
+    last_weight = last_weight_log.weight if last_weight_log else current_user.current_weight
     
     if request.method == 'POST':
         current_user.daily_calorie_goal = int(request.form.get('daily_calories', 2000))
@@ -810,7 +1311,7 @@ def goals():
         db.session.commit()
         flash('Goals updated!', 'success')
     
-    return render_template('goals.html', user=current_user, t=t, lang=lang)
+    return render_template('goals.html', user=current_user, t=t, lang=lang, last_weight=last_weight)
 
 @app.route('/categories')
 @login_required
@@ -856,7 +1357,8 @@ def premium():
     trial_available = not current_user.trial_used and not current_user.is_premium
     trial_active = bool(current_user.trial_ends and current_user.trial_ends > datetime.utcnow())
     return render_template('premium.html', t=t, lang=lang,
-                           trial_available=trial_available, trial_active=trial_active)
+                           trial_available=trial_available, trial_active=trial_active,
+                           now=datetime.utcnow())
 
 @app.route('/start-trial')
 @login_required
@@ -959,6 +1461,80 @@ with app.app_context():
             )
             db.session.add(f)
         db.session.commit()
+
+
+# ===================== ADMIN =====================
+
+from functools import wraps
+
+def superuser_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_superuser:
+            from flask import abort
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated
+
+@app.route('/admin')
+@login_required
+@superuser_required
+def admin_panel():
+    query = request.args.get('q', '').strip()
+    if query:
+        users = User.query.filter(
+            (User.email.ilike(f'%{query}%')) | (User.username.ilike(f'%{query}%'))
+        ).order_by(User.created_at.desc()).all()
+    else:
+        users = User.query.order_by(User.created_at.desc()).all()
+    return render_template('admin.html', users=users, query=query, now=datetime.utcnow())
+
+@app.route('/admin/grant-premium', methods=['POST'])
+@login_required
+@superuser_required
+def admin_grant_premium():
+    from datetime import timedelta
+    user_id = int(request.form.get('user_id'))
+    duration = request.form.get('duration', '1month')
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    user.is_premium = True
+    if duration == '7days':
+        user.premium_ends = datetime.utcnow() + timedelta(days=7)
+    elif duration == '1month':
+        user.premium_ends = datetime.utcnow() + timedelta(days=30)
+    elif duration == '3months':
+        user.premium_ends = datetime.utcnow() + timedelta(days=90)
+    elif duration == 'forever':
+        user.premium_ends = None
+    db.session.commit()
+    return redirect(url_for('admin_panel', q=request.args.get('q', '')))
+
+@app.route('/admin/revoke-premium', methods=['POST'])
+@login_required
+@superuser_required
+def admin_revoke_premium():
+    user_id = int(request.form.get('user_id'))
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    user.is_premium = False
+    user.premium_ends = None
+    user.trial_ends = None
+    db.session.commit()
+    return redirect(url_for('admin_panel', q=request.args.get('q', '')))
+
+@app.route('/admin/make-superuser', methods=['POST'])
+@login_required
+@superuser_required
+def admin_make_superuser():
+    user_id = int(request.form.get('user_id'))
+    user = User.query.get(user_id)
+    if user:
+        user.is_superuser = True
+        db.session.commit()
+    return redirect(url_for('admin_panel'))
 
 if __name__ == '__main__':
     app.run(debug=True)

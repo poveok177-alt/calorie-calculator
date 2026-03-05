@@ -55,6 +55,52 @@
   .bju-value { font-size:18px; font-weight:800; color:var(--green-dark); }
 
   .info-box { background:var(--mint-light); border-radius:12px; padding:12px; font-size:12px; color:var(--text-soft); margin-top:12px; line-height:1.5; }
+
+  /* ═══ MOBILE GLOBAL FIXES ═══ */
+  /* iOS safe area */
+  body { padding-bottom: max(60px, calc(60px + env(safe-area-inset-bottom))); }
+  /* Prevent double-tap zoom on buttons */
+  button, a { touch-action: manipulation; }
+  /* Scrollable lists scroll smoothly */
+  .meal-products, .category-scroll { -webkit-overflow-scrolling: touch; }
+  /* Bottom nav padding */
+  @media(max-width:860px){
+    body { padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom))); }
+    /* Hide top nav links on mobile — use bottom nav instead */
+    .nav-links { display:none!important; }
+    .lang-switcher { display:flex!important; }
+    /* Bigger tap targets */
+    .entry-remove { min-width:40px!important; min-height:40px!important; }
+    .cat-btn { min-height:36px!important; padding:6px 14px!important; }
+    .modal-quick-btn { min-height:40px!important; padding:8px 16px!important; }
+    /* Product list full width on mobile */
+    .meal-products { margin:0 10px 10px!important; }
+    /* Meal header wraps nicely */
+    .meal-header { padding:12px 14px 10px!important; }
+    /* Search row */
+    .meal-search-wrap { padding:0 10px 10px!important; }
+    /* Modal full width on mobile */
+    .modal-box { padding:22px 16px 28px!important; }
+  }
+  @media(max-width:480px){
+    .modal-meal-selector { gap:4px!important; }
+    .modal-meal-btn { min-width:60px!important; padding:7px 6px!important; font-size:11px!important; }
+    .modal-meal-btn span { font-size:9px!important; }
+    .search-tabs { overflow-x:auto; scrollbar-width:none; padding-bottom:0; }
+    .search-tabs::-webkit-scrollbar { display:none; }
+    .search-tab { font-size:12px!important; padding:6px 10px!important; white-space:nowrap; }
+  }
+
+
+  @media(max-width:540px){
+    main { padding: 16px 12px!important; }
+    .card { padding: 20px 16px!important; border-radius:18px!important; }
+    .form-row { grid-template-columns:1fr!important; gap:0!important; }
+    .bju-grid { grid-template-columns:repeat(2,1fr)!important; }
+    .page-title { font-size:26px!important; }
+    .btn-primary, .btn-secondary { min-height:50px!important; font-size:15px!important; }
+    .form-group input, .form-group select { min-height:48px!important; font-size:16px!important; }
+  }
 </style>
 </head>
 <body>
@@ -82,7 +128,7 @@
         <div class="form-group">
           <label>{{ t['current_weight'] }}</label>
           <input type="number" name="current_weight" step="0.1" min="30" max="300"
-                 value="{{ current_user.current_weight or '' }}" placeholder="70.5" required>
+                 value="{{ last_weight or current_user.current_weight or '' }}" placeholder="70.5" required>
         </div>
 
         <div class="form-group">
@@ -358,5 +404,36 @@ function updateCalculation() {
     // Если нужно, можно добавить автоматический расчёт при изменении пола/активности
 }
 </script>
+
+<!-- BOTTOM NAV (mobile only) -->
+<nav class="bottom-nav">
+  <a href="/" class="bnav-item ">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-label">{{ t.get('today','Сегодня') }}</span>
+  </a>
+  <a href="/history" class="bnav-item ">
+    <span class="bnav-icon">📊</span>
+    <span class="bnav-label">{{ t.get('history','История') }}</span>
+  </a>
+  <a href="/goals" class="bnav-item active">
+    <span class="bnav-icon">🎯</span>
+    <span class="bnav-label">{{ t.get('goals','Цели') }}</span>
+  </a>
+  <a href="/premium" class="bnav-item bnav-premium ">
+    <span class="bnav-icon">⭐</span>
+    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
+  </a>
+</nav>
+<style>
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
+@media(max-width:860px){.bottom-nav{display:flex;}}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
+.bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
+.bnav-item.bnav-premium{color:#e65c00;}
+.bnav-item.bnav-premium.active{background:rgba(255,107,53,.1);}
+.bnav-icon{font-size:22px;line-height:1;}
+.bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
+</style>
+
 </body>
 </html>
