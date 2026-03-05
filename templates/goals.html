@@ -2,153 +2,399 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234caf83' width='100' height='100' rx='22'/><text x='50' y='62' font-size='58' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ t.app_name }} — {{ t.goals }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{
---mint:#b5ead7;
---mint-light:#e8f8f2;
---green:#4caf83;
---green-dark:#2d8a63;
---text:#2d4a3e;
---border:#c8eedd;
---shadow:rgba(76,175,131,.12);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-font-family:'Nunito',sans-serif;
-background:#f9fdf9;
-color:var(--text);
-}
-nav{
-background:white;
-border-bottom:1px solid var(--border);
-padding:16px 24px;
-}
-.logo{
-font-family:'Playfair Display',serif;
-font-size:22px;
-color:var(--green-dark);
-text-decoration:none;
-font-weight:600;
-}
-main{max-width:700px;margin:40px auto;padding:0 20px}
-.page-title{
-font-family:'Playfair Display',serif;
-font-size:30px;
-margin-bottom:30px;
-}
-.card{
-background:white;
-border-radius:20px;
-padding:28px;
-border:1px solid var(--border);
-box-shadow:0 4px 20px var(--shadow);
-}
-.form-group{margin-bottom:18px}
-label{
-display:block;
-font-size:13px;
-font-weight:700;
-margin-bottom:6px;
-color:#5a7a6e;
-}
-input,select{
-width:100%;
-padding:12px;
-border-radius:12px;
-border:2px solid var(--border);
-background:var(--mint-light);
-font-size:15px;
-}
-input:focus,select:focus{
-outline:none;
-border-color:var(--green);
-background:white;
-}
-button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:18px;
-font-weight:800;
-cursor:pointer;
-margin-top:10px;
-}
-.btn-primary{
-background:linear-gradient(135deg,var(--green),#6dc49a);
-color:white;
-}
-.btn-secondary{
-background:var(--mint);
-color:var(--green-dark);
-}
-.progress{
-margin-top:25px;
-background:var(--mint-light);
-padding:18px;
-border-radius:14px;
-}
+  :root {
+    --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83;
+    --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9;
+    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e;
+    --border:#c8eedd; --shadow:rgba(76,175,131,.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text);
+    min-height:100vh;
+    background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
+    padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+  }
+  nav {
+    background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border); padding:0 24px;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow);
+  }
+  .nav-inner {
+    max-width:1100px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between; height:64px;
+  }
+  .logo { font-family:'Playfair Display',serif; font-size:22px; font-weight:600; color:var(--green-dark); text-decoration:none; }
+  .nav-link { padding:8px 14px; border-radius:20px; text-decoration:none; font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s; }
+  .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
+
+  main { max-width:720px; margin:0 auto; padding:36px 20px; }
+  .page-title { font-family:'Playfair Display',serif; font-size:32px; margin-bottom:4px; }
+  .page-sub { color:var(--text-soft); font-size:15px; margin-bottom:28px; }
+
+  .card {
+    background:white; border-radius:22px; padding:28px;
+    margin-bottom:20px; border:1.5px solid var(--border);
+    box-shadow:0 4px 24px var(--shadow);
+  }
+  .card-title {
+    font-family:'Playfair Display',serif; font-size:19px;
+    margin-bottom:20px; display:flex; align-items:center; gap:8px;
+  }
+
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+  .form-group { display:flex; flex-direction:column; margin-bottom:16px; }
+  .form-row .form-group { margin-bottom:0; }
+  .form-label {
+    font-size:11px; font-weight:800; color:var(--text-soft);
+    margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;
+  }
+  .form-input, .form-select {
+    padding:12px 16px; border:2px solid var(--border);
+    border-radius:14px; font-size:15px; font-family:'Nunito',sans-serif;
+    outline:none; transition:all .2s; background:var(--mint-light); color:var(--text);
+    width:100%;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color:var(--green); background:white;
+    box-shadow:0 0 0 4px rgba(76,175,131,.12);
+  }
+
+  .btn-calc {
+    width:100%; padding:13px; margin-bottom:10px;
+    background:var(--mint); color:var(--green-dark);
+    border:none; border-radius:16px; font-size:14px; font-weight:800;
+    font-family:'Nunito',sans-serif; cursor:pointer; transition:all .2s;
+  }
+  .btn-calc:hover { background:var(--mint-light); transform:translateY(-1px); }
+
+  .btn-submit {
+    width:100%; padding:15px; margin-top:4px;
+    background:linear-gradient(135deg,var(--green),var(--green-soft));
+    color:white; border:none; border-radius:18px;
+    font-size:16px; font-weight:800; font-family:'Nunito',sans-serif;
+    cursor:pointer; transition:all .2s;
+  }
+  .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(76,175,131,.3); }
+
+  .info-box {
+    background:var(--mint-light); border-left:4px solid var(--green);
+    padding:14px 16px; border-radius:12px; font-size:13px;
+    color:var(--text-soft); line-height:1.6; margin-bottom:18px;
+  }
+
+  .flash { background:#e8f5e9; color:#2e7d32; padding:12px 18px; border-radius:14px; margin-bottom:16px; font-size:14px; font-weight:600; border:1px solid #c8e6c9; }
+
+  /* Progress section */
+  .weight-diff {
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--mint-light); border-radius:16px; padding:16px 20px; margin-bottom:14px;
+  }
+  .weight-val { text-align:center; }
+  .weight-label { font-size:11px; color:var(--text-light); font-weight:700; text-transform:uppercase; }
+  .weight-num { font-size:24px; font-weight:800; }
+  .weight-arrow { font-size:22px; color:var(--green); }
+  .bmi-box { background:var(--mint-light); border-radius:14px; padding:14px 16px; font-size:13px; color:var(--text-soft); line-height:1.6; margin-top:10px; }
+
+  .bju-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
+  .bju-item { background:var(--mint-light); border-radius:12px; padding:12px; text-align:center; }
+  .bju-label { font-size:10px; color:var(--text-light); font-weight:700; text-transform:uppercase; }
+  .bju-value { font-size:20px; font-weight:800; color:var(--green-dark); }
+
+  /* Bottom nav */
+  .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:150; background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border-top:1px solid #c8eedd; box-shadow:0 -4px 20px rgba(76,175,131,.1); padding:6px 0 max(6px,env(safe-area-inset-bottom)); }
+  @media(max-width:860px) { .bottom-nav { display:flex; } .nav-links { display:none!important; } }
+  .bnav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; color:#8aaa9e; font-weight:700; padding:6px 4px; border-radius:12px; margin:0 3px; transition:all .2s; min-height:50px; justify-content:center; }
+  .bnav-item.active { color:#2d8a63; background:rgba(181,234,215,.35); }
+  .bnav-item.bnav-premium { color:#e65c00; }
+  .bnav-icon { font-size:22px; line-height:1; }
+  .bnav-label { letter-spacing:.3px; text-transform:uppercase; font-size:9px; }
+
+  @media(max-width:540px) {
+    main { padding:16px 12px; }
+    .card { padding:20px 16px; border-radius:18px; }
+    .form-row { grid-template-columns:1fr; }
+    .bju-grid { grid-template-columns:repeat(2,1fr); }
+    .page-title { font-size:26px; }
+    .btn-submit, .btn-calc { min-height:50px; font-size:15px; }
+    .form-input, .form-select { min-height:48px; font-size:16px; }
+  }
 </style>
 </head>
-
 <body>
-
 <nav>
-<a href="/" class="logo">🌿 {{ t.app_name }}</a>
+  <div class="nav-inner">
+    <a href="/" class="logo">🌿 {{ t.app_name }}</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">← {{ t.get('today','Сегодня') }}</a>
+      <a href="/history" class="nav-link">📅 {{ t.get('history','История') }}</a>
+    </div>
+  </div>
 </nav>
 
 <main>
-<div class="page-title">🎯 {{ t.goals }}</div>
+  <div class="page-title">🎯 {{ t.goals }}</div>
+  <div class="page-sub">Установите цели и рассчитайте нормы автоматически</div>
 
-<div class="card">
-<form method="POST">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}{% for msg in messages %}<div class="flash">{{ msg }}</div>{% endfor %}{% endif %}
+  {% endwith %}
 
-<div class="form-group">
-<label>{{ t.get('current_weight','Текущий вес') }}</label>
-<input type="number" name="current_weight" step="0.1"
-value="{{ last_weight or current_user.current_weight or '' }}" required>
-</div>
+  <form method="POST">
+    <!-- ВЕС И ПАРАМЕТРЫ -->
+    <div class="card">
+      <div class="card-title">⚖️ {{ t.get('weight_goal','Вес и параметры') }}</div>
 
-<div class="form-group">
-<label>{{ t.get('goal_weight','Целевой вес') }}</label>
-<input type="number" name="goal_weight" step="0.1"
-value="{{ current_user.goal_weight or '' }}" required>
-</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{{ t.get('current_weight','Текущий вес') }} (кг)</label>
+          <input type="number" name="current_weight" class="form-input" step="0.1" min="30" max="300"
+                 value="{{ last_weight or current_user.current_weight or '' }}" placeholder="70.5" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t.get('goal_weight','Целевой вес') }} (кг)</label>
+          <input type="number" name="goal_weight" class="form-input" step="0.1" min="30" max="300"
+                 value="{{ current_user.goal_weight or '' }}" placeholder="65.0" required>
+        </div>
+      </div>
 
-<div class="form-group">
-<label>{{ t.get('height','Рост') }}</label>
-<input type="number" name="height"
-value="{{ current_user.height or '' }}" required>
-</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{{ t.get('height','Рост') }} (см)</label>
+          <input type="number" name="height" class="form-input" step="1" min="100" max="250"
+                 value="{{ current_user.height or '' }}" placeholder="175" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Возраст</label>
+          <input type="number" name="age" class="form-input" min="14" max="100"
+                 value="{{ current_user.age or 25 }}" placeholder="25" required>
+        </div>
+      </div>
+    </div>
 
-<div class="form-group">
-<label>{{ t.get('age','Возраст') }}</label>
-<input type="number" name="age"
-value="{{ current_user.age or 25 }}" required>
-</div>
+    <!-- ПРОФИЛЬ -->
+    <div class="card">
+      <div class="card-title">👤 Профиль и активность</div>
 
-<div class="form-group">
-<label>{{ t.get('daily_goal','Калории в день') }}</label>
-<input type="number" name="daily_calorie_goal"
-value="{{ current_user.daily_calorie_goal or 2000 }}" required>
-</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{{ t.get('gender','Пол') }}</label>
+          <select name="gender" class="form-select" required>
+            <option value="male" {% if current_user.gender == 'male' %}selected{% endif %}>{{ t.get('gender_male','Мужской') }}</option>
+            <option value="female" {% if current_user.gender == 'female' %}selected{% endif %}>{{ t.get('gender_female','Женский') }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Активность</label>
+          <select name="activity" class="form-select" required>
+            <option value="sedentary" {% if current_user.activity == 'sedentary' %}selected{% endif %}>{{ t.get('act_sedentary','Малоподвижный') }}</option>
+            <option value="light" {% if current_user.activity == 'light' %}selected{% endif %}>{{ t.get('act_light','Лёгкая') }}</option>
+            <option value="moderate" {% if current_user.activity == 'moderate' or not current_user.activity %}selected{% endif %}>{{ t.get('act_moderate','Умеренная') }}</option>
+            <option value="active" {% if current_user.activity == 'active' %}selected{% endif %}>{{ t.get('act_active','Высокая') }}</option>
+            <option value="very_active" {% if current_user.activity == 'very_active' %}selected{% endif %}>{{ t.get('act_very_active','Очень высокая') }}</option>
+          </select>
+        </div>
+      </div>
 
-<button type="submit" class="btn-primary">
-💾 {{ t.get('save','Сохранить') }}
-</button>
+      <div class="info-box">
+        💡 <strong>{{ t.get('formula_note','Формула Харриса-Бенедикта') }}</strong> —
+        нажмите кнопку ниже, чтобы рассчитать калории и БЖУ автоматически
+      </div>
 
-</form>
+      <button type="button" class="btn-calc" onclick="calculateAll()">
+        {{ t.get('calc_auto','⚡ Рассчитать автоматически') }}
+      </button>
+    </div>
 
-{% if current_user.current_weight and current_user.goal_weight %}
-<div class="progress">
-{{ t.get('now','Сейчас') }}: {{ current_user.current_weight }} кг →
-{{ t.get('goal','Цель') }}: {{ current_user.goal_weight }} кг
-</div>
-{% endif %}
+    <!-- КАЛОРИИ И БЖУ -->
+    <div class="card">
+      <div class="card-title">🔥 {{ t.get('daily_goal','Дневная норма') }}</div>
 
-</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{{ t.get('daily_goal','Калории') }} (ккал)</label>
+          <input type="number" name="daily_calorie_goal" class="form-input" min="500" max="10000"
+                 value="{{ current_user.daily_calorie_goal or 2000 }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">💧 {{ t.get('water_goal_label','Вода') }} (стаканов)</label>
+          <input type="number" name="water_goal" class="form-input" min="1" max="20"
+                 value="{{ current_user.water_goal or 8 }}" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">{{ t.get('protein_goal_label','Белки') }} (г)</label>
+          <input type="number" name="protein_goal" class="form-input" min="10" max="500"
+                 value="{{ current_user.protein_goal or 150 }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ t.get('fat_goal_label','Жиры') }} (г)</label>
+          <input type="number" name="fat_goal" class="form-input" min="10" max="300"
+                 value="{{ current_user.fat_goal or 70 }}" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">{{ t.get('carbs_goal_label','Углеводы') }} (г)</label>
+        <input type="number" name="carbs_goal" class="form-input" min="10" max="700"
+               value="{{ current_user.carbs_goal or 250 }}" required>
+      </div>
+
+      <button type="submit" class="btn-submit">💾 {{ t.get('save','Сохранить') }}</button>
+    </div>
+  </form>
+
+  <!-- ПРОГРЕСС -->
+  {% if current_user.current_weight and current_user.goal_weight %}
+  <div class="card">
+    <div class="card-title">📊 Прогресс</div>
+
+    <div class="weight-diff">
+      <div class="weight-val">
+        <div class="weight-label">{{ t.get('now','Сейчас') }}</div>
+        <div class="weight-num">{{ current_user.current_weight }} кг</div>
+      </div>
+      <div class="weight-arrow">→</div>
+      <div class="weight-val">
+        <div class="weight-label">{{ t.get('goal','Цель') }}</div>
+        <div class="weight-num">{{ current_user.goal_weight }} кг</div>
+      </div>
+    </div>
+
+    {% set diff = (current_user.current_weight - current_user.goal_weight)|abs %}
+    <div style="font-size:14px;color:var(--text-soft);font-weight:600;margin-bottom:10px;">
+      {% if current_user.current_weight > current_user.goal_weight %}
+        {{ t.get('to_goal_lose','Осталось сбросить {d} кг').replace('{d}', diff|round(1)|string) }}
+      {% elif current_user.current_weight < current_user.goal_weight %}
+        {{ t.get('to_goal_gain','Осталось набрать {d} кг').replace('{d}', diff|round(1)|string) }}
+      {% else %}
+        {{ t.get('goal_reached','Цель достигнута 🎉') }}
+      {% endif %}
+    </div>
+
+    {% if current_user.height %}
+    {% set bmi = current_user.current_weight / ((current_user.height / 100) ** 2) %}
+    <div class="bmi-box">
+      <strong>📊 ИМТ: {{ bmi|round(1) }}</strong> —
+      {% if bmi < 18.5 %}Недостаточный вес (< 18.5)
+      {% elif bmi < 25 %}Норма (18.5–24.9) ✅
+      {% elif bmi < 30 %}Избыточный вес (25–29.9)
+      {% else %}Ожирение (> 30)
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if current_user.daily_calorie_goal %}
+    <div style="font-size:13px;font-weight:700;color:var(--text-soft);margin:16px 0 8px;">{{ t.get('your_norms','Ваши нормы') }}</div>
+    <div class="bju-grid">
+      <div class="bju-item">
+        <div class="bju-label">{{ t.get('calories','Калории') }}</div>
+        <div class="bju-value">{{ current_user.daily_calorie_goal }}</div>
+        <div class="bju-label">{{ t.get('kcal','ккал') }}</div>
+      </div>
+      <div class="bju-item">
+        <div class="bju-label">{{ t.get('protein','Белки') }}</div>
+        <div class="bju-value">{{ current_user.protein_goal }}</div>
+        <div class="bju-label">г</div>
+      </div>
+      <div class="bju-item">
+        <div class="bju-label">{{ t.get('fat','Жиры') }}</div>
+        <div class="bju-value">{{ current_user.fat_goal }}</div>
+        <div class="bju-label">г</div>
+      </div>
+      <div class="bju-item">
+        <div class="bju-label">{{ t.get('carbs','Углеводы') }}</div>
+        <div class="bju-value">{{ current_user.carbs_goal }}</div>
+        <div class="bju-label">г</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
 </main>
+
+<script>
+const T = {
+  calc_fill_all: {{ t.get('calc_fill_all','Заполните все поля')|tojson }},
+  calc_done: {{ t.get('calc_done','Расчёт выполнен')|tojson }},
+  calc_bmr: {{ t.get('calc_bmr','Базовый обмен')|tojson }},
+  calc_tdee: {{ t.get('calc_tdee','Дневная норма')|tojson }},
+  calc_save: {{ t.get('calc_save','Нажмите Сохранить')|tojson }},
+  calc_male: {{ t.get('calc_male','Мужчина')|tojson }},
+  calc_female: {{ t.get('calc_female','Женщина')|tojson }},
+  kcal: {{ t.get('kcal','ккал')|tojson }},
+  g: {{ t.get('g','г')|tojson }},
+};
+
+function calculateAll() {
+  const weight = parseFloat(document.querySelector('[name=current_weight]').value);
+  const goal   = parseFloat(document.querySelector('[name=goal_weight]').value);
+  const height = parseFloat(document.querySelector('[name=height]').value);
+  const age    = parseFloat(document.querySelector('[name=age]').value);
+  const gender = document.querySelector('[name=gender]').value;
+  const act    = document.querySelector('[name=activity]').value;
+
+  if (!weight || !height || !age || !gender || !act) {
+    alert('❌ ' + T.calc_fill_all);
+    return;
+  }
+
+  let bmr;
+  if (gender === 'male') {
+    bmr = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
+  } else {
+    bmr = 447.593 + 9.247 * weight + 3.098 * height - 4.330 * age;
+  }
+
+  const mult = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very_active:1.9 };
+  let calories = Math.round(bmr * (mult[act] || 1.55));
+
+  if (goal && goal < weight) calories -= 400;
+  if (goal && goal > weight) calories += 300;
+  calories = Math.max(1200, calories);
+
+  const protein = Math.min(Math.round(weight * 1.7), 200);
+  const fat     = Math.round(weight * 0.9);
+  const carbs   = Math.max(50, Math.round((calories - protein * 4 - fat * 9) / 4));
+  const water   = Math.round((weight * 30) / 250);
+
+  document.querySelector('[name=daily_calorie_goal]').value = calories;
+  document.querySelector('[name=protein_goal]').value = protein;
+  document.querySelector('[name=fat_goal]').value = fat;
+  document.querySelector('[name=carbs_goal]').value = carbs;
+  document.querySelector('[name=water_goal]').value = water;
+
+  alert(`✅ ${T.calc_done}\n\n🧬 ${T.calc_bmr}: ${Math.round(bmr)} ${T.kcal}\n🔥 ${T.calc_tdee}: ${calories} ${T.kcal}\n\n🥩 Б: ${protein}${T.g}  🥑 Ж: ${fat}${T.g}  🍞 У: ${carbs}${T.g}\n\n📌 ${T.calc_save}`);
+}
+</script>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="/" class="bnav-item">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-label">{{ t.get('today','Сегодня') }}</span>
+  </a>
+  <a href="/history" class="bnav-item">
+    <span class="bnav-icon">📊</span>
+    <span class="bnav-label">{{ t.get('history','История') }}</span>
+  </a>
+  <a href="/goals" class="bnav-item active">
+    <span class="bnav-icon">🎯</span>
+    <span class="bnav-label">{{ t.goals }}</span>
+  </a>
+  <a href="/premium" class="bnav-item bnav-premium">
+    <span class="bnav-icon">⭐</span>
+    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
+  </a>
+</nav>
+
 </body>
 </html>

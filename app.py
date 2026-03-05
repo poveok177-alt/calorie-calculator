@@ -3,17 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
-from collections import OrderedDict
 import json
 import os
 import uuid
-import hashlib
-import time
-import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# ===== YooKassa (без падения сервера) =====
 try:
     from yookassa import Configuration, Payment
     Configuration.account_id = os.getenv('YOOKASSA_SHOP_ID')
@@ -27,7 +24,7 @@ app = Flask(__name__)
 def health():
     return "OK", 200
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'mojasupertajnayastrokakotoruyaniktonevzlomaet123')
+app.config['SECRET_KEY'] = 'mojasupertajnayastrokakotoruyaniktonevzlomaet123'
 app.config['SESSION_TYPE'] = 'filesystem'
 
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///calories.db')
@@ -40,7 +37,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# ===================== DB MODELS =====================
+# ===================== МОДЕЛИ БД =====================
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,8 +47,9 @@ class User(UserMixin, db.Model):
     language = db.Column(db.String(10), default='ru')
     is_premium = db.Column(db.Boolean, default=False)
     is_superuser = db.Column(db.Boolean, default=False)
-    premium_ends = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Цели
     current_weight = db.Column(db.Float, nullable=True)
     goal_weight = db.Column(db.Float, nullable=True)
     height = db.Column(db.Float, nullable=True)
@@ -63,10 +61,13 @@ class User(UserMixin, db.Model):
     age = db.Column(db.Integer, default=25)
     gender = db.Column(db.String(10), default='male')
     activity = db.Column(db.String(20), default='moderate')
+
+    # Пробный период
     trial_used = db.Column(db.Boolean, default=False)
     trial_ends = db.Column(db.DateTime, nullable=True)
+    premium_ends = db.Column(db.DateTime, nullable=True)
     email_reminders = db.Column(db.Boolean, default=True)
-    favorites = db.Column(db.Text, default='[]')
+
     entries = db.relationship('FoodEntry', backref='user', lazy=True)
 
 class Food(db.Model):
@@ -96,857 +97,1188 @@ class FoodEntry(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     food = db.relationship('Food')
 
-class CustomFood(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    name = db.Column(db.String(200), nullable=False)
-    calories = db.Column(db.Float, nullable=False)
-    protein = db.Column(db.Float, default=0)
-    fat = db.Column(db.Float, default=0)
-    carbs = db.Column(db.Float, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 class WeightLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     weight = db.Column(db.Float, nullable=False)
-    date = db.Column(db.Date, default=date.today, nullable=False)
+    date = db.Column(db.Date, default=date.today)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# ===================== DB INIT =====================
-
-def init_db():
-    with app.app_context():
-        try:
-            inspector = db.inspect(db.engine)
-            if 'user' not in inspector.get_table_names():
-                return
-            user_columns = [col['name'] for col in inspector.get_columns('user')]
-            new_columns = [
-                ('favorites', "TEXT DEFAULT '[]'"),
-                ('trial_used', 'BOOLEAN DEFAULT FALSE'),
-                ('trial_ends', 'TIMESTAMP'),
-                ('email_reminders', 'BOOLEAN DEFAULT TRUE'),
-                ('is_premium', 'BOOLEAN DEFAULT FALSE'),
-                ('is_superuser', 'BOOLEAN DEFAULT FALSE'),
-                ('premium_ends', 'TIMESTAMP'),
-                ('current_weight', 'FLOAT'),
-                ('goal_weight', 'FLOAT'),
-                ('height', 'FLOAT'),
-                ('daily_calorie_goal', 'INTEGER DEFAULT 2000'),
-                ('water_goal', 'INTEGER DEFAULT 8'),
-                ('protein_goal', 'INTEGER DEFAULT 150'),
-                ('fat_goal', 'INTEGER DEFAULT 70'),
-                ('carbs_goal', 'INTEGER DEFAULT 250'),
-                ('age', 'INTEGER DEFAULT 25'),
-                ('gender', "VARCHAR(10) DEFAULT 'male'"),
-                ('activity', "VARCHAR(20) DEFAULT 'moderate'"),
-                ('language', "VARCHAR(10) DEFAULT 'ru'"),
-            ]
-            with db.engine.connect() as conn:
-                for col_name, col_def in new_columns:
-                    if col_name not in user_columns:
-                        try:
-                            conn.execute(db.text(f'ALTER TABLE "user" ADD COLUMN {col_name} {col_def}'))
-                            conn.commit()
-                        except Exception as e:
-                            conn.rollback()
-        except Exception as e:
-            pass
-
-# ===================== TRANSLATIONS =====================
+# ===================== ПЕРЕВОДЫ =====================
 
 TRANSLATIONS = {
     'ru': {
-        'app_name': 'CaloriMint',
-        'tagline': 'Ваше тело - ваша забота',
-        'login': 'Вход',
-        'register': 'Регистрация',
-        'email': 'Email',
-        'password': 'Пароль',
-        'username': 'Имя пользователя',
-        'no_account': 'Нет аккаунта?',
-        'have_account': 'Есть аккаунт?',
+        'app_name': 'КалориМинт',
+        'tagline': 'Забота о теле начинается здесь',
+        'search_placeholder': 'Поиск продукта...',
+        'add_food': 'Добавить',
         'today': 'Сегодня',
-        'history': 'История',
-        'goals': 'Цели',
-        'premium': 'Premium',
-        'logout': 'Выход',
         'calories': 'Калории',
         'protein': 'Белки',
         'fat': 'Жиры',
         'carbs': 'Углеводы',
-        'kcal': 'ккал',
-        'g': 'г',
-        'ml': 'мл',
-        'of': 'из',
-        'water': 'Вода',
-        'cups': 'чашек',
+        'grams': 'граммов',
+        'categories': 'Категории',
+        'fruits': 'Фрукты 🍎',
+        'vegetables': 'Овощи 🥦',
+        'meat': 'Мясо 🥩',
+        'dairy': 'Молочное 🥛',
+        'grains': 'Злаки 🌾',
+        'nuts': 'Орехи и семена 🌰',
+        'fish': 'Рыба и морепродукты 🐟',
+        'sweets': 'Сладкое 🍫',
+        'drinks': 'Напитки 🥤',
+        'other': 'Другое 🍽️',
+        'login': 'Войти',
+        'register': 'Регистрация',
+        'logout': 'Выйти',
+        'premium': 'Премиум',
+        'history': 'История питания',
+        'goals': 'Мои цели',
         'breakfast': 'Завтрак',
         'lunch': 'Обед',
         'dinner': 'Ужин',
         'snack': 'Перекус',
-        'search_placeholder': 'Ищите продукты...',
-        'all': 'Все',
-        'categories': 'Категории',
-        'clear': 'Очистить',
-        'clear_day': 'Очистить день',
-        'delete_entry_confirm': 'Удалить этот продукт?',
-        'clear_meal_confirm': 'Очистить этот приём пищи?',
-        'clear_day_confirm': 'Очистить весь день?',
-        'quick_loading': 'Загрузка...',
+        'daily_goal': 'Дневная цель',
+        'consumed': 'Съедено',
+        'remaining': 'Осталось',
+        'per_100g': 'на 100 г',
+        'get_premium': 'Получить Премиум',
+        'premium_features': 'Премиум функции',
+        'choose_language': 'Выберите язык',
+        'email': 'Email',
+        'password': 'Пароль',
+        'username': 'Имя пользователя',
+        'no_account': 'Нет аккаунта?',
+        'have_account': 'Уже есть аккаунт?',
+        'did_you_mean': 'Возможно вы имели в виду:',
         'not_found': 'Ничего не найдено',
-        'load_error': 'Ошибка загрузки',
-        'weight_label': 'Вес (г)',
-        'volume_label': 'Объём (мл)',
-        'total': 'Итого',
+        'month_history': 'История за месяц',
+        'weight_goal': 'Цель по весу',
+        'current_weight': 'Текущий вес (кг)',
+        'goal_weight': 'Цель (кг)',
+        'height': 'Рост (см)',
+        'save': 'Сохранить',
+        'bju_counter': 'Счётчик БЖУ',
+        'no_ads': 'Без рекламы',
+        'premium_desc': 'Разблокируй все возможности для достижения твоих целей',
+        'subscribe': 'Подписаться — 199 ₽/мес',
+        'remove': 'Удалить',
+        'kcal': 'ккал',
+        'g': 'г',
+        'back': 'Назад',
+        'products_count': 'продуктов',
+        'grams_label': 'Количество (граммов)',
         'confirm_add': 'Добавить',
-        'cancel': 'Отмена',
+        'added_to_diary': 'добавлен в дневник',
+        'login_required': 'Войдите в аккаунт, чтобы добавлять продукты в дневник',
+        'add_from_cat': '+ Добавить',
+        'history_subtitle': 'Ваш прогресс и история питания',
+        'streak_label': 'дней подряд',
+        'streak_zero': 'Начните вести дневник!',
+        'weekly_title': '📊 Неделя',
+        'avg_cal_label': 'Среднее ккал',
+        'days_on_goal_label': 'Дней в норме',
+        'days_logged_label': 'Дней с записями',
+        'weight_chart_title': '📈 График веса',
+        'weight_placeholder': 'кг',
+        'weight_save_btn': 'Записать',
+        'weight_chart_premium': 'График веса доступен в Premium',
+        'cal_history_title': '📅 История калорий',
+        'click_day_hint': 'Нажмите на день — список продуктов',
+        'daily_log': 'Дневник питания',
+        'no_entries_yet': 'Нет записей. Начните вести дневник!',
+        'no_foods_day': 'Нет записей',
+        'foods_that_day': 'Продукты за этот день',
+        'history_premium_msg': 'Полная история доступна в Premium',
+        'pm_no_thanks': 'Нет, спасибо',
+        'pm_try_btn': 'Попробовать 7 дней бесплатно',
+        'pm_monthly_note': 'затем 199 ₽/месяц',
+        'pm_history': '🔒 Полная история — это Premium',
+        'pm_weight_chart': '📈 График динамики веса доступен в Premium',
+        'pm_weekly': '📅 Месячные сводки — это Premium',
+        'pm_generic': '👑 Весь потенциал приложения открыт в Premium',
+        'water_goal': 'Цель по воде',
+        'water_goal_label': 'Вода (стаканов/день)',
+        'protein_goal_label': 'Белки (г/день)',
+        'fat_goal_label': 'Жиры (г/день)',
+        'carbs_goal_label': 'Углеводы (г/день)',
+        'calc_auto': '⚡ Рассчитать автоматически',
+        'calc_fill_all': 'Заполните все поля',
+        'calc_done': 'Расчёт выполнен',
+        'calc_bmr': 'Базовый обмен веществ',
+        'calc_tdee': 'Дневная норма калорий',
+        'calc_save': 'Нажмите Сохранить, чтобы применить',
+        'calc_male': 'Мужчина',
+        'calc_female': 'Женщина',
+        'calc_activity_label': 'Активность',
+        'formula_note': 'Расчёт по формуле Харриса-Бенедикта',
+        'act_sedentary': 'Малоподвижный образ жизни',
+        'act_light': 'Лёгкая активность (1-3 дня/нед)',
+        'act_moderate': 'Умеренная (3-5 дней/нед)',
+        'act_active': 'Высокая (6-7 дней/нед)',
+        'act_very_active': 'Очень высокая (ежедневно)',
+        'now': 'Сейчас',
+        'goal': 'Цель',
+        'to_goal_lose': 'Осталось сбросить {d} кг',
+        'to_goal_gain': 'Осталось набрать {d} кг',
+        'goal_reached': 'Цель достигнута 🎉',
+        'your_norms': 'Ваши нормы',
+        'select': 'Выберите',
+        'gender_male': 'Мужской',
+        'gender_female': 'Женский',
+        'premium_title': '⭐ Premium',
+        'premium_subtitle': 'Все функции без ограничений',
+        'premium_feature_history': 'История за 30 дней',
+        'premium_feature_chart': 'График веса',
+        'premium_feature_reports': 'Недельные отчёты',
+        'premium_feature_foods': 'Безлимит своих продуктов',
+        'premium_feature_streak': 'Streak дней подряд',
+        'premium_feature_ads': 'Без рекламы',
+        'premium_active': 'Premium активен',
+        'premium_activate_test': 'Активировать Premium (тест)',
+        'premium_try': 'Попробовать 7 дней бесплатно',
+        'premium_already_used': 'Пробный период уже использован',
     },
     'en': {
         'app_name': 'CaloriMint',
-        'tagline': 'Your body, your care',
-        'login': 'Login',
-        'register': 'Register',
-        'email': 'Email',
-        'password': 'Password',
-        'username': 'Username',
-        'no_account': 'No account?',
-        'have_account': 'Have an account?',
+        'tagline': 'Your body care starts here',
+        'search_placeholder': 'Search food...',
+        'add_food': 'Add',
         'today': 'Today',
-        'history': 'History',
-        'goals': 'Goals',
-        'premium': 'Premium',
-        'logout': 'Logout',
         'calories': 'Calories',
         'protein': 'Protein',
         'fat': 'Fat',
         'carbs': 'Carbs',
-        'kcal': 'kcal',
-        'g': 'g',
-        'ml': 'ml',
-        'of': 'of',
-        'water': 'Water',
-        'cups': 'cups',
+        'grams': 'grams',
+        'categories': 'Categories',
+        'fruits': 'Fruits 🍎',
+        'vegetables': 'Vegetables 🥦',
+        'meat': 'Meat 🥩',
+        'dairy': 'Dairy 🥛',
+        'grains': 'Grains 🌾',
+        'nuts': 'Nuts & Seeds 🌰',
+        'fish': 'Fish & Seafood 🐟',
+        'sweets': 'Sweets 🍫',
+        'drinks': 'Drinks 🥤',
+        'other': 'Other 🍽️',
+        'login': 'Login',
+        'register': 'Register',
+        'logout': 'Logout',
+        'premium': 'Premium',
+        'history': 'Food history',
+        'goals': 'My goals',
         'breakfast': 'Breakfast',
         'lunch': 'Lunch',
         'dinner': 'Dinner',
         'snack': 'Snack',
-        'search_placeholder': 'Search products...',
-        'all': 'All',
-        'categories': 'Categories',
-        'clear': 'Clear',
-        'clear_day': 'Clear day',
-        'delete_entry_confirm': 'Delete this product?',
-        'clear_meal_confirm': 'Clear this meal?',
-        'clear_day_confirm': 'Clear entire day?',
-        'quick_loading': 'Loading...',
+        'daily_goal': 'Daily goal',
+        'consumed': 'Consumed',
+        'remaining': 'Remaining',
+        'per_100g': 'per 100g',
+        'get_premium': 'Get Premium',
+        'premium_features': 'Premium features',
+        'choose_language': 'Choose language',
+        'email': 'Email',
+        'password': 'Password',
+        'username': 'Username',
+        'no_account': "Don't have an account?",
+        'have_account': 'Already have an account?',
+        'did_you_mean': 'Did you mean:',
         'not_found': 'Nothing found',
-        'load_error': 'Load error',
-        'weight_label': 'Weight (g)',
-        'volume_label': 'Volume (ml)',
-        'total': 'Total',
+        'month_history': 'Monthly history',
+        'weight_goal': 'Weight goal',
+        'current_weight': 'Current weight (kg)',
+        'goal_weight': 'Goal weight (kg)',
+        'height': 'Height (cm)',
+        'save': 'Save',
+        'bju_counter': 'Macros counter',
+        'no_ads': 'No ads',
+        'premium_desc': 'Unlock all features to reach your goals',
+        'subscribe': 'Subscribe — $2.99/mo',
+        'remove': 'Remove',
+        'kcal': 'kcal',
+        'g': 'g',
+        'back': 'Back',
+        'products_count': 'products',
+        'grams_label': 'Amount (grams)',
         'confirm_add': 'Add',
-        'cancel': 'Cancel',
+        'added_to_diary': 'added to diary',
+        'login_required': 'Please log in to add foods to your diary',
+        'add_from_cat': '+ Add',
+        'history_subtitle': 'Your progress and food history',
+        'streak_label': 'days in a row',
+        'streak_zero': 'Start keeping a diary!',
+        'weekly_title': '📊 This week',
+        'avg_cal_label': 'Avg calories',
+        'days_on_goal_label': 'Days on goal',
+        'days_logged_label': 'Days logged',
+        'weight_chart_title': '📈 Weight chart',
+        'weight_placeholder': 'kg',
+        'weight_save_btn': 'Log',
+        'weight_chart_premium': 'Weight chart available in Premium',
+        'cal_history_title': '📅 Calorie history',
+        'click_day_hint': 'Tap a day to see foods',
+        'daily_log': 'Food diary',
+        'no_entries_yet': 'No entries yet. Start your diary!',
+        'no_foods_day': 'No entries',
+        'foods_that_day': 'Foods that day',
+        'history_premium_msg': 'Full history available in Premium',
+        'pm_no_thanks': 'No, thanks',
+        'pm_try_btn': 'Try 7 days free',
+        'pm_monthly_note': 'then $2.99/month',
+        'pm_history': '🔒 Full history is a Premium feature',
+        'pm_weight_chart': '📈 Weight chart is available in Premium',
+        'pm_weekly': '📅 Monthly reports are Premium',
+        'pm_generic': '👑 All app features unlocked with Premium',
+        'water_goal': 'Water goal',
+        'water_goal_label': 'Water (glasses/day)',
+        'protein_goal_label': 'Protein (g/day)',
+        'fat_goal_label': 'Fat (g/day)',
+        'carbs_goal_label': 'Carbs (g/day)',
+        'calc_auto': '⚡ Calculate automatically',
+        'calc_fill_all': 'Fill in all fields',
+        'calc_done': 'Calculation done',
+        'calc_bmr': 'Basal metabolic rate',
+        'calc_tdee': 'Daily calorie needs',
+        'calc_save': 'Click Save to apply',
+        'calc_male': 'Male',
+        'calc_female': 'Female',
+        'calc_activity_label': 'Activity',
+        'formula_note': 'Harris-Benedict formula',
+        'act_sedentary': 'Sedentary',
+        'act_light': 'Light activity (1-3 days/wk)',
+        'act_moderate': 'Moderate (3-5 days/wk)',
+        'act_active': 'Active (6-7 days/wk)',
+        'act_very_active': 'Very active (daily)',
+        'now': 'Now',
+        'goal': 'Goal',
+        'to_goal_lose': '{d} kg left to lose',
+        'to_goal_gain': '{d} kg left to gain',
+        'goal_reached': 'Goal reached 🎉',
+        'your_norms': 'Your norms',
+        'select': 'Select',
+        'gender_male': 'Male',
+        'gender_female': 'Female',
+        'premium_title': '⭐ Premium',
+        'premium_subtitle': 'All features, no limits',
+        'premium_feature_history': '30-day history',
+        'premium_feature_chart': 'Weight chart',
+        'premium_feature_reports': 'Weekly reports',
+        'premium_feature_foods': 'Unlimited custom foods',
+        'premium_feature_streak': 'Streak tracking',
+        'premium_feature_ads': 'No ads',
+        'premium_active': 'Premium active',
+        'premium_activate_test': 'Activate Premium (test)',
+        'premium_try': 'Try 7 days free',
+        'premium_already_used': 'Trial already used',
+    },
+    'uk': {
+        'app_name': "КалоріМ'ята",
+        'tagline': 'Турбота про тіло починається тут',
+        'search_placeholder': 'Пошук продукту...',
+        'add_food': 'Додати',
+        'today': 'Сьогодні',
+        'calories': 'Калорії',
+        'protein': 'Білки',
+        'fat': 'Жири',
+        'carbs': 'Вуглеводи',
+        'grams': 'грамів',
+        'categories': 'Категорії',
+        'fruits': 'Фрукти 🍎',
+        'vegetables': 'Овочі 🥦',
+        'meat': "М'ясо 🥩",
+        'dairy': 'Молочне 🥛',
+        'grains': 'Злаки 🌾',
+        'nuts': 'Горіхи та насіння 🌰',
+        'fish': 'Риба та морепродукти 🐟',
+        'sweets': 'Солодке 🍫',
+        'drinks': 'Напої 🥤',
+        'other': 'Інше 🍽️',
+        'login': 'Увійти',
+        'register': 'Реєстрація',
+        'logout': 'Вийти',
+        'premium': 'Преміум',
+        'history': 'Історія харчування',
+        'goals': 'Мої цілі',
+        'breakfast': 'Сніданок',
+        'lunch': 'Обід',
+        'dinner': 'Вечеря',
+        'snack': 'Перекус',
+        'daily_goal': 'Денна ціль',
+        'consumed': "З'їдено",
+        'remaining': 'Залишилось',
+        'per_100g': 'на 100 г',
+        'get_premium': 'Отримати Преміум',
+        'premium_features': 'Преміум функції',
+        'choose_language': 'Оберіть мову',
+        'email': 'Email',
+        'password': 'Пароль',
+        'username': "Ім'я користувача",
+        'no_account': 'Немає акаунту?',
+        'have_account': 'Вже є акаунт?',
+        'did_you_mean': 'Можливо ви мали на увазі:',
+        'not_found': 'Нічого не знайдено',
+        'month_history': 'Історія за місяць',
+        'weight_goal': 'Ціль за вагою',
+        'current_weight': 'Поточна вага (кг)',
+        'goal_weight': 'Ціль (кг)',
+        'height': 'Зріст (см)',
+        'save': 'Зберегти',
+        'bju_counter': 'Лічильник БЖВ',
+        'no_ads': 'Без реклами',
+        'premium_desc': 'Розблокуй усі можливості для досягнення цілей',
+        'subscribe': 'Підписатись — 79 ₴/міс',
+        'remove': 'Видалити',
+        'kcal': 'ккал',
+        'g': 'г',
+        'back': 'Назад',
+        'products_count': 'продуктів',
+        'grams_label': 'Кількість (грамів)',
+        'confirm_add': 'Додати',
+        'added_to_diary': 'додано в щоденник',
+        'login_required': 'Увійдіть, щоб додавати продукти',
+        'add_from_cat': '+ Додати',
+        'history_subtitle': 'Ваш прогрес та історія харчування',
+        'streak_label': 'днів поспіль',
+        'streak_zero': 'Почніть вести щоденник!',
+        'weekly_title': '📊 Тиждень',
+        'avg_cal_label': 'Середнє ккал',
+        'days_on_goal_label': 'Днів у нормі',
+        'days_logged_label': 'Днів із записами',
+        'weight_chart_title': '📈 Графік ваги',
+        'weight_placeholder': 'кг',
+        'weight_save_btn': 'Записати',
+        'weight_chart_premium': 'Графік ваги доступний у Premium',
+        'cal_history_title': '📅 Історія калорій',
+        'click_day_hint': 'Натисніть на день — список продуктів',
+        'daily_log': 'Щоденник харчування',
+        'no_entries_yet': 'Немає записів. Починайте!',
+        'no_foods_day': 'Немає записів',
+        'foods_that_day': 'Продукти за цей день',
+        'history_premium_msg': 'Повна історія доступна в Premium',
+        'pm_no_thanks': 'Ні, дякую',
+        'pm_try_btn': 'Спробувати 7 днів безкоштовно',
+        'pm_monthly_note': 'потім 79 ₴/місяць',
+        'pm_history': '🔒 Повна історія — це Premium',
+        'pm_weight_chart': '📈 Графік ваги доступний у Premium',
+        'pm_weekly': '📅 Місячні зведення — це Premium',
+        'pm_generic': '👑 Весь потенціал застосунку відкрито в Premium',
+        'water_goal': 'Ціль по воді',
+        'water_goal_label': 'Вода (склянок/день)',
+        'protein_goal_label': 'Білки (г/день)',
+        'fat_goal_label': 'Жири (г/день)',
+        'carbs_goal_label': 'Вуглеводи (г/день)',
+        'calc_auto': '⚡ Розрахувати автоматично',
+        'calc_fill_all': 'Заповніть усі поля',
+        'calc_done': 'Розрахунок виконано',
+        'calc_bmr': 'Базовий обмін речовин',
+        'calc_tdee': 'Денна норма калорій',
+        'calc_save': 'Натисніть Зберегти, щоб застосувати',
+        'calc_male': 'Чоловік',
+        'calc_female': 'Жінка',
+        'calc_activity_label': 'Активність',
+        'formula_note': 'Розрахунок за формулою Харріса-Бенедикта',
+        'act_sedentary': 'Малорухливий спосіб життя',
+        'act_light': 'Легка активність',
+        'act_moderate': 'Помірна активність',
+        'act_active': 'Висока активність',
+        'act_very_active': 'Дуже висока активність',
+        'now': 'Зараз',
+        'goal': 'Ціль',
+        'to_goal_lose': 'Залишилось скинути {d} кг',
+        'to_goal_gain': 'Залишилось набрати {d} кг',
+        'goal_reached': 'Ціль досягнута 🎉',
+        'your_norms': 'Ваші норми',
+        'select': 'Оберіть',
+        'gender_male': 'Чоловічий',
+        'gender_female': 'Жіночий',
+        'premium_title': '⭐ Premium',
+        'premium_subtitle': 'Усі функції без обмежень',
+        'premium_feature_history': 'Історія за 30 днів',
+        'premium_feature_chart': 'Графік ваги',
+        'premium_feature_reports': 'Тижневі звіти',
+        'premium_feature_foods': 'Безліміт своїх продуктів',
+        'premium_feature_streak': 'Streak днів поспіль',
+        'premium_feature_ads': 'Без реклами',
+        'premium_active': 'Premium активний',
+        'premium_activate_test': 'Активувати Premium (тест)',
+        'premium_try': 'Спробувати 7 днів безкоштовно',
+        'premium_already_used': 'Пробний період вже використано',
+    },
+    'kk': {
+        'app_name': 'КалориМята',
+        'tagline': 'Денсаулық туралы қамқорлық осында басталады',
+        'search_placeholder': 'Өнімді іздеу...',
+        'add_food': 'Қосу',
+        'today': 'Бүгін',
+        'calories': 'Калория',
+        'protein': 'Ақуыз',
+        'fat': 'Май',
+        'carbs': 'Көмірсу',
+        'grams': 'грамм',
+        'categories': 'Санаттар',
+        'fruits': 'Жемістер 🍎',
+        'vegetables': 'Көкөністер 🥦',
+        'meat': 'Ет 🥩',
+        'dairy': 'Сүт өнімдері 🥛',
+        'grains': 'Дән 🌾',
+        'nuts': 'Жаңғақтар 🌰',
+        'fish': 'Балық 🐟',
+        'sweets': 'Тәттілер 🍫',
+        'drinks': 'Сусындар 🥤',
+        'other': 'Басқа 🍽️',
+        'login': 'Кіру',
+        'register': 'Тіркелу',
+        'logout': 'Шығу',
+        'premium': 'Премиум',
+        'history': 'Тамақтану тарихы',
+        'goals': 'Менің мақсаттарым',
+        'breakfast': 'Таңғы ас',
+        'lunch': 'Түскі ас',
+        'dinner': 'Кешкі ас',
+        'snack': 'Тамақ аралық',
+        'daily_goal': 'Күнделікті мақсат',
+        'consumed': 'Жеген',
+        'remaining': 'Қалды',
+        'per_100g': '100 г үшін',
+        'get_premium': 'Премиум алу',
+        'premium_features': 'Премиум мүмкіндіктер',
+        'choose_language': 'Тілді таңдаңыз',
+        'email': 'Email',
+        'password': 'Құпия сөз',
+        'username': 'Пайдаланушы аты',
+        'no_account': 'Тіркелмеген бе?',
+        'have_account': 'Тіркелген бе?',
+        'did_you_mean': 'Мүмкін сіз ойлаған:',
+        'not_found': 'Ештеңе табылмады',
+        'month_history': 'Ай тарихы',
+        'weight_goal': 'Салмақ мақсаты',
+        'current_weight': 'Қазіргі салмақ (кг)',
+        'goal_weight': 'Мақсат (кг)',
+        'height': 'Бой (см)',
+        'save': 'Сақтау',
+        'bju_counter': 'БЖК санауышы',
+        'no_ads': 'Жарнамасыз',
+        'premium_desc': 'Мақсатыңызға жету үшін барлық мүмкіндіктерді ашыңыз',
+        'subscribe': 'Жазылу — 799 ₸/ай',
+        'remove': 'Жою',
+        'kcal': 'ккал',
+        'g': 'г',
+        'back': 'Артқа',
+        'products_count': 'өнім',
+        'grams_label': 'Мөлшері (грамм)',
+        'confirm_add': 'Қосу',
+        'added_to_diary': 'күнделікке қосылды',
+        'login_required': 'Өнімдер қосу үшін кіріңіз',
+        'add_from_cat': '+ Қосу',
+        'history_subtitle': 'Сіздің прогресіңіз',
+        'streak_label': 'күн қатарынан',
+        'streak_zero': 'Күнделік жүргізуді бастаңыз!',
+        'weekly_title': '📊 Апта',
+        'avg_cal_label': 'Орта ккал',
+        'days_on_goal_label': 'Норма күндері',
+        'days_logged_label': 'Жазбалар бар күндер',
+        'weight_chart_title': '📈 Салмақ графигі',
+        'weight_placeholder': 'кг',
+        'weight_save_btn': 'Жазу',
+        'weight_chart_premium': 'Салмақ графигі Premium-да қол жетімді',
+        'cal_history_title': '📅 Калория тарихы',
+        'click_day_hint': 'Күнді басыңыз — өнімдер тізімі',
+        'daily_log': 'Тамақтану күнделігі',
+        'no_entries_yet': 'Жазба жоқ. Бастаңыз!',
+        'no_foods_day': 'Жазба жоқ',
+        'foods_that_day': 'Сол күнгі өнімдер',
+        'history_premium_msg': 'Толық тарих Premium-да',
+        'pm_no_thanks': 'Жоқ, рахмет',
+        'pm_try_btn': '7 күн тегін байқап көру',
+        'pm_monthly_note': 'содан кейін 799 ₸/ай',
+        'pm_history': '🔒 Толық тарих — Premium',
+        'pm_weight_chart': '📈 Салмақ графигі Premium-да',
+        'pm_weekly': '📅 Айлық есептер — Premium',
+        'pm_generic': '👑 Барлық мүмкіндіктер Premium-да',
+        'water_goal': 'Су мақсаты',
+        'water_goal_label': 'Су (стакан/күн)',
+        'protein_goal_label': 'Ақуыз (г/күн)',
+        'fat_goal_label': 'Май (г/күн)',
+        'carbs_goal_label': 'Көмірсу (г/күн)',
+        'calc_auto': '⚡ Автоматты есептеу',
+        'calc_fill_all': 'Барлық өрістерді толтырыңыз',
+        'calc_done': 'Есептеу аяқталды',
+        'calc_bmr': 'Негізгі зат алмасу',
+        'calc_tdee': 'Күнделікті калория нормасы',
+        'calc_save': 'Сақтауды басыңыз',
+        'calc_male': 'Еркек',
+        'calc_female': 'Әйел',
+        'calc_activity_label': 'Белсенділік',
+        'formula_note': 'Харрис-Бенедикт формуласы',
+        'act_sedentary': 'Отырықшы өмір салты',
+        'act_light': 'Жеңіл белсенділік',
+        'act_moderate': 'Орташа белсенділік',
+        'act_active': 'Жоғары белсенділік',
+        'act_very_active': 'Өте жоғары белсенділік',
+        'now': 'Қазір',
+        'goal': 'Мақсат',
+        'to_goal_lose': '{d} кг азайту қалды',
+        'to_goal_gain': '{d} кг жинау қалды',
+        'goal_reached': 'Мақсатқа жетілді 🎉',
+        'your_norms': 'Сіздің нормаларыңыз',
+        'select': 'Таңдаңыз',
+        'gender_male': 'Еркек',
+        'gender_female': 'Әйел',
+        'premium_title': '⭐ Premium',
+        'premium_subtitle': 'Барлық мүмкіндіктер ашық',
+        'premium_feature_history': '30 күн тарихы',
+        'premium_feature_chart': 'Салмақ графигі',
+        'premium_feature_reports': 'Апталық есептер',
+        'premium_feature_foods': 'Шексіз жеке өнімдер',
+        'premium_feature_streak': 'Streak қатарынан күндер',
+        'premium_feature_ads': 'Жарнамасыз',
+        'premium_active': 'Premium белсенді',
+        'premium_activate_test': 'Premium-ды белсендіру (тест)',
+        'premium_try': '7 күн тегін байқап көру',
+        'premium_already_used': 'Сынақ кезеңі қолданылды',
     }
 }
 
-def get_lang():
-    if current_user.is_authenticated:
-        return current_user.language or 'ru'
-    return session.get('lang', 'ru')
+CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'dairy', 'grains', 'nuts', 'fish', 'sweets', 'drinks', 'other']
 
-# ===================== OPEN FOOD FACTS API =====================
+def get_t():
+    lang = session.get('language', 'ru')
+    return TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
 
-_off_cache = {}
-_cache_timestamps = {}
-_cache_ttl = 7200  # 2 часа кеша
+def get_food_name(food, lang):
+    if lang == 'en': return food.name_en
+    if lang == 'uk': return food.name_uk or food.name_ru
+    if lang == 'kk': return food.name_kk or food.name_ru
+    return food.name_ru
 
-def _get_cache_key(query, lang):
-    raw = f"{query.lower().strip()}:{lang}"
-    return hashlib.md5(raw.encode()).hexdigest()
+# ===================== АВТОРАСЧЁТ =====================
 
-def _is_cache_valid(cache_key):
-    if cache_key not in _cache_timestamps:
-        return False
-    return (time.time() - _cache_timestamps[cache_key]) < _cache_ttl
+def calculate_calories(weight, height, age, gender, activity):
+    """Формула Харриса-Бенедикта"""
+    if gender == 'male':
+        bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+    else:
+        bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
 
-def search_openfoodfacts(query, lang='ru', page_size=50):
-    cache_key = _get_cache_key(query, lang)
-    if cache_key in _off_cache and _is_cache_valid(cache_key):
-        return _off_cache[cache_key]
-
-    lang_map = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'kk'}
-    search_lc = lang_map.get(lang, 'en')
-    name_fields_by_lang = {
-        'ru': ['product_name_ru', 'product_name_en', 'product_name'],
-        'en': ['product_name_en', 'product_name', 'product_name_ru'],
-        'uk': ['product_name_uk', 'product_name_ru', 'product_name_en', 'product_name'],
-        'kk': ['product_name_kk', 'product_name_ru', 'product_name_en', 'product_name'],
+    multipliers = {
+        'sedentary': 1.2,
+        'light': 1.375,
+        'moderate': 1.55,
+        'active': 1.725,
+        'very_active': 1.9
     }
-    preferred_fields = name_fields_by_lang.get(lang, name_fields_by_lang['en'])
+    return int(bmr * multipliers.get(activity, 1.55))
 
-    try:
-        url = 'https://world.openfoodfacts.org/cgi/search.pl'
-        params = {
-            'search_terms': query,
-            'search_simple': 1,
-            'action': 'process',
-            'json': 1,
-            'page_size': page_size,
-            'lc': search_lc,
-            'fields': 'code,product_name,product_name_ru,product_name_en,product_name_uk,product_name_kk,nutriments,categories_tags,brands,quantity,image_front_small_url'
-        }
-        resp = requests.get(url, params=params, timeout=8, headers={'User-Agent': 'CaloriMint/2.0'})
-        
-        if resp.status_code != 200:
-            return []
+# ===================== STREAK =====================
 
-        data = resp.json()
-        results = []
-        seen_names = set()
+def calculate_streak(user_id):
+    """Считаем streak — сколько дней подряд есть записи"""
+    today = date.today()
+    streak = 0
+    check_date = today
+    while True:
+        has_entry = FoodEntry.query.filter_by(
+            user_id=user_id, date=check_date
+        ).first()
+        if has_entry:
+            streak += 1
+            check_date = check_date - timedelta(days=1)
+        else:
+            break
+    return streak
 
-        for p in data.get('products', []):
-            n = p.get('nutriments', {})
-            cal = n.get('energy-kcal_100g') or n.get('energy-kcal') or (n.get('energy_100g', 0) / 4.184 if n.get('energy_100g') else 0)
-            
-            if not cal or cal <= 0:
-                continue
-
-            protein = float(n.get('proteins_100g') or n.get('proteins') or 0)
-            fat = float(n.get('fat_100g') or n.get('fat') or 0)
-            carbs = float(n.get('carbohydrates_100g') or n.get('carbohydrates') or 0)
-
-            display_name = ''
-            for field in preferred_fields:
-                v = p.get(field, '').strip()
-                if v:
-                    display_name = v
-                    break
-            
-            if not display_name:
-                continue
-
-            name_key = display_name.lower()
-            if name_key in seen_names:
-                continue
-            seen_names.add(name_key)
-
-            barcode = str(p.get('code', ''))[:13]
-            off_id = f'off_{barcode}' if barcode else f'off_nob_{len(results)}'
-
-            results.append({
-                'id': off_id,
-                'name_ru': display_name,
-                'name_en': p.get('product_name_en') or p.get('product_name') or display_name,
-                'calories': round(float(cal), 1),
-                'protein': round(protein, 1),
-                'fat': round(fat, 1),
-                'carbs': round(carbs, 1),
-                'category': 'other',
-                'source': 'off',
-            })
-
-        _off_cache[cache_key] = results
-        _cache_timestamps[cache_key] = time.time()
-        return results
-    except Exception as e:
-        print(f"❌ Open Food Facts API error: {e}")
-        return []
-
-# ===================== ROUTES =====================
-
-@app.before_request
-def before_request():
-    try:
-        if current_user.is_authenticated:
-            session['lang'] = current_user.language or 'ru'
-        elif 'lang' not in session:
-            session['lang'] = 'ru'
-    except:
-        pass
-    try:
-        if current_user.is_authenticated and current_user.is_premium:
-            if current_user.premium_ends and current_user.premium_ends < datetime.utcnow():
-                current_user.is_premium = False
-                current_user.premium_ends = None
-                db.session.commit()
-    except:
-        pass
+# ===================== МАРШРУТЫ =====================
 
 @app.route('/')
 def index():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-    lang = current_user.language or 'ru'
-    today = date.today()
-    entries = FoodEntry.query.filter_by(user_id=current_user.id, date=today).all()
-    meals = {
-        'breakfast': {'name': 'Завтрак', 'icon': '🌅', 'total': 0, 'entries': []},
-        'lunch': {'name': 'Обед', 'icon': '☀️', 'total': 0, 'entries': []},
-        'dinner': {'name': 'Ужин', 'icon': '🌙', 'total': 0, 'entries': []},
-        'snack': {'name': 'Перекус', 'icon': '🍿', 'total': 0, 'entries': []},
-    }
-    total_calories = total_protein = total_fat = total_carbs = 0
-    for entry in entries:
-        meal_type = entry.meal_type or 'snack'
-        if meal_type in meals:
-            meals[meal_type]['entries'].append({'id': entry.id, 'name': entry.food_name, 'grams': entry.grams, 'calories': entry.calories})
-            meals[meal_type]['total'] += entry.calories
-        total_calories += entry.calories
-        total_protein += entry.protein
-        total_fat += entry.fat
-        total_carbs += entry.carbs
-    streak = 0
-    check = today
-    while True:
-        has_entry = FoodEntry.query.filter_by(user_id=current_user.id, date=check).first()
-        if has_entry:
-            streak += 1
-            check = check - timedelta(days=1)
-        else:
-            break
-    
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    return render_template('index.html', meals=meals, total_calories=int(total_calories), total_protein=int(total_protein), total_fat=int(total_fat), total_carbs=int(total_carbs), lang=lang, streak=streak, t=t, current_user=current_user)
+    if not session.get('language'):
+        return redirect(url_for('choose_language'))
+    t = get_t()
+    lang = session.get('language', 'ru')
 
-@app.route('/api/search', methods=['GET'])
-@login_required
-def search_foods():
-    query = request.args.get('q', '').strip().lower()
-    category = request.args.get('category', '').strip()
-    show_all = request.args.get('show_all', '')
-    
-    if not query and not category and not show_all:
-        return jsonify([])
-    
-    import sqlite3
-    
-    try:
-        # 🎯 SQLITE ПОИСК - 3+ МИЛЛИОНА ПРОДУКТОВ!
-        conn = sqlite3.connect('products.db')
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-        
-        results = []
-        
-        if query:
-            # Полнотекстовый поиск по 3млн продуктов
-            c.execute('''
-                SELECT id, name_ru, name_en, calories, protein, fat, carbs, category
-                FROM products
-                WHERE name_ru LIKE ? OR name_en LIKE ?
-                LIMIT 100
-            ''', (f'%{query}%', f'%{query}%'))
-        
-        elif category:
-            # Поиск по категории
-            c.execute('''
-                SELECT id, name_ru, name_en, calories, protein, fat, carbs, category
-                FROM products
-                WHERE category = ?
-                ORDER BY RANDOM()
-                LIMIT 100
-            ''', (category,))
-        
-        elif show_all:
-            # Случайные продукты
-            c.execute('''
-                SELECT id, name_ru, name_en, calories, protein, fat, carbs, category
-                FROM products
-                ORDER BY RANDOM()
-                LIMIT 50
-            ''')
-        
-        for row in c.fetchall():
-            results.append({
-                'id': f'db_{row[0]}',
-                'name_ru': row[1],
-                'name_en': row[2],
-                'calories': float(row[3]),
-                'protein': float(row[4]),
-                'fat': float(row[5]),
-                'carbs': float(row[6]),
-                'category': row[7],
-                'source': 'sqlite'
-            })
-        
-        conn.close()
-        return jsonify(results)
-    
-    except Exception as e:
-        print(f"⚠️ SQLite error: {e}")
-        # FALLBACK: если БД не создана, используем локальные продукты
-        try:
-            from food_data import food_data
-            results = []
-            
-            for idx, food in enumerate(food_data):
-                if category and food.get('category') != category:
-                    continue
-                if query:
-                    haystack = ' '.join([food.get('name_ru', ''), food.get('name_en', '')]).lower()
-                    if query not in haystack:
-                        continue
-                
-                results.append({
-                    'id': idx,
-                    'name_ru': food['name_ru'],
-                    'name_en': food.get('name_en', food['name_ru']),
-                    'calories': food['calories'],
-                    'protein': food.get('protein', 0),
-                    'fat': food.get('fat', 0),
-                    'carbs': food.get('carbs', 0),
-                    'category': food.get('category', 'other'),
-                    'source': 'local'
-                })
-            
-            return jsonify(results[:100])
-        except:
-            return jsonify([])
+    today_entries = []
+    total_cal = total_protein = total_fat = total_carbs = 0
+    daily_goal = 2000
 
-@app.route('/api/search-off', methods=['GET'])
-@login_required
-def search_foods_off():
-    query = request.args.get('q', '').strip()
-    if not query:
-        return jsonify([])
-    lang = current_user.language or 'ru'
-    results = search_openfoodfacts(query, lang, page_size=50)
-    return jsonify(results[:50])
+    if current_user.is_authenticated:
+        today_entries = FoodEntry.query.filter_by(
+            user_id=current_user.id, date=date.today()
+        ).order_by(FoodEntry.created_at.desc()).all()
 
-@app.route('/api/add-entry', methods=['POST'])
-@login_required
-def add_entry():
-    data = request.get_json()
-    food_id = data.get('food_id')
-    grams = float(data.get('grams', 100))
-    meal_type = data.get('meal_type', 'snack')
-    if isinstance(food_id, str) and (food_id.startswith('off_') or food_id.startswith('custom_')):
-        cal_per_100 = float(data.get('calories', 0))
-        protein_per_100 = float(data.get('protein', 0))
-        fat_per_100 = float(data.get('fat', 0))
-        carbs_per_100 = float(data.get('carbs', 0))
-        food_name = data.get('food_name', 'Unknown')
-        multiplier = grams / 100
-        entry = FoodEntry(user_id=current_user.id, food_id=0, food_name=food_name, grams=grams, calories=cal_per_100 * multiplier, protein=protein_per_100 * multiplier, fat=fat_per_100 * multiplier, carbs=carbs_per_100 * multiplier, meal_type=meal_type, date=date.today())
-        db.session.add(entry)
-        db.session.commit()
-        return jsonify({'success': True})
-    from food_data import food_data
-    food_id = int(food_id)
-    if food_id < 0 or food_id >= len(food_data):
-        return jsonify({'error': 'Invalid food'}), 400
-    food = food_data[food_id]
-    multiplier = grams / 100
-    entry = FoodEntry(user_id=current_user.id, food_id=food_id, food_name=food['name_ru'], grams=grams, calories=food['calories'] * multiplier, protein=food.get('protein', 0) * multiplier, fat=food.get('fat', 0) * multiplier, carbs=food.get('carbs', 0) * multiplier, meal_type=meal_type, date=date.today())
-    db.session.add(entry)
-    db.session.commit()
-    return jsonify({'success': True})
+        for e in today_entries:
+            total_cal += e.calories
+            total_protein += e.protein
+            total_fat += e.fat
+            total_carbs += e.carbs
+        daily_goal = current_user.daily_calorie_goal or 2000
 
-@app.route('/api/delete-entry/<int:entry_id>', methods=['DELETE'])
-@login_required
-def delete_entry(entry_id):
-    entry = FoodEntry.query.filter_by(id=entry_id, user_id=current_user.id).first()
-    if not entry:
-        return jsonify({'error': 'Not found'}), 404
-    db.session.delete(entry)
-    db.session.commit()
-    return jsonify({'success': True})
+    progress_pct = min(100, int(total_cal / daily_goal * 100)) if daily_goal > 0 else 0
 
-@app.route('/api/clear-meal', methods=['POST'])
-@login_required
-def clear_meal():
-    data = request.get_json()
-    meal_type = data.get('meal_type')
-    entries = FoodEntry.query.filter_by(user_id=current_user.id, meal_type=meal_type, date=date.today()).all()
-    for entry in entries:
-        db.session.delete(entry)
-    db.session.commit()
-    return jsonify({'success': True})
+    return render_template('index.html', t=t, lang=lang,
+                           today_entries=today_entries,
+                           total_cal=round(total_cal),
+                           total_protein=round(total_protein, 1),
+                           total_fat=round(total_fat, 1),
+                           total_carbs=round(total_carbs, 1),
+                           daily_goal=daily_goal,
+                           progress_pct=progress_pct,
+                           category_keys=CATEGORY_KEYS)
 
-@app.route('/api/clear-day', methods=['DELETE'])
-@login_required
-def clear_day():
-    entries = FoodEntry.query.filter_by(user_id=current_user.id, date=date.today()).all()
-    for entry in entries:
-        db.session.delete(entry)
-    db.session.commit()
-    return jsonify({'success': True})
-
-@app.route('/api/recent', methods=['GET'])
-@login_required
-def get_recent():
-    from food_data import food_data
-    entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(FoodEntry.created_at.desc()).limit(50).all()
-    seen = set()
-    results = []
-    for entry in entries:
-        if entry.food_id == 0 or entry.food_id in seen or entry.food_id >= len(food_data):
-            continue
-        seen.add(entry.food_id)
-        food = food_data[entry.food_id]
-        results.append({'id': entry.food_id, 'name_ru': food['name_ru'], 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)})
-        if len(results) >= 10:
-            break
-    return jsonify(results)
-
-@app.route('/api/favorites', methods=['GET'])
-@login_required
-def get_favorites():
-    from food_data import food_data
-    fav_ids = json.loads(current_user.favorites or '[]')
-    results = []
-    for fid in fav_ids:
-        if isinstance(fid, int) and 0 <= fid < len(food_data):
-            food = food_data[fid]
-            results.append({'id': fid, 'name_ru': food['name_ru'], 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)})
-    return jsonify(results)
-
-@app.route('/api/favorites', methods=['POST'])
-@login_required
-def add_favorite():
-    data = request.get_json()
-    food_id = data.get('food_id')
-    fav_ids = json.loads(current_user.favorites or '[]')
-    if food_id not in fav_ids:
-        fav_ids.append(food_id)
-    current_user.favorites = json.dumps(fav_ids)
-    db.session.commit()
-    return jsonify({'success': True})
-
-@app.route('/api/favorites/<int:food_id>', methods=['DELETE'])
-@login_required
-def remove_favorite(food_id):
-    fav_ids = json.loads(current_user.favorites or '[]')
-    if food_id in fav_ids:
-        fav_ids.remove(food_id)
-    current_user.favorites = json.dumps(fav_ids)
-    db.session.commit()
-    return jsonify({'success': True})
-
-@app.route('/api/custom-foods', methods=['GET'])
-@login_required
-def get_custom_foods():
-    foods = CustomFood.query.filter_by(user_id=current_user.id).order_by(CustomFood.created_at.desc()).all()
-    return jsonify([{'id': f'custom_{f.id}', 'name_ru': f.name, 'calories': f.calories, 'protein': f.protein, 'fat': f.fat, 'carbs': f.carbs, 'source': 'custom'} for f in foods])
-
-@app.route('/api/custom-foods', methods=['POST'])
-@login_required
-def create_custom_food():
-    if not current_user.is_premium:
-        count = CustomFood.query.filter_by(user_id=current_user.id).count()
-        if count >= 3:
-            return jsonify({'error': 'limit_reached', 'limit': 3}), 403
-    data = request.get_json()
-    name = data.get('name', '').strip()
-    if not name:
-        return jsonify({'error': 'Name required'}), 400
-    f = CustomFood(user_id=current_user.id, name=name, calories=float(data.get('calories', 0)), protein=float(data.get('protein', 0)), fat=float(data.get('fat', 0)), carbs=float(data.get('carbs', 0)))
-    db.session.add(f)
-    db.session.commit()
-    return jsonify({'success': True, 'id': f'custom_{f.id}'})
-
-@app.route('/api/custom-foods/<int:food_id>', methods=['DELETE'])
-@login_required
-def delete_custom_food(food_id):
-    f = CustomFood.query.filter_by(id=food_id, user_id=current_user.id).first()
-    if not f:
-        return jsonify({'error': 'Not found'}), 404
-    db.session.delete(f)
-    db.session.commit()
-    return jsonify({'success': True})
-
-@app.route('/api/weight-log', methods=['GET'])
-@login_required
-def get_weight_log():
-    days = int(request.args.get('days', 30))
-    since = date.today() - timedelta(days=days)
-    logs = WeightLog.query.filter(WeightLog.user_id == current_user.id, WeightLog.date >= since).order_by(WeightLog.date.asc()).all()
-    return jsonify([{'date': l.date.strftime('%Y-%m-%d'), 'weight': l.weight} for l in logs])
-
-@app.route('/api/weight-log', methods=['POST'])
-@login_required
-def add_weight_log():
-    data = request.get_json()
-    weight = float(data.get('weight', 0))
-    if not weight:
-        return jsonify({'error': 'Weight required'}), 400
-    log_date = date.today()
-    existing = WeightLog.query.filter_by(user_id=current_user.id, date=log_date).first()
-    if existing:
-        existing.weight = weight
-    else:
-        existing = WeightLog(user_id=current_user.id, weight=weight, date=log_date)
-        db.session.add(existing)
-    current_user.current_weight = weight
-    db.session.commit()
-    return jsonify({'success': True})
-
-@app.route('/api/last-weight', methods=['GET'])
-@login_required
-def get_last_weight():
-    last = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
-    return jsonify({'weight': last.weight if last else (current_user.current_weight or ''), 'date': last.date.strftime('%Y-%m-%d') if last else None})
-
-@app.route('/api/history-data', methods=['GET'])
-@login_required
-def history_data():
-    days = int(request.args.get('days', 30))
-    since = date.today() - timedelta(days=days)
-    entries = FoodEntry.query.filter(FoodEntry.user_id == current_user.id, FoodEntry.date >= since).all()
-    day_map = {}
-    for e in entries:
-        ds = e.date.strftime('%Y-%m-%d')
-        if ds not in day_map:
-            day_map[ds] = {'calories': 0, 'protein': 0, 'fat': 0, 'carbs': 0, 'foods': []}
-        day_map[ds]['calories'] += e.calories
-        day_map[ds]['protein'] += e.protein
-        day_map[ds]['fat'] += e.fat
-        day_map[ds]['carbs'] += e.carbs
-        day_map[ds]['foods'].append({'name': e.food_name, 'grams': e.grams, 'calories': e.calories, 'meal': e.meal_type})
-    return jsonify({'days': day_map, 'goal': current_user.daily_calorie_goal or 2000})
-
-@app.route('/api/streak', methods=['GET'])
-@login_required
-def get_streak():
-    today = date.today()
-    streak = 0
-    check = today
-    while True:
-        has_entry = FoodEntry.query.filter_by(user_id=current_user.id, date=check).first()
-        if has_entry:
-            streak += 1
-            check = check - timedelta(days=1)
-        else:
-            break
-    return jsonify({'streak': streak})
-
-@app.route('/api/weekly-summary', methods=['GET'])
-@login_required
-def weekly_summary():
-    today = date.today()
-    since = today - timedelta(days=6)
-    entries = FoodEntry.query.filter(FoodEntry.user_id == current_user.id, FoodEntry.date >= since).all()
-    goal = current_user.daily_calorie_goal or 2000
-    day_map = {}
-    for e in entries:
-        ds = e.date.strftime('%Y-%m-%d')
-        if ds not in day_map:
-            day_map[ds] = {'cal': 0, 'protein': 0, 'fat': 0, 'carbs': 0}
-        day_map[ds]['cal'] += e.calories
-        day_map[ds]['protein'] += e.protein
-        day_map[ds]['fat'] += e.fat
-        day_map[ds]['carbs'] += e.carbs
-    days_logged = len(day_map)
-    days_on_goal = sum(1 for d in day_map.values() if d['cal'] <= goal)
-    avg_cal = round(sum(d['cal'] for d in day_map.values()) / max(days_logged, 1))
-    avg_protein = round(sum(d['protein'] for d in day_map.values()) / max(days_logged, 1))
-    avg_fat = round(sum(d['fat'] for d in day_map.values()) / max(days_logged, 1))
-    avg_carbs = round(sum(d['carbs'] for d in day_map.values()) / max(days_logged, 1))
-    return jsonify({'days_logged': days_logged, 'days_on_goal': days_on_goal, 'avg_cal': avg_cal, 'avg_protein': avg_protein, 'avg_fat': avg_fat, 'avg_carbs': avg_carbs, 'goal': goal})
-
-@app.route('/history')
-@login_required
-def history():
-    lang = current_user.language or 'ru'
-    is_premium = current_user.is_premium
-    if is_premium:
-        entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(FoodEntry.date.desc()).all()
-    else:
-        since = date.today() - timedelta(days=6)
-        entries = FoodEntry.query.filter(FoodEntry.user_id == current_user.id, FoodEntry.date >= since).order_by(FoodEntry.date.desc()).all()
-    days = OrderedDict()
-    for e in entries:
-        ds = e.date.strftime('%d.%m.%Y')
-        if ds not in days:
-            days[ds] = {'entries': [], 'total_cal': 0, 'total_protein': 0, 'total_fat': 0, 'total_carbs': 0}
-        days[ds]['entries'].append({'food_name': e.food_name, 'grams': e.grams, 'calories': e.calories, 'meal_type': e.meal_type or 'other'})
-        days[ds]['total_cal'] += e.calories
-        days[ds]['total_protein'] += e.protein
-        days[ds]['total_fat'] += e.fat
-        days[ds]['total_carbs'] += e.carbs
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    now = datetime.utcnow()
-    return render_template('history.html', days=days, lang=lang, is_premium=is_premium, goal=current_user.daily_calorie_goal or 2000, t=t, current_user=current_user, now=now, streak=0)
-
-@app.route('/goals', methods=['GET', 'POST'])
-@login_required
-def goals():
-    lang = current_user.language or 'ru'
-    if request.method == 'POST':
-        current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal', 2000))
-        current_user.protein_goal = int(request.form.get('protein_goal', 150))
-        current_user.fat_goal = int(request.form.get('fat_goal', 70))
-        current_user.carbs_goal = int(request.form.get('carbs_goal', 250))
-        current_user.age = int(request.form.get('age', 25))
-        current_user.gender = request.form.get('gender', 'male')
-        current_user.activity = request.form.get('activity', 'moderate')
-        current_user.height = float(request.form.get('height', 170))
-        current_user.current_weight = float(request.form.get('current_weight', 70))
-        current_user.goal_weight = float(request.form.get('goal_weight', 70))
-        current_user.water_goal = int(request.form.get('water_goal', 8))
-        db.session.commit()
-        flash('Goals updated!', 'success')
-        return redirect(url_for('goals'))
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    last_weight = None
-    return render_template('goals.html', user=current_user, lang=lang, t=t, last_weight=last_weight, current_user=current_user, now=datetime.utcnow())
-
-@app.route('/categories')
-@login_required
-def categories():
-    lang = current_user.language or 'ru'
-    from food_data import food_data
-    cats = {}
-    for idx, food in enumerate(food_data):
-        cat = food.get('category', 'other')
-        if cat not in cats:
-            cats[cat] = []
-        cats[cat].append({'id': idx, 'name': food['name_ru'], 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)})
-    cat_labels = {
-        'fruits': '🍎 Фрукты', 'vegetables': '🥦 Овощи', 'meat': '🥩 Мясо',
-        'dairy': '🥛 Молочное', 'grains': '🌾 Злаки', 'nuts': '🌰 Орехи',
-        'fish': '🐟 Рыба', 'sweets': '🍫 Сладкое', 'drinks': '🥤 Напитки',
-        'supplements': '💊 Витамины', 'sports_nutrition': '💪 Спортпит'
-    }
-    category_keys = [k for k in cat_labels if k in cats]
-    current_cat = request.args.get('cat', category_keys[0] if category_keys else 'fruits')
-    foods = sorted(cats.get(current_cat, []), key=lambda x: x['name'])
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    return render_template('categories.html', categories=cats, category_keys=category_keys, cat_labels=cat_labels, current_cat=current_cat, foods=foods, lang=lang, t=t, current_user=current_user)
-
-@app.route('/premium')
-@login_required
-def premium():
-    lang = current_user.language or 'ru'
-    trial_available = not current_user.trial_used and not current_user.is_premium
-    trial_active = bool(current_user.trial_ends and current_user.trial_ends > datetime.utcnow())
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    now = datetime.utcnow()
-    return render_template('premium.html', lang=lang, trial_available=trial_available, trial_active=trial_active, t=t, current_user=current_user, now=now)
-
-@app.route('/start-trial')
-@login_required
-def start_trial():
-    if current_user.trial_used or current_user.is_premium:
-        return redirect(url_for('premium'))
-    current_user.trial_used = True
-    current_user.is_premium = True
-    current_user.trial_ends = datetime.utcnow() + timedelta(days=7)
-    db.session.commit()
-    flash('Trial activated!', 'success')
+@app.route('/set-language/<lang>')
+def set_language(lang):
+    if lang in TRANSLATIONS:
+        session['language'] = lang
+        session.modified = True
     return redirect(url_for('index'))
 
-@app.route('/buy-premium', methods=['POST'])
-@login_required
-def buy_premium():
-    if not Payment:
-        return jsonify({'error': 'Payment unavailable'}), 500
-    try:
-        idempotency_key = str(uuid.uuid4())
-        payment = Payment.create({"amount": {"value": "129.00", "currency": "RUB"}, "confirmation": {"type": "redirect", "return_url": request.url_root + "premium-success"}, "description": f"Premium subscription for {current_user.username}"}, idempotency_key)
-        current_user.is_premium = True
-        current_user.premium_ends = datetime.utcnow() + timedelta(days=30)
-        db.session.commit()
-        return jsonify({'confirmation_url': payment.confirmation.confirmation_url})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@app.route('/choose-language')
+def choose_language():
+    return render_template('choose_language.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+    t = get_t()
+    lang = session.get('language', 'ru')
     if request.method == 'POST':
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '')
+        email = request.form.get('email')
+        password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password_hash, password):
-            login_user(user)
+            login_user(user, remember=True)
+            session['language'] = user.language
+            session.modified = True
             return redirect(url_for('index'))
-        flash('Invalid credentials', 'error')
-    lang = session.get('lang', 'ru')
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    return render_template('login.html', t=t)
+        else:
+            flash('Неверный email или пароль')
+    return render_template('login.html', t=t, lang=lang)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+    t = get_t()
+    lang = session.get('language', 'ru')
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '')
-        confirm = request.form.get('confirm_password', '')
-        if not username or not email or not password:
-            flash('All fields required', 'error')
-            return redirect(url_for('register'))
-        if password != confirm:
-            flash('Passwords do not match', 'error')
-            return redirect(url_for('register'))
-        if User.query.filter_by(username=username).first():
-            flash('Username taken', 'error')
-            return redirect(url_for('register'))
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
         if User.query.filter_by(email=email).first():
-            flash('Email taken', 'error')
-            return redirect(url_for('register'))
-        user = User(username=username, email=email, password_hash=generate_password_hash(password), language='ru')
-        db.session.add(user)
-        db.session.commit()
-        flash('Registration successful! Please log in.', 'success')
-        return redirect(url_for('login'))
-    lang = session.get('lang', 'ru')
-    t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
-    return render_template('register.html', t=t)
+            flash('Email уже используется')
+            return render_template('register.html', t=t, lang=lang)
+
+        if User.query.filter_by(username=username).first():
+            flash('Имя пользователя уже занято')
+            return render_template('register.html', t=t, lang=lang)
+
+        try:
+            user = User(
+                username=username,
+                email=email,
+                password_hash=generate_password_hash(password),
+                language=lang
+            )
+            db.session.add(user)
+            db.session.commit()
+            login_user(user, remember=True)
+            session['language'] = lang
+            session.modified = True
+            return redirect(url_for('index'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Ошибка при регистрации, попробуй ещё раз')
+            return render_template('register.html', t=t, lang=lang)
+
+    return render_template('register.html', t=t, lang=lang)
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
+
+@app.before_request
+def check_trial():
+    if current_user.is_authenticated and current_user.is_premium:
+        if current_user.trial_ends and datetime.utcnow() > current_user.trial_ends:
+            if not current_user.premium_ends:
+                current_user.is_premium = False
+                db.session.commit()
+
+@app.route('/premium')
+def premium():
+    t = get_t()
+    lang = session.get('language', 'ru')
+    trial_available = False
+    if current_user.is_authenticated and not current_user.trial_used:
+        trial_available = True
+    return render_template('premium.html', t=t, lang=lang, trial_available=trial_available, now=datetime.utcnow())
+
+@app.route('/start-trial')
+@login_required
+def start_trial():
+    if current_user.trial_used:
+        flash(get_t().get('premium_already_used', 'Пробный период уже использован'))
+        return redirect(url_for('premium'))
+    current_user.trial_used = True
+    current_user.trial_ends = datetime.utcnow() + timedelta(days=7)
+    current_user.is_premium = True
+    db.session.commit()
+    flash('🎉 Пробный период на 7 дней активирован!')
+    return redirect(url_for('index'))
+
+@app.route('/history')
+@login_required
+def history():
+    t = get_t()
+    lang = session.get('language', 'ru')
+    is_premium = current_user.is_premium
+
+    today = date.today()
+    thirty_days_ago = today - timedelta(days=30)
+
+    entries = FoodEntry.query.filter(
+        FoodEntry.user_id == current_user.id,
+        FoodEntry.date >= thirty_days_ago
+    ).order_by(FoodEntry.date.desc(), FoodEntry.created_at.desc()).all()
+
+    days = {}
+    for e in entries:
+        d = str(e.date)
+        if d not in days:
+            days[d] = {'entries': [], 'total_cal': 0, 'total_protein': 0, 'total_fat': 0, 'total_carbs': 0}
+        days[d]['entries'].append(e)
+        days[d]['total_cal'] += e.calories
+        days[d]['total_protein'] += e.protein
+        days[d]['total_fat'] += e.fat
+        days[d]['total_carbs'] += e.carbs
+
+    streak = calculate_streak(current_user.id)
+    now = datetime.utcnow()
+
+    return render_template('history.html', t=t, lang=lang,
+                           days=days,
+                           is_premium=is_premium,
+                           goal=current_user.daily_calorie_goal or 2000,
+                           streak=streak,
+                           current_user=current_user,
+                           now=now)
+
+@app.route('/goals', methods=['GET', 'POST'])
+@login_required
+def goals():
+    t = get_t()
+    lang = session.get('language', 'ru')
+
+    last_weight = None
+    wl = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
+    if wl:
+        last_weight = wl.weight
+
+    if request.method == 'POST':
+        try:
+            w = float(request.form.get('current_weight') or 0)
+            h = float(request.form.get('height') or 0)
+            a = int(request.form.get('age') or 25)
+            g = request.form.get('gender') or 'male'
+            act = request.form.get('activity') or 'moderate'
+
+            current_user.current_weight = w
+            current_user.goal_weight = float(request.form.get('goal_weight') or 0)
+            current_user.height = h
+            current_user.age = a
+            current_user.gender = g
+            current_user.activity = act
+
+            # Авторасчёт калорий
+            if w and h and a:
+                calories = calculate_calories(w, h, a, g, act)
+                # Корректировка по цели
+                goal_w = current_user.goal_weight
+                if goal_w and goal_w < w:
+                    calories -= 400
+                elif goal_w and goal_w > w:
+                    calories += 300
+                calories = max(1200, calories)
+
+                current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal') or calories)
+                current_user.protein_goal = int(request.form.get('protein_goal') or int(w * 1.7))
+                current_user.fat_goal = int(request.form.get('fat_goal') or int(w * 0.9))
+                carbs_cal = (current_user.daily_calorie_goal - current_user.protein_goal * 4 - current_user.fat_goal * 9)
+                current_user.carbs_goal = int(request.form.get('carbs_goal') or max(50, int(carbs_cal / 4)))
+            else:
+                current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal') or 2000)
+                current_user.protein_goal = int(request.form.get('protein_goal') or 150)
+                current_user.fat_goal = int(request.form.get('fat_goal') or 70)
+                current_user.carbs_goal = int(request.form.get('carbs_goal') or 250)
+
+            current_user.water_goal = int(request.form.get('water_goal') or 8)
+
+            # Сохраняем вес в лог
+            if w:
+                existing = WeightLog.query.filter_by(user_id=current_user.id, date=date.today()).first()
+                if existing:
+                    existing.weight = w
+                else:
+                    db.session.add(WeightLog(user_id=current_user.id, weight=w))
+
+            db.session.commit()
+            flash('✅ Цели сохранены!')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'❌ Ошибка: {str(e)}')
+
+    return render_template('goals.html', t=t, lang=lang,
+                           last_weight=last_weight,
+                           current_user=current_user,
+                           now=datetime.utcnow())
+
+@app.route('/categories')
+def categories():
+    t = get_t()
+    lang = session.get('language', 'ru')
+    cat = request.args.get('cat', 'fruits')
+
+    foods = Food.query.filter_by(category=cat).all()
+    foods_data = []
+    for f in foods:
+        foods_data.append({
+            'id': f.id,
+            'name': get_food_name(f, lang),
+            'calories': f.calories,
+            'protein': f.protein,
+            'fat': f.fat,
+            'carbs': f.carbs,
+        })
+    foods_data.sort(key=lambda x: x['name'])
+
+    cat_labels = {k: t.get(k, k) for k in CATEGORY_KEYS}
+
+    return render_template('categories.html', t=t, lang=lang,
+                           foods=foods_data, current_cat=cat,
+                           category_keys=CATEGORY_KEYS,
+                           cat_labels=cat_labels)
+
+# ===================== ADMIN =====================
 
 @app.route('/admin')
 @login_required
 def admin():
     if not current_user.is_superuser:
-        return 'Forbidden', 403
-    users = User.query.all()
-    return render_template('admin.html', users=users, now=datetime.utcnow())
+        return redirect(url_for('index'))
+    t = get_t()
+    query = request.args.get('q', '')
+    if query:
+        users = User.query.filter(
+            (User.email.ilike(f'%{query}%')) | (User.username.ilike(f'%{query}%'))
+        ).all()
+    else:
+        users = User.query.order_by(User.created_at.desc()).all()
+    now = datetime.utcnow()
+    return render_template('admin.html', users=users, query=query, now=now, t=t)
 
-@app.route('/set-language/<lang>')
-def set_language(lang):
-    if lang in ['ru', 'en', 'uk', 'kk']:
-        if current_user.is_authenticated:
-            current_user.language = lang
+@app.route('/admin/grant-premium', methods=['POST'])
+@login_required
+def admin_grant_premium():
+    if not current_user.is_superuser:
+        return redirect(url_for('index'))
+    user_id = request.form.get('user_id')
+    duration = request.form.get('duration', '1month')
+    user = User.query.get(user_id)
+    if user:
+        user.is_premium = True
+        now = datetime.utcnow()
+        base = user.premium_ends if user.premium_ends and user.premium_ends > now else now
+        if duration == '7days':
+            user.premium_ends = base + timedelta(days=7)
+        elif duration == '3months':
+            user.premium_ends = base + timedelta(days=90)
+        elif duration == 'forever':
+            user.premium_ends = None
+        else:
+            user.premium_ends = base + timedelta(days=30)
+        db.session.commit()
+        flash(f'Premium выдан: {user.username}')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/revoke-premium', methods=['POST'])
+@login_required
+def admin_revoke_premium():
+    if not current_user.is_superuser:
+        return redirect(url_for('index'))
+    user_id = request.form.get('user_id')
+    user = User.query.get(user_id)
+    if user:
+        user.is_premium = False
+        user.premium_ends = None
+        db.session.commit()
+        flash(f'Premium отозван: {user.username}')
+    return redirect(url_for('admin'))
+
+# ===================== API =====================
+
+@app.route('/api/search')
+def api_search():
+    lang = session.get('language', 'ru')
+    q = request.args.get('q', '').strip().lower()
+    if not q:
+        return jsonify([])
+
+    name_col = {'ru': Food.name_ru, 'en': Food.name_en, 'uk': Food.name_uk, 'kk': Food.name_kk}.get(lang, Food.name_ru)
+    foods = Food.query.filter(name_col.ilike(f'%{q}%')).limit(10).all()
+
+    if len(foods) < 2:
+        all_foods = Food.query.all()
+        def similarity(a, b):
+            a, b = a.lower(), b.lower()
+            if a in b or b in a: return 0.9
+            common = sum(1 for c in a if c in b)
+            return common / max(len(a), len(b), 1)
+        scored = [(similarity(q, get_food_name(f, lang)), f) for f in all_foods]
+        scored = [(s, f) for s, f in scored if s > 0.4]
+        scored.sort(reverse=True)
+        foods = [f for _, f in scored[:10]]
+
+    return jsonify([{
+        'id': f.id,
+        'name': get_food_name(f, lang),
+        'calories': f.calories,
+        'protein': f.protein,
+        'fat': f.fat,
+        'carbs': f.carbs,
+        'category': f.category,
+    } for f in foods])
+
+@app.route('/api/add-entry', methods=['POST'])
+@login_required
+def api_add_entry():
+    data = request.get_json()
+    food = Food.query.get(data['food_id'])
+    if not food:
+        return jsonify({'error': 'Food not found'}), 404
+    lang = session.get('language', 'ru')
+    grams = float(data.get('grams', 100))
+    ratio = grams / 100
+    entry = FoodEntry(
+        user_id=current_user.id,
+        food_id=food.id,
+        food_name=get_food_name(food, lang),
+        grams=grams,
+        calories=round(food.calories * ratio, 1),
+        protein=round(food.protein * ratio, 1),
+        fat=round(food.fat * ratio, 1),
+        carbs=round(food.carbs * ratio, 1),
+        meal_type=data.get('meal_type', 'other')
+    )
+    db.session.add(entry)
+    db.session.commit()
+    return jsonify({'success': True, 'entry_id': entry.id})
+
+@app.route('/api/remove-entry/<int:entry_id>', methods=['DELETE'])
+@login_required
+def api_remove_entry(entry_id):
+    entry = FoodEntry.query.filter_by(id=entry_id, user_id=current_user.id).first()
+    if entry:
+        db.session.delete(entry)
+        db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/clear-day', methods=['DELETE'])
+@login_required
+def api_clear_day():
+    FoodEntry.query.filter_by(user_id=current_user.id, date=date.today()).delete()
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/water', methods=['GET', 'POST'])
+@login_required
+def api_water():
+    key = f'water_{current_user.id}_{date.today()}'
+    if request.method == 'POST':
+        data = request.get_json()
+        session[key] = data.get('glasses', 0)
+        session.modified = True
+        return jsonify({'success': True, 'glasses': session[key]})
+    return jsonify({'glasses': session.get(key, 0), 'goal': current_user.water_goal or 8})
+
+@app.route('/api/today-summary')
+@login_required
+def api_today_summary():
+    entries = FoodEntry.query.filter_by(user_id=current_user.id, date=date.today()).all()
+    return jsonify({
+        'calories': round(sum(e.calories for e in entries)),
+        'protein': round(sum(e.protein for e in entries), 1),
+        'fat': round(sum(e.fat for e in entries), 1),
+        'carbs': round(sum(e.carbs for e in entries), 1),
+    })
+
+@app.route('/api/weight-log', methods=['GET', 'POST'])
+@login_required
+def api_weight_log():
+    if request.method == 'POST':
+        data = request.get_json()
+        weight = float(data.get('weight', 0))
+        if weight > 0:
+            existing = WeightLog.query.filter_by(user_id=current_user.id, date=date.today()).first()
+            if existing:
+                existing.weight = weight
+            else:
+                db.session.add(WeightLog(user_id=current_user.id, weight=weight))
+            current_user.current_weight = weight
             db.session.commit()
-        session['lang'] = lang
-    return redirect(request.referrer or url_for('index'))
+        return jsonify({'success': True})
 
-@app.route('/language', methods=['POST'])
-def change_language():
-    lang = request.form.get('lang', 'ru')
-    if lang in ['ru', 'en', 'uk', 'kk']:
-        if current_user.is_authenticated:
-            current_user.language = lang
-            db.session.commit()
-        session['lang'] = lang
-    return redirect(request.referrer or url_for('index'))
+    days = int(request.args.get('days', 30))
+    since = date.today() - timedelta(days=days)
+    logs = WeightLog.query.filter(
+        WeightLog.user_id == current_user.id,
+        WeightLog.date >= since
+    ).order_by(WeightLog.date.asc()).all()
+    return jsonify([{'date': str(l.date), 'weight': l.weight} for l in logs])
 
-@app.errorhandler(404)
-def not_found(e):
-    return 'Not found', 404
+@app.route('/api/last-weight')
+@login_required
+def api_last_weight():
+    log = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
+    return jsonify({'weight': log.weight if log else None})
 
-@app.errorhandler(500)
-def server_error(e):
-    return 'Server error', 500
+@app.route('/api/weekly-summary')
+@login_required
+def api_weekly_summary():
+    since = date.today() - timedelta(days=7)
+    entries = FoodEntry.query.filter(
+        FoodEntry.user_id == current_user.id,
+        FoodEntry.date >= since
+    ).all()
 
-if __name__ == '__main__':
+    by_day = {}
+    for e in entries:
+        d = str(e.date)
+        if d not in by_day:
+            by_day[d] = {'cal': 0, 'protein': 0, 'fat': 0, 'carbs': 0}
+        by_day[d]['cal'] += e.calories
+        by_day[d]['protein'] += e.protein
+        by_day[d]['fat'] += e.fat
+        by_day[d]['carbs'] += e.carbs
+
+    goal = current_user.daily_calorie_goal or 2000
+    days_logged = len(by_day)
+    days_on_goal = sum(1 for d in by_day.values() if d['cal'] <= goal * 1.05)
+    avg_cal = round(sum(d['cal'] for d in by_day.values()) / max(days_logged, 1))
+    avg_protein = round(sum(d['protein'] for d in by_day.values()) / max(days_logged, 1), 1)
+    avg_fat = round(sum(d['fat'] for d in by_day.values()) / max(days_logged, 1), 1)
+    avg_carbs = round(sum(d['carbs'] for d in by_day.values()) / max(days_logged, 1), 1)
+
+    return jsonify({
+        'avg_cal': avg_cal,
+        'days_on_goal': days_on_goal,
+        'days_logged': days_logged,
+        'avg_protein': avg_protein,
+        'avg_fat': avg_fat,
+        'avg_carbs': avg_carbs,
+    })
+
+@app.route('/api/history-data')
+@login_required
+def api_history_data():
+    days_count = int(request.args.get('days', 30))
+    since = date.today() - timedelta(days=days_count)
+    entries = FoodEntry.query.filter(
+        FoodEntry.user_id == current_user.id,
+        FoodEntry.date >= since
+    ).all()
+
+    by_day = {}
+    for e in entries:
+        d = str(e.date)
+        if d not in by_day:
+            by_day[d] = {'calories': 0, 'foods': []}
+        by_day[d]['calories'] += e.calories
+        by_day[d]['foods'].append({
+            'name': e.food_name,
+            'grams': e.grams,
+            'calories': e.calories,
+            'meal': e.meal_type
+        })
+
+    return jsonify({'days': by_day, 'goal': current_user.daily_calorie_goal or 2000})
+
+@app.route('/api/create-payment', methods=['POST'])
+@login_required
+def create_payment():
+    if Payment is None:
+        return jsonify({'success': False, 'error': 'Payment not configured'}), 500
+    try:
+        payment = Payment.create({
+            "amount": {"value": "199.00", "currency": "RUB"},
+            "confirmation": {
+                "type": "redirect",
+                "return_url": request.host_url.rstrip('/') + '/premium-success'
+            },
+            "description": f"Премиум подписка для {current_user.username}",
+            "metadata": {"user_id": current_user.id, "email": current_user.email}
+        })
+        return jsonify({'success': True, 'confirmation_url': payment.confirmation.confirmation_url})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/premium-success')
+@login_required
+def premium_success():
+    flash('Если оплата прошла успешно — премиум активируется автоматически.')
+    return redirect('/')
+
+@app.route('/webhook/yookassa', methods=['POST'])
+def yookassa_webhook():
+    try:
+        data = request.json
+        if data.get('event') == 'payment.succeeded':
+            user_id = data.get('object', {}).get('metadata', {}).get('user_id')
+            if user_id:
+                user = User.query.get(user_id)
+                if user:
+                    user.is_premium = True
+                    user.premium_ends = datetime.utcnow() + timedelta(days=30)
+                    db.session.commit()
+        return jsonify({'status': 'ok'}), 200
+    except Exception:
+        return jsonify({'status': 'error'}), 400
+
+# ===================== ЗАПУСК =====================
+
+def init_db():
     with app.app_context():
         db.create_all()
-        init_db()
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+
+        # Добавляем колонки если их нет (для старых БД)
+        try:
+            inspector = db.inspect(db.engine)
+            user_cols = [c['name'] for c in inspector.get_columns('user')]
+            with db.engine.connect() as conn:
+                if 'is_superuser' not in user_cols:
+                    conn.execute(db.text('ALTER TABLE "user" ADD COLUMN is_superuser BOOLEAN DEFAULT FALSE'))
+                    conn.commit()
+                if 'premium_ends' not in user_cols:
+                    conn.execute(db.text('ALTER TABLE "user" ADD COLUMN premium_ends DATETIME'))
+                    conn.commit()
+        except Exception as e:
+            print(f"Migration note: {e}")
+
+        if Food.query.count() == 0:
+            try:
+                from food_data import FOODS
+                for f in FOODS:
+                    db.session.add(Food(**f))
+                db.session.commit()
+                print(f"✅ Добавлено {len(FOODS)} продуктов")
+            except Exception as e:
+                print(f"⚠️ food_data import error: {e}")
+
+init_db()
+
+if __name__ == '__main__':
+    app.run(debug=True)

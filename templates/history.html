@@ -247,11 +247,11 @@
 const isPremium = {{ 'true' if is_premium else 'false' }};
 const calGoal = {{ goal }};
 const t_js = {
-  kcal: {{ t['kcal']|tojson }},
-  g: {{ t['g']|tojson }},
-  protein: {{ t['protein']|tojson }},
-  fat: {{ t['fat']|tojson }},
-  carbs: {{ t['carbs']|tojson }},
+  kcal: {{ t.get('kcal','ккал')|tojson }},
+  g: {{ t.get('g','г')|tojson }},
+  protein: {{ t.get('protein','Белки')|tojson }},
+  fat: {{ t.get('fat','Жиры')|tojson }},
+  carbs: {{ t.get('carbs','Углеводы')|tojson }},
   no_foods_day: {{ t.get('no_foods_day','Нет записей')|tojson }},
   foods_that_day: {{ t.get('foods_that_day','Продукты за этот день')|tojson }},
   avg_cal_label: {{ t.get('avg_cal_label','Среднее ккал')|tojson }},

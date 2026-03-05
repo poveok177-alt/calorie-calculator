@@ -2,7 +2,6 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234caf83' width='100' height='100' rx='22'/><text x='50' y='62' font-size='58' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ t.app_name }} — {{ t.categories }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
@@ -76,38 +75,38 @@
 <nav>
   <div class="nav-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <a href="/" class="nav-link">← {{ t['back'] }}</a>
+    <a href="/" class="nav-link">← Поиск</a>
   </div>
 </nav>
 <main>
   <!-- SIDEBAR -->
   <div class="cat-sidebar">
-    <div class="cat-title">{{ t['categories'] }}</div>
+    <div class="cat-title">{{ t.categories }}</div>
     {% for cat in category_keys %}
     <a href="/categories?cat={{ cat }}" class="cat-btn {% if current_cat == cat %}active{% endif %}">
-      {{ cat_labels[cat] }}
+      {{ t[cat] }}
     </a>
     {% endfor %}
   </div>
 
   <!-- FOODS -->
   <div class="foods-panel">
-    <div class="foods-title">{{ cat_labels[current_cat] }}</div>
-    <div class="foods-count">{{ foods|length }} {{ t['products_count'] }}</div>
+    <div class="foods-title">{{ t[current_cat] }}</div>
+    <div class="foods-count">{{ foods|length }} продуктов · сортировка по алфавиту</div>
     <div class="foods-grid">
       {% for food in foods %}
       <div class="food-card" onclick="quickAdd({{ food.id }}, '{{ food.name|replace("'", "\\'") }}', {{ food.calories }}, {{ food.protein }}, {{ food.fat }}, {{ food.carbs }})">
         <div class="food-name">{{ food.name }}</div>
         <div>
           <span class="food-cal">{{ food.calories }}</span>
-          <span class="food-cal-label"> {{ t['kcal'] }} / 100{{ t['g'] }}</span>
+          <span class="food-cal-label"> {{ t.kcal }} / 100{{ t.g }}</span>
         </div>
         <div class="food-macros">
           <span class="macro-chip">Б {{ food.protein }}г</span>
           <span class="macro-chip">Ж {{ food.fat }}г</span>
           <span class="macro-chip">У {{ food.carbs }}г</span>
         </div>
-        <button class="add-from-cat">{{ t['add_from_cat'] }}</button>
+        <button class="add-from-cat">+ Добавить</button>
       </div>
       {% endfor %}
     </div>
@@ -119,12 +118,12 @@
   <div style="background:white; border-radius:24px; padding:32px; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.2);">
     <div style="font-family:'Playfair Display',serif; font-size:20px; margin-bottom:20px;" id="modal-title"></div>
     <div style="margin-bottom:16px;">
-      <label style="font-size:12px; font-weight:700; color:#5a7a6e; display:block; margin-bottom:6px; text-transform:uppercase;">{{ t['grams_label'] }}</label>
+      <label style="font-size:12px; font-weight:700; color:#5a7a6e; display:block; margin-bottom:6px; text-transform:uppercase;">Количество (граммов)</label>
       <input type="number" id="modal-grams" value="100" min="1" max="9999" style="width:100%; padding:12px 16px; border:2px solid #c8eedd; border-radius:14px; font-size:15px; font-family:'Nunito',sans-serif; outline:none;">
     </div>
     <div id="modal-preview" style="font-size:13px; color:#5a7a6e; margin-bottom:20px;"></div>
     <div style="display:flex; gap:12px;">
-      <button onclick="confirmAdd()" style="flex:1; padding:12px; background:linear-gradient(135deg,#4caf83,#6dc49a); color:white; border:none; border-radius:14px; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer;">{{ t['confirm_add'] }}</button>
+      <button onclick="confirmAdd()" style="flex:1; padding:12px; background:linear-gradient(135deg,#4caf83,#6dc49a); color:white; border:none; border-radius:14px; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer;">✓ Добавить</button>
       <button onclick="closeModal()" style="padding:12px 20px; background:none; border:2px solid #c8eedd; border-radius:14px; font-size:14px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer;">✕</button>
     </div>
   </div>
@@ -136,7 +135,7 @@ let modalFood = null;
 
 function quickAdd(id, name, cal, protein, fat, carbs) {
   if (!isAuth) {
-    alert({{ t['login_required']|tojson }});
+    alert('Войдите в аккаунт, чтобы добавлять продукты в дневник');
     return;
   }
   modalFood = { id, name, cal, protein, fat, carbs };
@@ -165,7 +164,7 @@ async function confirmAdd() {
   const data = await r.json();
   if (data.success) {
     closeModal();
-    alert(`✓ ${modalFood.name} {{ t['added_to_diary'] }}`);
+    alert(`✓ ${modalFood.name} добавлен в дневник!`);
   }
 }
 

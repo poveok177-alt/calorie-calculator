@@ -2,30 +2,18 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>{{ t.app_name }}</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234caf83' width='100' height='100' rx='22'/><text x='50' y='62' font-size='58' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t.app_name }} — {{ t.today }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --mint: #b5ead7;
-    --mint-light: #e8f8f2;
-    --mint-medium: #d0f0e4;
-    --green: #4caf83;
-    --green-dark: #2d8a63;
-    --green-soft: #6dc49a;
-    --white: #ffffff;
-    --cream: #f9fdf9;
-    --text: #2d4a3e;
-    --text-soft: #5a7a6e;
-    --text-light: #8aaa9e;
-    --border: #c8eedd;
-    --shadow: rgba(76,175,131,0.12);
-    --shadow-hover: rgba(76,175,131,0.22);
-    --danger: #e57373;
+    --mint: #b5ead7; --mint-light: #e8f8f2; --green: #4caf83;
+    --green-dark: #2d8a63; --green-soft: #6dc49a; --white: #ffffff;
+    --cream: #f9fdf9; --text: #2d4a3e; --text-soft: #5a7a6e;
+    --text-light: #8aaa9e; --border: #c8eedd;
+    --shadow: rgba(76, 175, 131, 0.12);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
   body {
     font-family: 'Nunito', sans-serif;
     background: var(--cream);
@@ -33,1250 +21,677 @@
     min-height: 100vh;
     background-image: radial-gradient(circle at 20% 20%, rgba(181,234,215,0.3) 0%, transparent 50%),
                       radial-gradient(circle at 80% 80%, rgba(181,234,215,0.2) 0%, transparent 50%);
-    padding-bottom: 60px;
   }
-
-  /* NAV */
   nav {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 16px;
-    position: sticky;
-    top: 0;
-    z-index: 200;
-    box-shadow: 0 2px 16px var(--shadow);
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px var(--shadow);
   }
   .nav-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    gap: 10px;
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px;
   }
   .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--green-dark);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-  .nav-link {
-    padding: 7px 12px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-soft);
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .nav-link:hover { background: var(--mint-light); color: var(--green-dark); }
-  .nav-link.premium-btn { background: linear-gradient(135deg, var(--green), var(--green-soft)); color: white; }
-  .lang-switcher { display: flex; align-items: center; gap: 3px; }
-  .lang-btn {
-    background: none; border: 1.5px solid var(--border); border-radius: 10px;
-    padding: 3px 8px; font-size: 11px; font-weight: 700; cursor: pointer;
-    color: var(--text-soft); transition: all 0.2s; font-family: 'Nunito', sans-serif;
-  }
-  .lang-btn:hover, .lang-btn.active { background: var(--mint); border-color: var(--green); color: var(--green-dark); }
-  .mobile-menu-btn {
-    display: none; align-items: center; justify-content: center;
-    width: 40px; height: 40px; border: 1.5px solid var(--border);
-    border-radius: 12px; background: none; cursor: pointer; font-size: 20px; color: var(--text-soft);
-  }
-  @media (max-width: 640px) {
-    .nav-links, .lang-switcher { display: none; }
-    .mobile-menu-btn { display: flex; }
-  }
-
-  /* MOBILE DRAWER */
-  .mobile-drawer { display: none; position: fixed; inset: 0; z-index: 300; }
-  .mobile-drawer.open { display: block; }
-  .drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
-  .drawer-panel {
-    position: absolute; top: 0; right: 0; width: 260px; height: 100%;
-    background: white; padding: 20px; display: flex; flex-direction: column;
-    gap: 6px; overflow-y: auto; box-shadow: -4px 0 30px rgba(0,0,0,0.15);
-  }
-  .drawer-close {
-    align-self: flex-end; background: none; border: none;
-    font-size: 22px; cursor: pointer; color: var(--text-soft); margin-bottom: 10px;
-  }
-  .drawer-link {
-    display: block; padding: 12px 16px; border-radius: 14px;
-    text-decoration: none; font-size: 15px; font-weight: 700; color: var(--text-soft); transition: all 0.2s;
-  }
-  .drawer-link:hover { background: var(--mint-light); color: var(--green-dark); }
-  .drawer-link.premium { background: linear-gradient(135deg, var(--green), var(--green-soft)); color: white; }
-  .drawer-langs { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 6px; }
-  .drawer-lang-btn {
-    border: 1.5px solid var(--border); border-radius: 10px; padding: 6px 14px;
-    font-size: 13px; font-weight: 700; cursor: pointer; background: none; font-family: 'Nunito', sans-serif; color: var(--text-soft);
-  }
-  .drawer-lang-btn.active { background: var(--mint); border-color: var(--green); color: var(--green-dark); }
-
-  /* MAIN LAYOUT */
-  main {
-    max-width: 1100px; margin: 0 auto; padding: 20px 16px;
-    display: grid; grid-template-columns: 1fr 330px; gap: 20px; align-items: start;
-  }
-  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
-
-  /* TOTALS CARD */
-  .totals-card {
-    background: white; border-radius: 20px; padding: 22px;
-    box-shadow: 0 4px 24px var(--shadow); border: 1px solid var(--border);
-    position: sticky; top: 76px;
-  }
-  @media (max-width: 860px) {
-    .totals-card {
-      position: static; order: -1;
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 14px 16px;
-    }
-    .totals-title { grid-column: 1/-1; }
-    .total-item { margin-bottom: 0; }
-    .total-value { font-size: 22px; }
-  }
-  @media (max-width: 480px) {
-    .totals-card { grid-template-columns: repeat(2, 1fr); }
-  }
-  .totals-title {
-    font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text);
-    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
-  }
-  .total-item { text-align: center; margin-bottom: 16px; }
-  .total-item:last-child { margin-bottom: 0; }
-  .total-label { font-size: 11px; color: var(--text-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-  .total-value { font-size: 28px; font-weight: 800; color: var(--green-dark); line-height: 1.1; }
-  .total-unit { font-size: 11px; color: var(--text-light); }
-  .progress-bar { background: var(--mint-light); border-radius: 10px; height: 5px; margin-top: 6px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-soft)); transition: width 0.4s; }
-
-  /* MEAL SECTION */
-  .meal-section {
-    margin-bottom: 16px; background: white; border-radius: 20px;
-    overflow: hidden; box-shadow: 0 4px 24px var(--shadow); border: 1px solid var(--border);
-  }
-  .meal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 18px 12px; gap: 8px; flex-wrap: wrap;
-  }
-  .meal-title {
-    font-family: 'Playfair Display', serif; font-size: 17px; color: var(--text);
+    font-family: 'Playfair Display', serif; font-size: 22px;
+    font-weight: 600; color: var(--green-dark); text-decoration: none;
     display: flex; align-items: center; gap: 8px;
   }
-  .meal-cal { font-size: 14px; font-weight: 800; color: var(--green-dark); }
-  .btn-clear-meal {
-    background: none; border: 1.5px solid var(--border); color: var(--text-soft);
-    border-radius: 10px; padding: 5px 11px; font-size: 12px; font-weight: 700;
-    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
-    display: flex; align-items: center; gap: 4px; min-height: 32px;
+  .nav-link {
+    padding: 8px 14px; border-radius: 20px; text-decoration: none;
+    font-size: 14px; font-weight: 600; color: var(--text-soft); transition: all 0.2s;
   }
-  .btn-clear-meal:hover { background: #fff0f0; border-color: var(--danger); color: var(--danger); }
+  .nav-link:hover { background: var(--mint-light); color: var(--green-dark); }
 
-  /* SEARCH TABS */
+  main {
+    max-width: 800px; margin: 0 auto; padding: 40px 24px;
+  }
+  .page-title {
+    font-family: 'Playfair Display', serif; font-size: 28px;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .page-date {
+    color: var(--text-light); font-size: 14px; margin-bottom: 32px;
+  }
+
+  /* ПРОГРЕСС */
+  .progress-card {
+    background: linear-gradient(135deg, var(--green), var(--green-soft));
+    border-radius: 24px; padding: 32px; color: white; margin-bottom: 32px;
+    box-shadow: 0 8px 40px var(--shadow);
+  }
+  .progress-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+  .progress-number { font-size: 48px; font-weight: 800; }
+  .progress-bar {
+    height: 12px; border-radius: 6px; background: rgba(255,255,255,0.3);
+    margin: 16px 0 12px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: white; width: 0%; transition: width 0.3s;
+  }
+  .progress-info {
+    display: flex; justify-content: space-between; font-size: 13px; opacity: 0.9;
+  }
+  .bju-summary {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px;
+  }
+  .bju-chip {
+    background: rgba(255,255,255,0.15); border-radius: 12px; padding: 12px;
+    text-align: center;
+  }
+  .bju-label { font-size: 11px; opacity: 0.85; }
+  .bju-value { font-size: 18px; font-weight: 800; margin-top: 4px; }
+
+  /* ПОИСК И ТАБЫ */
+  .search-section {
+    background: white; border-radius: 20px; padding: 24px;
+    border: 1.5px solid var(--border); box-shadow: 0 4px 20px var(--shadow);
+    margin-bottom: 24px;
+  }
+  .search-input {
+    width: 100%; padding: 14px 18px;
+    border: 2px solid var(--border); border-radius: 16px;
+    font-size: 15px; background: var(--mint-light); outline: none;
+    transition: all 0.25s; margin-bottom: 16px;
+  }
+  .search-input:focus {
+    border-color: var(--green); background: white;
+    box-shadow: 0 0 0 4px rgba(76,175,131,0.12);
+  }
+  .category-btn {
+    padding: 8px 14px; border: 2px solid var(--border);
+    border-radius: 20px; background: white; color: var(--text-soft);
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: all 0.2s; font-family: 'Nunito', sans-serif;
+  }
+  .category-btn:hover {
+    border-color: var(--green); color: var(--green-dark);
+    background: var(--mint-light);
+  }
+  .category-btn.active {
+    background: linear-gradient(135deg, var(--green), var(--green-soft));
+    color: white; border-color: var(--green);
+  }
   .search-tabs {
-    display: flex; gap: 0; padding: 0 18px 8px; border-bottom: 1px solid var(--mint-light);
+    display: flex; gap: 8px; border-bottom: 2px solid var(--border);
   }
   .search-tab {
-    background: none; border: none; padding: 6px 14px; font-size: 13px; font-weight: 700;
-    color: var(--text-soft); cursor: pointer; border-bottom: 2px solid transparent;
-    font-family: 'Nunito', sans-serif; transition: all 0.2s; white-space: nowrap;
+    padding: 10px 16px; border: none; background: none;
+    cursor: pointer; font-size: 14px; font-weight: 600;
+    color: var(--text-soft); border-bottom: 3px solid transparent;
+    transition: all 0.2s; font-family: 'Nunito', sans-serif;
   }
-  .search-tab.active { color: var(--green-dark); border-bottom-color: var(--green); }
+  .search-tab.active {
+    color: var(--green-dark); border-bottom-color: var(--green);
+  }
   .search-tab:hover { color: var(--green-dark); }
+  .search-results {
+    max-height: 300px; overflow-y: auto; margin-top: 12px;
+  }
+  .search-result {
+    padding: 12px; border-radius: 12px; cursor: pointer;
+    transition: all 0.2s; display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 8px;
+  }
+  .search-result:hover { background: var(--mint-light); }
+  .search-result-name { font-weight: 600; font-size: 14px; }
+  .search-result-cal { font-size: 12px; color: var(--text-light); }
+  .fav-star {
+    cursor: pointer; font-size: 18px; transition: all 0.2s;
+  }
+  .fav-star.filled { color: #ffc107; }
 
-  /* CATEGORY TABS */
-  .category-scroll {
-    padding: 8px 18px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; display: flex; gap: 6px;
+  /* ПРИЁМЫ ПИЩИ */
+  .meals-container { margin-top: 32px; }
+  .meal-section {
+    background: white; border-radius: 20px; padding: 20px;
+    border: 1.5px solid var(--border); margin-bottom: 20px;
+    box-shadow: 0 4px 20px var(--shadow);
   }
-  .category-scroll::-webkit-scrollbar { display: none; }
-  .cat-btn {
-    background: var(--mint-light); border: 1.5px solid var(--border); color: var(--text-soft);
-    border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 700;
-    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
-    min-height: 30px;
+  .meal-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--mint-light);
   }
-  .cat-btn:hover { background: var(--mint); border-color: var(--green); color: var(--green-dark); }
-  .cat-btn.active { background: var(--green); color: white; border-color: var(--green-dark); }
-
-  /* SEARCH */
-  .meal-search-wrap { padding: 0 18px 10px; display: flex; gap: 8px; }
-  .meal-search {
-    flex: 1; padding: 9px 15px; border-radius: 12px;
-    border: 1.5px solid var(--border); font-size: 14px; font-family: 'Nunito', sans-serif;
-    color: var(--text); background: var(--mint-light); outline: none; transition: all 0.2s;
-    min-height: 44px;
+  .meal-icon { font-size: 24px; }
+  .meal-title { font-weight: 800; font-size: 16px; color: var(--text); }
+  .meal-cal {
+    margin-left: auto; font-size: 18px; font-weight: 800;
+    color: var(--green-dark);
   }
-  .meal-search:focus { border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(76,175,131,0.1); }
-  .btn-create-food {
-    background: var(--mint-light); border: 1.5px solid var(--border); color: var(--green-dark);
-    border-radius: 12px; padding: 9px 13px; font-size: 18px; cursor: pointer;
-    transition: all 0.2s; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    min-height: 44px; min-width: 44px;
+  .meal-entry {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--mint-light); justify-content: space-between;
   }
-  .btn-create-food:hover { background: var(--mint); border-color: var(--green); }
-
-  /* PRODUCTS LIST */
-  .meal-products {
-    display: none; margin: 0 18px 10px; background: var(--mint-light);
-    border-radius: 14px; overflow: hidden; max-height: 280px; overflow-y: auto;
-  }
-  .meal-products.show { display: block; }
-  .product-item {
-    padding: 10px 12px; background: white; margin: 5px; border-radius: 10px;
-    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    transition: all 0.15s; border: 1.5px solid transparent;
-  }
-  .product-item:hover { background: var(--mint-light); border-color: var(--green); transform: translateX(2px); }
-  .product-name { font-weight: 700; font-size: 14px; color: var(--text); }
-  .product-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; }
-  .product-cal-badge {
-    background: var(--mint-medium); color: var(--green-dark); font-weight: 800;
-    font-size: 12px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-left: 8px;
-  }
-  .product-source-badge {
-    font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700;
-    flex-shrink: 0; white-space: nowrap;
-  }
-  .badge-off { background: #e3f2fd; color: #1565c0; }
-  .badge-custom { background: #fff3e0; color: #e65100; }
-  .products-empty { text-align: center; padding: 20px; color: var(--text-light); font-size: 13px; }
-
-  /* ENTRIES */
-  .meal-entries { padding: 0 18px 14px; display: flex; flex-direction: column; gap: 6px; }
-  .entry-item {
-    display: flex; align-items: center; padding: 10px 12px;
-    background: var(--mint-light); border-radius: 12px; border: 1px solid var(--border); gap: 8px;
-  }
-  .entry-info { flex: 1; min-width: 0; }
-  .entry-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .entry-sub { font-size: 11px; color: var(--text-light); }
-  .entry-remove {
+  .meal-entry:last-child { border-bottom: none; }
+  .entry-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .entry-breakfast { background: #ffb74d; }
+  .entry-lunch { background: #81c784; }
+  .entry-dinner { background: #64b5f6; }
+  .entry-snack { background: #f06292; }
+  .entry-info { flex: 1; }
+  .entry-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .entry-grams { font-size: 12px; color: var(--text-light); }
+  .entry-cal { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+  .entry-delete {
     background: none; border: none; cursor: pointer; color: var(--text-light);
-    font-size: 15px; width: 32px; height: 32px; display: flex; align-items: center;
-    justify-content: center; border-radius: 8px; transition: all 0.2s; flex-shrink: 0;
+    font-size: 16px; transition: all 0.2s;
   }
-  .entry-remove:hover { background: #fff0f0; color: var(--danger); }
-
-  /* CLEAR DAY */
-  .clear-day-wrap { text-align: center; padding: 4px 0 8px; }
-  .btn-clear-day {
-    background: none; border: 1.5px solid var(--danger); color: var(--danger);
-    border-radius: 14px; padding: 10px 24px; font-size: 13px; font-weight: 700;
-    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  .entry-delete:hover { color: #e53935; }
+  .meal-empty {
+    text-align: center; padding: 24px; color: var(--text-light);
+    font-size: 13px;
   }
-  .btn-clear-day:hover { background: var(--danger); color: white; }
 
-  /* MODAL ADD PRODUCT */
+  /* МОДАЛЬ */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-    z-index: 500; align-items: flex-end; justify-content: center;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    z-index: 200; align-items: center; justify-content: center;
   }
-  .modal-overlay.open { display: flex; }
-  @media (min-width: 520px) {
-    .modal-overlay { align-items: center; }
-    .modal-box { border-radius: 24px !important; max-width: 400px !important; }
+  .modal-overlay.show { display: flex; }
+  .modal-content {
+    background: white; border-radius: 24px; padding: 32px;
+    max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2);
   }
-  .modal-box {
-    background: white; border-radius: 24px 24px 0 0; padding: 28px 22px 34px;
-    width: 100%; max-width: 100%; box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
-    animation: slideUp 0.22s ease;
+  .modal-title {
+    font-family: 'Playfair Display', serif; font-size: 20px;
+    margin-bottom: 20px; color: var(--text);
   }
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  .form-group {
+    margin-bottom: 16px;
   }
-  .modal-handle {
-    width: 36px; height: 4px; background: var(--border); border-radius: 4px;
-    margin: 0 auto 20px;
-  }
-  .modal-product-name { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--text); margin-bottom: 4px; }
-  .modal-product-meta { font-size: 12px; color: var(--text-light); margin-bottom: 18px; }
-  .modal-label { font-size: 12px; font-weight: 700; color: var(--text-soft); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-  .modal-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .modal-input {
-    flex: 1; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border);
-    font-size: 22px; font-weight: 800; font-family: 'Nunito', sans-serif; color: var(--text);
-    outline: none; text-align: center; transition: all 0.2s; background: var(--mint-light);
-    min-height: 54px;
-  }
-  .modal-input:focus { border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(76,175,131,0.12); }
-  .modal-unit { font-size: 16px; font-weight: 700; color: var(--text-soft); min-width: 24px; }
-  .modal-quick-btns { display: flex; gap: 7px; margin-bottom: 16px; flex-wrap: wrap; }
-  .modal-quick-btn {
-    background: var(--mint-light); border: 1.5px solid var(--border); border-radius: 20px;
-    padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
-    font-family: 'Nunito', sans-serif; color: var(--text-soft); transition: all 0.2s;
-    min-height: 36px;
-  }
-  .modal-quick-btn:hover, .modal-quick-btn.selected { background: var(--green); color: white; border-color: var(--green); }
-
-  /* MEAL SELECTOR IN MODAL */
-  .modal-meal-selector { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-  .modal-meal-btn {
-    flex: 1; min-width: 70px; padding: 8px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
-    border: 1.5px solid var(--border); background: var(--mint-light); color: var(--text-soft);
-    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s; text-align: center;
-    min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .modal-meal-btn.selected { border-color: var(--green-dark); background: var(--green); color: white; }
-  .modal-meal-btn:hover { border-color: var(--green); background: var(--mint); color: var(--green-dark); }
-
-  .modal-preview {
-    background: var(--mint-light); border-radius: 12px; padding: 12px 16px;
-    margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;
-    font-weight: 800; color: var(--green-dark);
-  }
-  .modal-preview-label { font-size: 12px; font-weight: 600; color: var(--text-soft); }
-  .modal-preview-cal { font-size: 20px; }
-  .modal-btn-row { display: flex; gap: 10px; }
-  .modal-cancel {
-    flex: 1; padding: 14px; border-radius: 14px; border: 1.5px solid var(--border);
-    background: none; font-size: 15px; font-weight: 700; color: var(--text-soft);
-    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s; min-height: 50px;
-  }
-  .modal-cancel:hover { background: var(--mint-light); }
-  .modal-confirm {
-    flex: 2; padding: 14px; border-radius: 14px; border: none;
-    background: linear-gradient(135deg, var(--green), var(--green-soft));
-    color: white; font-size: 15px; font-weight: 800; cursor: pointer;
-    font-family: 'Nunito', sans-serif; transition: all 0.2s; box-shadow: 0 4px 15px var(--shadow-hover);
-    min-height: 50px;
-  }
-  .modal-confirm:hover { transform: translateY(-1px); }
-  .modal-confirm:disabled { opacity: 0.6; transform: none; }
-
-  /* CREATE CUSTOM FOOD MODAL */
-  .create-modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-    z-index: 510; align-items: flex-end; justify-content: center;
-  }
-  .create-modal-overlay.open { display: flex; }
-  @media (min-width: 520px) {
-    .create-modal-overlay { align-items: center; }
-    .create-modal-box { border-radius: 24px !important; max-width: 420px !important; }
-  }
-  .create-modal-box {
-    background: white; border-radius: 24px 24px 0 0; padding: 28px 22px 34px;
-    width: 100%; max-width: 100%; box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
-    animation: slideUp 0.22s ease;
-  }
-  .create-modal-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); margin-bottom: 18px; }
-  .create-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .create-form-row.full { grid-template-columns: 1fr; }
-  .create-input-wrap label { display: block; font-size: 11px; font-weight: 700; color: var(--text-soft); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .create-input {
-    width: 100%; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--border);
-    font-size: 15px; font-family: 'Nunito', sans-serif; color: var(--text);
-    background: var(--mint-light); outline: none; transition: all 0.2s; min-height: 44px;
-  }
-  .create-input:focus { border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(76,175,131,0.1); }
-
-  /* WATER TRACKER */
-  .water-section {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-  .water-label {
+  .form-label {
     font-size: 12px; font-weight: 700; color: var(--text-soft);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+    display: block; margin-bottom: 6px; text-transform: uppercase;
   }
-  .water-cups {
-    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+  .form-input {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid var(--border); border-radius: 14px;
+    font-size: 15px; font-family: 'Nunito', sans-serif;
+    outline: none; transition: all 0.25s;
   }
-  .water-cup {
-    background: none; border: none; font-size: 20px; cursor: pointer;
-    padding: 2px; border-radius: 6px; transition: all 0.15s; opacity: 0.3;
-    line-height: 1; min-width: 28px; min-height: 28px;
+  .form-input:focus {
+    border-color: var(--green); background: var(--mint-light);
   }
-  .water-cup.filled { opacity: 1; transform: scale(1.1); }
-  .water-cup:hover { opacity: 0.8; transform: scale(1.15); }
-  .water-info {
-    font-size: 12px; color: var(--text-light); font-weight: 700;
+  .modal-preview {
+    font-size: 13px; color: var(--text-soft); margin: 16px 0;
+    padding: 12px; background: var(--mint-light); border-radius: 12px;
   }
-  @media (max-width: 860px) {
-    .water-section { grid-column: 1/-1; }
-    .water-cups { gap: 4px; }
-    .water-cup { font-size: 22px; }
+  .meal-select {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid var(--border); border-radius: 14px;
+    font-size: 14px; font-family: 'Nunito', sans-serif;
+    outline: none; cursor: pointer;
   }
-
-  /* FAV STAR */
-  .btn-fav {
-    background: none; border: none; font-size: 14px; cursor: pointer;
-    color: var(--text-light); padding: 4px; border-radius: 6px; transition: all 0.15s;
-    flex-shrink: 0; line-height: 1;
+  .modal-buttons {
+    display: flex; gap: 12px; margin-top: 20px;
   }
-  .btn-fav:hover { color: #f1c40f; }
-  .btn-fav.active { color: #f1c40f; }
-
-  /* ═══ MOBILE GLOBAL FIXES ═══ */
-  /* iOS safe area */
-  body { padding-bottom: max(60px, calc(60px + env(safe-area-inset-bottom))); }
-  /* Prevent double-tap zoom on buttons */
-  button, a { touch-action: manipulation; }
-  /* Scrollable lists scroll smoothly */
-  .meal-products, .category-scroll { -webkit-overflow-scrolling: touch; }
-  /* Bottom nav padding */
-  @media(max-width:860px){
-    body { padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom))); }
-    /* Hide top nav links on mobile — use bottom nav instead */
-    .nav-links { display:none!important; }
-    .lang-switcher { display:flex!important; }
-    /* Bigger tap targets */
-    .entry-remove { min-width:40px!important; min-height:40px!important; }
-    .cat-btn { min-height:36px!important; padding:6px 14px!important; }
-    .modal-quick-btn { min-height:40px!important; padding:8px 16px!important; }
-    /* Product list full width on mobile */
-    .meal-products { margin:0 10px 10px!important; }
-    /* Meal header wraps nicely */
-    .meal-header { padding:12px 14px 10px!important; }
-    /* Search row */
-    .meal-search-wrap { padding:0 10px 10px!important; }
-    /* Modal full width on mobile */
-    .modal-box { padding:22px 16px 28px!important; }
+  .btn-confirm {
+    flex: 1; padding: 12px; background: linear-gradient(135deg, var(--green), var(--green-soft));
+    color: white; border: none; border-radius: 14px;
+    font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
+    cursor: pointer; transition: all 0.2s;
   }
-  @media(max-width:480px){
-    .modal-meal-selector { gap:4px!important; }
-    .modal-meal-btn { min-width:60px!important; padding:7px 6px!important; font-size:11px!important; }
-    .modal-meal-btn span { font-size:9px!important; }
-    .search-tabs { overflow-x:auto; scrollbar-width:none; padding-bottom:0; }
-    .search-tabs::-webkit-scrollbar { display:none; }
-    .search-tab { font-size:12px!important; padding:6px 10px!important; white-space:nowrap; }
+  .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(76,175,131,.3); }
+  .btn-cancel {
+    padding: 12px 20px; background: none; border: 2px solid var(--border);
+    border-radius: 14px; font-size: 14px; font-weight: 700;
+    font-family: 'Nunito', sans-serif; cursor: pointer;
   }
 
-
-  /* ─── EXTRA MOBILE FIXES for index ─── */
-  @media(max-width:860px){
-    /* Totals on mobile: 2x2 grid, more compact */
-    .totals-card { grid-template-columns: repeat(2,1fr)!important; gap:10px!important; padding:12px!important; }
-    .totals-title { font-size:15px!important; }
-    .total-value { font-size:24px!important; }
-    /* Meal cards more compact */
-    .meal-title { font-size:15px!important; }
-    .meal-cal { font-size:13px!important; }
-    /* Products list max height smaller */
-    .meal-products { max-height:220px!important; }
-    /* Search tab text smaller */
-    .search-tab { font-size:11px!important; padding:6px 8px!important; }
-    /* Quick create btn */
-    .btn-create-food { font-size:16px!important; }
+  .meal-empty-add {
+    display: block; width: 100%; padding: 12px; margin-top: 12px;
+    background: var(--mint-light); border: 2px solid var(--border);
+    border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;
+    color: var(--green-dark); transition: all 0.2s;
   }
-  @media(max-width:400px){
-    .totals-card { grid-template-columns: repeat(2,1fr)!important; }
-    .total-value { font-size:20px!important; }
-    .total-unit { font-size:10px!important; }
-    /* Hide protein/fat/carbs labels on very small screens, keep numbers */
-    .total-label { font-size:9px!important; }
-    /* Entry names truncate */
-    .entry-name { font-size:12px!important; }
-    /* Modal weight input bigger on small phones */
-    .modal-input { font-size:26px!important; }
-  }
+  .meal-empty-add:hover { background: var(--border); }
 
+  @media(max-width: 600px) {
+    main { padding: 20px 12px; }
+    .progress-card { padding: 20px; }
+    .progress-number { font-size: 36px; }
+    .bju-chip { padding: 8px; }
+    .modal-content { max-width: 90%; }
+  }
 </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="/" class="logo">🌿 CaloriMint</a>
-    <div class="nav-links">
-      <a href="/history" class="nav-link">{{ t.history }}</a>
-      <a href="/goals" class="nav-link">{{ t.goals }}</a>
-      <a href="/premium" class="nav-link premium-btn">{{ t.premium }}</a>
+    <a href="/" class="logo">🌿 {{ t.app_name }}</a>
+    <div>
+      <a href="/goals" class="nav-link">🎯 {{ t.goals }}</a>
+      <a href="/history" class="nav-link">📅 {{ t.history }}</a>
+      <a href="/categories" class="nav-link">🍕 {{ t.categories }}</a>
+      <a href="/premium" class="nav-link">⭐ {{ t.premium }}</a>
       <a href="/logout" class="nav-link">{{ t.logout }}</a>
     </div>
-    <div class="lang-switcher">
-      {% for lc in ['ru', 'en', 'uk', 'kk'] %}
-      <form method="POST" action="/language" style="display:inline;">
-        <input type="hidden" name="lang" value="{{ lc }}">
-        <button type="submit" class="lang-btn {% if lang == lc %}active{% endif %}">{{ {'ru':'РУ','en':'EN','uk':'UK','kk':'КК'}[lc] }}</button>
-      </form>
-      {% endfor %}
-    </div>
-    <button class="mobile-menu-btn" onclick="openDrawer()">☰</button>
   </div>
 </nav>
 
-<!-- MOBILE DRAWER -->
-<div class="mobile-drawer" id="mobileDrawer">
-  <div class="drawer-overlay" onclick="closeDrawer()"></div>
-  <div class="drawer-panel">
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
-    <a href="/history" class="drawer-link">📊 {{ t.history }}</a>
-    <a href="/goals" class="drawer-link">🎯 {{ t.goals }}</a>
-    <a href="/premium" class="drawer-link premium">⭐ {{ t.premium }}</a>
-    <a href="/logout" class="drawer-link">🚪 {{ t.logout }}</a>
-    <div class="drawer-langs">
-      {% for lc in ['ru', 'en', 'uk', 'kk'] %}
-      <form method="POST" action="/language" style="display:inline;">
-        <input type="hidden" name="lang" value="{{ lc }}">
-        <button type="submit" class="drawer-lang-btn {% if lang == lc %}active{% endif %}">{{ {'ru':'РУ','en':'EN','uk':'UK','kk':'КК'}[lc] }}</button>
-      </form>
-      {% endfor %}
-    </div>
-  </div>
-</div>
-
-<!-- MAIN -->
 <main>
-  <!-- MEALS -->
-  <div>
-    {% for meal_key, meal in meals.items() %}
-    <div class="meal-section" id="meal-{{ meal_key }}">
+  <h1 class="page-title">{{ t.today }}</h1>
+  <div class="page-date">{{ now.strftime('%d.%m.%Y') if now else '' }}</div>
 
+  <!-- ПРОГРЕСС -->
+  <div class="progress-card">
+    <div class="progress-label">{{ t.consumed }}</div>
+    <div class="progress-number">{{ total_cal|int }}</div>
+    <div style="font-size: 13px; margin-bottom: 12px;">/ {{ daily_goal }} {{ t.kcal }} {{ t.daily_goal }}</div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: {{ progress_percent }}%"></div>
+    </div>
+    <div class="progress-info">
+      <span>{{ remaining|int }} {{ t.kcal }} {{ t.remaining }}</span>
+      <span>{{ (progress_percent|int) }}%</span>
+    </div>
+    <div class="bju-summary">
+      <div class="bju-chip">
+        <div class="bju-label">{{ t.protein }}</div>
+        <div class="bju-value">{{ total_protein }}г</div>
+      </div>
+      <div class="bju-chip">
+        <div class="bju-label">{{ t.fat }}</div>
+        <div class="bju-value">{{ total_fat }}г</div>
+      </div>
+      <div class="bju-chip">
+        <div class="bju-label">{{ t.carbs }}</div>
+        <div class="bju-value">{{ total_carbs }}г</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПОИСК И КАТЕГОРИИ -->
+  <div class="search-section">
+    <input type="text" id="search-input" class="search-input"
+           placeholder="{{ t.search_placeholder }}" autocomplete="off">
+    
+    <!-- КАТЕГОРИИ -->
+    <div style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
+      <button class="category-btn active" onclick="filterByCategory('')">Все</button>
+      <button class="category-btn" onclick="filterByCategory('fruits')">🍎 {{ t.fruits }}</button>
+      <button class="category-btn" onclick="filterByCategory('vegetables')">🥦 {{ t.vegetables }}</button>
+      <button class="category-btn" onclick="filterByCategory('meat')">🥩 {{ t.meat }}</button>
+      <button class="category-btn" onclick="filterByCategory('dairy')">🥛 {{ t.dairy }}</button>
+      <button class="category-btn" onclick="filterByCategory('grains')">🌾 {{ t.grains }}</button>
+      <button class="category-btn" onclick="filterByCategory('nuts')">🌰 {{ t.nuts }}</button>
+      <button class="category-btn" onclick="filterByCategory('fish')">🐟 {{ t.fish }}</button>
+      <button class="category-btn" onclick="filterByCategory('sweets')">🍫 {{ t.sweets }}</button>
+      <button class="category-btn" onclick="filterByCategory('drinks')">🥤 {{ t.drinks }}</button>
+      <button class="category-btn" onclick="filterByCategory('supplements')">💊 {{ t.supplements }}</button>
+      <button class="category-btn" onclick="filterByCategory('sports_nutrition')">💪 {{ t.sports_nutrition }}</button>
+    </div>
+    
+    <div class="search-tabs">
+      <button class="search-tab active" onclick="switchTab('search')">🔍 {{ t.search_placeholder }}</button>
+      <button class="search-tab" onclick="switchTab('recent')">⏰ {{ t.recent }}</button>
+      <button class="search-tab" onclick="switchTab('favorites')">⭐ {{ t.favorites }}</button>
+    </div>
+
+    <!-- Поиск -->
+    <div id="search-tab" class="search-results"></div>
+    
+    <!-- Недавние -->
+    <div id="recent-tab" class="search-results" style="display: none;"></div>
+    
+    <!-- Избранные -->
+    <div id="favorites-tab" class="search-results" style="display: none;"></div>
+  </div>
+
+  <!-- ПРИЁМЫ ПИЩИ -->
+  <div class="meals-container">
+    <!-- ЗАВТРАК -->
+    <div class="meal-section">
       <div class="meal-header">
-        <div class="meal-title">
-          <span>{{ meal.icon }}</span>
-          <span>{{ meal.name }}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="meal-cal">{{ meal.total|int }} {{ t['kcal'] }}</div>
-          <button class="btn-clear-meal" onclick="clearMeal('{{ meal_key }}')">🗑 {{ t['clear'] }}</button>
-        </div>
+        <span class="meal-icon">🌅</span>
+        <span class="meal-title">{{ t.breakfast }}</span>
+        <span class="meal-cal">{{ meal_totals.get('breakfast', 0)|int }} {{ t.kcal }}</span>
       </div>
-
-      <!-- SEARCH TABS: Поиск / Недавние / Избранные / Мои -->
-      <div class="search-tabs">
-        <button class="search-tab active" onclick="switchTab('{{ meal_key }}','search',this)">🔍 {{ t.get('tab_search','Поиск') }}</button>
-        <button class="search-tab" onclick="switchTab('{{ meal_key }}','recent',this)">🕐 {{ t.get('tab_recent','Недавние') }}</button>
-        <button class="search-tab" onclick="switchTab('{{ meal_key }}','favorites',this)">⭐ {{ t.get('tab_favorites','Избранные') }}</button>
-        <button class="search-tab" onclick="switchTab('{{ meal_key }}','custom',this)">👤 {{ t.get('tab_custom','Мои') }}</button>
-      </div>
-
-      <!-- SEARCH PANEL -->
-      <div class="tab-panel" id="tab-search-{{ meal_key }}">
-        <!-- CATEGORY TABS -->
-        <div class="category-scroll" id="cats-{{ meal_key }}">
-          <button class="cat-btn active" onclick="loadCategory('{{ meal_key }}','',this)">{{ t['all'] }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','fruits',this)">🍎 {{ t.get('cat_fruits','Фрукты') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','vegetables',this)">🥦 {{ t.get('cat_vegetables','Овощи') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','meat',this)">🥩 {{ t.get('cat_meat','Мясо') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','dairy',this)">🥛 {{ t.get('cat_dairy','Молочное') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','grains',this)">🌾 {{ t.get('cat_grains','Злаки') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','nuts',this)">🌰 {{ t.get('cat_nuts','Орехи') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','fish',this)">🐟 {{ t.get('cat_fish','Рыба') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','sweets',this)">🍫 {{ t.get('cat_sweets','Сладкое') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','drinks',this)">🥤 {{ t.get('cat_drinks','Напитки') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','supplements',this)">💊 {{ t.get('cat_supplements','Витамины') }}</button>
-          <button class="cat-btn" onclick="loadCategory('{{ meal_key }}','sports_nutrition',this)">💪 {{ t.get('cat_sports','Спортпит') }}</button>
-        </div>
-        <div class="meal-search-wrap">
-          <input type="text" id="search-{{ meal_key }}" class="meal-search"
-                 placeholder="{{ t['search_placeholder'] }}"
-                 oninput="searchInMeal('{{ meal_key }}')">
-          <button class="btn-create-food" onclick="openCreateModal('{{ meal_key }}')" title="{{ t.get('create_food','Создать свой продукт') }}">👤+</button>
-        </div>
-      </div>
-
-      <!-- RECENT PANEL -->
-      <div class="tab-panel" id="tab-recent-{{ meal_key }}" style="display:none;">
-        <div style="padding: 8px 18px 4px; font-size:12px; color:var(--text-light); font-weight:700;">{{ t.get('recent_label','Последние добавленные') }}</div>
-      </div>
-
-      <!-- FAVORITES PANEL -->
-      <div class="tab-panel" id="tab-favorites-{{ meal_key }}" style="display:none;">
-        <div style="padding: 8px 18px 4px; font-size:12px; color:var(--text-light); font-weight:700;">{{ t.get('favorites_label','Избранные продукты') }}</div>
-      </div>
-
-      <!-- CUSTOM PANEL -->
-      <div class="tab-panel" id="tab-custom-{{ meal_key }}" style="display:none;">
-        <div style="padding: 8px 18px 4px; font-size:12px; color:var(--text-light); font-weight:700;">{{ t.get('custom_label','Мои продукты') }}</div>
-      </div>
-
-      <!-- PRODUCTS LIST -->
-      <div class="meal-products" id="products-{{ meal_key }}"></div>
-
-      <!-- ENTRIES -->
-      <div class="meal-entries" id="entries-{{ meal_key }}">
-        {% for entry in meal.entries %}
-        <div class="entry-item">
-          <div class="entry-info">
-            <div class="entry-name">{{ entry.name }}</div>
-            <div class="entry-sub">{{ entry.grams|int }} {{ t['g'] }} · {{ entry.calories|int }} {{ t['kcal'] }}</div>
+      <div id="breakfast-entries">
+        {% if meals.breakfast %}
+          {% for entry in meals.breakfast %}
+          <div class="meal-entry">
+            <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
+              <div class="entry-dot entry-breakfast"></div>
+              <div class="entry-info">
+                <div class="entry-name">{{ entry.food_name }}</div>
+                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+              </div>
+            </div>
+            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
           </div>
-          <button class="entry-remove" onclick="removeEntry({{ entry.id }})">✕</button>
-        </div>
-        {% endfor %}
+          {% endfor %}
+        {% else %}
+          <div class="meal-empty">{{ t.breakfast }} — пусто</div>
+        {% endif %}
       </div>
-
+      <button class="meal-empty-add" onclick="setDefaultMeal('breakfast')">+ {{ t.add_food }}</button>
     </div>
-    {% endfor %}
 
-    <div class="clear-day-wrap">
-      <button class="btn-clear-day" onclick="clearDay()">{{ t['clear_day'] }}</button>
+    <!-- ОБЕД -->
+    <div class="meal-section">
+      <div class="meal-header">
+        <span class="meal-icon">☀️</span>
+        <span class="meal-title">{{ t.lunch }}</span>
+        <span class="meal-cal">{{ meal_totals.get('lunch', 0)|int }} {{ t.kcal }}</span>
+      </div>
+      <div id="lunch-entries">
+        {% if meals.lunch %}
+          {% for entry in meals.lunch %}
+          <div class="meal-entry">
+            <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
+              <div class="entry-dot entry-lunch"></div>
+              <div class="entry-info">
+                <div class="entry-name">{{ entry.food_name }}</div>
+                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+              </div>
+            </div>
+            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="meal-empty">{{ t.lunch }} — пусто</div>
+        {% endif %}
+      </div>
+      <button class="meal-empty-add" onclick="setDefaultMeal('lunch')">+ {{ t.add_food }}</button>
+    </div>
+
+    <!-- УЖИН -->
+    <div class="meal-section">
+      <div class="meal-header">
+        <span class="meal-icon">🌙</span>
+        <span class="meal-title">{{ t.dinner }}</span>
+        <span class="meal-cal">{{ meal_totals.get('dinner', 0)|int }} {{ t.kcal }}</span>
+      </div>
+      <div id="dinner-entries">
+        {% if meals.dinner %}
+          {% for entry in meals.dinner %}
+          <div class="meal-entry">
+            <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
+              <div class="entry-dot entry-dinner"></div>
+              <div class="entry-info">
+                <div class="entry-name">{{ entry.food_name }}</div>
+                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+              </div>
+            </div>
+            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="meal-empty">{{ t.dinner }} — пусто</div>
+        {% endif %}
+      </div>
+      <button class="meal-empty-add" onclick="setDefaultMeal('dinner')">+ {{ t.add_food }}</button>
+    </div>
+
+    <!-- ПЕРЕКУС -->
+    <div class="meal-section">
+      <div class="meal-header">
+        <span class="meal-icon">🍿</span>
+        <span class="meal-title">{{ t.snack }}</span>
+        <span class="meal-cal">{{ meal_totals.get('snack', 0)|int }} {{ t.kcal }}</span>
+      </div>
+      <div id="snack-entries">
+        {% if meals.snack %}
+          {% for entry in meals.snack %}
+          <div class="meal-entry">
+            <div style="display: flex; gap: 12px; flex: 1; align-items: center;">
+              <div class="entry-dot entry-snack"></div>
+              <div class="entry-info">
+                <div class="entry-name">{{ entry.food_name }}</div>
+                <div class="entry-grams">{{ entry.grams|int }} {{ t.g }}</div>
+              </div>
+            </div>
+            <div class="entry-cal">{{ entry.calories|int }} {{ t.kcal }}</div>
+            <button class="entry-delete" onclick="deleteEntry({{ entry.id }})">✕</button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="meal-empty">{{ t.snack }} — пусто</div>
+        {% endif %}
+      </div>
+      <button class="meal-empty-add" onclick="setDefaultMeal('snack')">+ {{ t.add_food }}</button>
     </div>
   </div>
 
-  <!-- TOTALS SIDEBAR -->
-  <div class="totals-card">
-    <div class="totals-title">{{ t['today_title'] }}</div>
-    {% if streak > 0 %}
-    <div style="text-align:center;margin-bottom:12px;">
-      <a href="/history" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ff6b35,#f7c59f);color:white;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:800;text-decoration:none;">
-        🔥 {{ streak }} {{ t.get('streak_label','дней подряд') }}
-      </a>
-    </div>
-    {% endif %}
-    <div class="total-item">
-      <div class="total-label">{{ t['calories'] }}</div>
-      <div class="total-value">{{ total_calories }}</div>
-      <div class="total-unit">{{ t['of'] }} {{ current_user.daily_calorie_goal if current_user.is_authenticated else 2000 }} {{ t['kcal'] }}</div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: {{ [total_calories / (current_user.daily_calorie_goal if current_user.is_authenticated else 2000) * 100, 100]|min|int }}%"></div>
-      </div>
-    </div>
-    {% if current_user.is_authenticated and current_user.is_premium %}
-    <div class="total-item">
-      <div class="total-label">{{ t['protein'] }}</div>
-      <div class="total-value">{{ total_protein|int }}</div>
-      <div class="total-unit">{{ t['g'] }} {{ t['of'] }} {{ current_user.protein_goal }}</div>
-    </div>
-    <div class="total-item">
-      <div class="total-label">{{ t['fat'] }}</div>
-      <div class="total-value">{{ total_fat|int }}</div>
-      <div class="total-unit">{{ t['g'] }} {{ t['of'] }} {{ current_user.fat_goal }}</div>
-    </div>
-    <div class="total-item">
-      <div class="total-label">{{ t['carbs'] }}</div>
-      <div class="total-value">{{ total_carbs|int }}</div>
-      <div class="total-unit">{{ t['g'] }} {{ t['of'] }} {{ current_user.carbs_goal }}</div>
-    </div>
-    {% endif %}
-
-    <!-- WATER TRACKER -->
-    {% set water_goal = current_user.water_goal if current_user.is_authenticated else 8 %}
-    <div class="water-section">
-      <div class="water-label">{{ t['water'] }}</div>
-      <div class="water-cups" id="waterCups">
-        {% for i in range(water_goal) %}
-        <button class="water-cup" id="cup-{{ i }}" onclick="toggleCup({{ i }})" title="{{ i+1 }}">🥛</button>
-        {% endfor %}
-      </div>
-      <div class="water-info" id="waterInfo">0 / {{ water_goal }} {{ t['cups'] }}</div>
-    </div>
-  </div>
 </main>
 
-<!-- MODAL: добавление продукта -->
-<div class="modal-overlay" id="addModal" onclick="modalBgClick(event)">
-  <div class="modal-box" id="modalBox">
-    <div class="modal-handle"></div>
-    <div class="modal-product-name" id="modalName"></div>
-    <div class="modal-product-meta" id="modalMeta"></div>
-
-    <!-- Выбор приёма пищи -->
-    <label class="modal-label">{{ t.get('meal_type_label','Приём пищи') }}</label>
-    <div class="modal-meal-selector" id="modalMealSelector">
-      <button class="modal-meal-btn" data-meal="breakfast" onclick="selectMealType('breakfast')">🌅<span style="font-size:10px;margin-top:2px;">{{ t['breakfast'] }}</span></button>
-      <button class="modal-meal-btn" data-meal="lunch" onclick="selectMealType('lunch')">☀️<span style="font-size:10px;margin-top:2px;">{{ t['lunch'] }}</span></button>
-      <button class="modal-meal-btn" data-meal="dinner" onclick="selectMealType('dinner')">🌙<span style="font-size:10px;margin-top:2px;">{{ t['dinner'] }}</span></button>
-      <button class="modal-meal-btn" data-meal="snack" onclick="selectMealType('snack')">🍿<span style="font-size:10px;margin-top:2px;">{{ t['snack'] }}</span></button>
+<!-- МОДАЛЬ ДЛЯ ГРАММОВКИ -->
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-title" id="modal-title"></div>
+    
+    <div class="form-group">
+      <label class="form-label">{{ t.grams }} (по умолчанию 100)</label>
+      <input type="number" id="modal-grams" class="form-input" value="100" min="1" max="9999">
     </div>
 
-    <label class="modal-label" id="modalWeightLabel">{{ t['weight_label'] }}</label>
-    <div class="modal-input-row">
-      <input type="number" class="modal-input" id="modalWeight" value="100" min="1" max="9999" oninput="updatePreview()">
-      <span class="modal-unit" id="modalUnit">г</span>
+    <div class="form-group">
+      <label class="form-label">{{ t.breakfast }}</label>
+      <select id="modal-meal" class="meal-select">
+        <option value="breakfast">{{ t.breakfast }}</option>
+        <option value="lunch">{{ t.lunch }}</option>
+        <option value="dinner">{{ t.dinner }}</option>
+        <option value="snack">{{ t.snack }}</option>
+      </select>
     </div>
-    <div class="modal-quick-btns" id="modalQuickBtns"></div>
-    <div class="modal-preview">
-      <div>
-        <div class="modal-preview-label">{{ t['total'] }}</div>
-        <div class="modal-preview-cal" id="previewCal">100 ккал</div>
-      </div>
-      <div style="text-align:right;">
-        <div class="modal-preview-label">Б / Ж / У</div>
-        <div id="previewBJU" style="font-size:13px;font-weight:700;color:var(--text-soft);">— / — / —</div>
-      </div>
-    </div>
-    <div class="modal-btn-row">
-      <button class="modal-cancel" onclick="closeModal()">{{ t['cancel'] }}</button>
-      <button class="modal-confirm" id="modalConfirmBtn" onclick="confirmAdd()">{{ t['confirm_add'] }}</button>
-    </div>
-  </div>
-</div>
 
-<!-- MODAL: создание своего продукта -->
-<div class="create-modal-overlay" id="createModal" onclick="createModalBgClick(event)">
-  <div class="create-modal-box">
-    <div class="modal-handle"></div>
-    <div class="create-modal-title">👤 {{ t.get('create_food','Создать свой продукт') }}</div>
-    <div class="create-form-row full">
-      <div class="create-input-wrap">
-        <label>{{ t.get('product_name_label','Название') }}</label>
-        <input type="text" class="create-input" id="createName" placeholder="{{ t.get('product_name_ph','Например: Мой омлет') }}">
-      </div>
-    </div>
-    <div class="create-form-row">
-      <div class="create-input-wrap">
-        <label>🔥 {{ t['calories'] }} / 100г</label>
-        <input type="number" class="create-input" id="createCal" placeholder="0" min="0">
-      </div>
-      <div class="create-input-wrap">
-        <label>🥩 {{ t['protein'] }} г</label>
-        <input type="number" class="create-input" id="createProtein" placeholder="0" min="0" step="0.1">
-      </div>
-    </div>
-    <div class="create-form-row">
-      <div class="create-input-wrap">
-        <label>🥑 {{ t['fat'] }} г</label>
-        <input type="number" class="create-input" id="createFat" placeholder="0" min="0" step="0.1">
-      </div>
-      <div class="create-input-wrap">
-        <label>🍞 {{ t['carbs'] }} г</label>
-        <input type="number" class="create-input" id="createCarbs" placeholder="0" min="0" step="0.1">
-      </div>
-    </div>
-    <div style="font-size:12px;color:var(--text-light);margin-bottom:16px;" id="createLimitNote"></div>
-    <div class="modal-btn-row">
-      <button class="modal-cancel" onclick="closeCreateModal()">{{ t['cancel'] }}</button>
-      <button class="modal-confirm" id="createConfirmBtn" onclick="confirmCreateFood()">{{ t.get('save_food','Сохранить') }}</button>
+    <div class="modal-preview" id="modal-preview"></div>
+
+    <div class="modal-buttons">
+      <button class="btn-confirm" onclick="confirmAdd()">✓ {{ t.add_food }}</button>
+      <button class="btn-cancel" onclick="closeModal()">✕</button>
     </div>
   </div>
 </div>
 
 <script>
+const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
+let currentFood = null;
+let defaultMeal = 'snack';
+let modalFood = null;
+let currentCategory = '';  // НОВОЕ: фильтр по категории
 
-const t_js = {
-  quick_loading: {{ t['quick_loading']|tojson }},
-  not_found: {{ t['not_found']|tojson }},
-  load_error: {{ t['load_error']|tojson }},
-  weight_label: {{ t['weight_label']|tojson }},
-  volume_label: {{ t['volume_label']|tojson }},
-  total: {{ t['total']|tojson }},
-  cancel: {{ t['cancel']|tojson }},
-  confirm_add: {{ t['confirm_add']|tojson }},
-  kcal: {{ t['kcal']|tojson }},
-  g: {{ t['g']|tojson }},
-  ml: {{ t['ml']|tojson }},
-  cups: {{ t['cups']|tojson }},
-  delete_entry_confirm: {{ t['delete_entry_confirm']|tojson }},
-  clear_meal_confirm: {{ t['clear_meal_confirm']|tojson }},
-  clear_day_confirm: {{ t['clear_day_confirm']|tojson }},
-  breakfast: {{ t['breakfast']|tojson }},
-  lunch: {{ t['lunch']|tojson }},
-  dinner: {{ t['dinner']|tojson }},
-  snack: {{ t['snack']|tojson }},
-  of: {{ t['of']|tojson }},
-  tab_search: {{ t.get('tab_search','Поиск')|tojson }},
-  tab_recent: {{ t.get('tab_recent','Недавние')|tojson }},
-  tab_favorites: {{ t.get('tab_favorites','Избранные')|tojson }},
-  tab_custom: {{ t.get('tab_custom','Мои')|tojson }},
-  nothing_recent: {{ t.get('nothing_recent','Нет недавних продуктов')|tojson }},
-  nothing_favorites: {{ t.get('nothing_favorites','Нет избранных')|tojson }},
-  nothing_custom: {{ t.get('nothing_custom','Нет своих продуктов')|tojson }},
-  custom_limit_msg: {{ t.get('custom_limit_msg','Бесплатно: до 3 своих продуктов. Для безлимита — Premium')|tojson }},
-  limit_reached_msg: {{ t.get('limit_reached_msg','Достигнут лимит (3 продукта). Получите Premium для безлимита.')|tojson }},
-  save_food: {{ t.get('save_food','Сохранить')|tojson }},
-  off_source: {{ t.get('off_source','Open Food Facts')|tojson }},
-};
-
-const isPremium = {{ 'true' if current_user.is_authenticated and current_user.is_premium else 'false' }};
-const searchTimers = {};
-let modalData = null;
-let createMealTarget = null;
-let favoriteIds = new Set();
-
-// ── DRAWER ──
-function openDrawer() {
-  document.getElementById('mobileDrawer').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeDrawer() {
-  document.getElementById('mobileDrawer').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// ── LOAD FAVORITES IDS on startup ──
-(async function loadFavIds() {
-  try {
-    const res = await fetch('/api/favorites');
-    const items = await res.json();
-    items.forEach(f => favoriteIds.add(f.id));
-  } catch {}
-})();
-
-// ── SEARCH TABS ──
-function switchTab(meal, tab, btn) {
-  // hide all panels
-  ['search','recent','favorites','custom'].forEach(t => {
-    const el = document.getElementById(`tab-${t}-${meal}`);
-    if (el) el.style.display = 'none';
-  });
-  // show selected
-  const panel = document.getElementById(`tab-${tab}-${meal}`);
-  if (panel) panel.style.display = '';
-  // update tab buttons
-  btn.closest('.search-tabs').querySelectorAll('.search-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const prodDiv = document.getElementById(`products-${meal}`);
-  prodDiv.classList.remove('show');
-
+function switchTab(tab) {
+  document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.search-results').forEach(r => r.style.display = 'none');
+  
+  event.target.classList.add('active');
+  
   if (tab === 'search') {
-    // just show the search UI, products hidden until search
+    document.getElementById('search-tab').style.display = 'block';
   } else if (tab === 'recent') {
-    loadRecentTab(meal);
+    document.getElementById('recent-tab').style.display = 'block';
+    loadRecent();
   } else if (tab === 'favorites') {
-    loadFavoritesTab(meal);
-  } else if (tab === 'custom') {
-    loadCustomTab(meal);
+    document.getElementById('favorites-tab').style.display = 'block';
+    loadFavorites();
   }
 }
 
-// ── CATEGORIES ──
-async function loadCategory(meal, category, btn) {
-  document.getElementById(`search-${meal}`).value = '';
-  document.getElementById(`cats-${meal}`).querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  await fetchProducts(meal, { category });
+function filterByCategory(cat) {
+  // НОВОЕ: обновляем активную кнопку категории
+  document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  currentCategory = cat;
+  document.getElementById('search-input').dispatchEvent(new Event('input'));
 }
 
-// ── SEARCH ──
-async function searchInMeal(meal) {
-  clearTimeout(searchTimers[meal]);
-  searchTimers[meal] = setTimeout(async () => {
-    const q = document.getElementById(`search-${meal}`).value.trim();
-    if (!q) {
-      const active = document.getElementById(`cats-${meal}`).querySelector('.cat-btn.active');
-      const m = active ? active.getAttribute('onclick').match(/loadCategory\('[^']*',\s*'([^']*)'/): null;
-      await fetchProducts(meal, { category: m ? m[1] : '' });
-    } else {
-      await fetchProducts(meal, { q });
-    }
-  }, 280);
-}
-
-// ── LOAD RECENT TAB ──
-async function loadRecentTab(meal) {
-  const prodDiv = document.getElementById(`products-${meal}`);
-  prodDiv.innerHTML = `<div class="products-empty">⏳ ${t_js.quick_loading}</div>`;
-  prodDiv.classList.add('show');
-  try {
-    const res = await fetch('/api/recent');
-    const items = await res.json();
-    if (!items.length) {
-      prodDiv.innerHTML = `<div class="products-empty">${t_js.nothing_recent}</div>`;
-      return;
-    }
-    prodDiv.innerHTML = items.map(item => renderProductItem(item, meal)).join('');
-  } catch {
-    prodDiv.innerHTML = `<div class="products-empty" style="color:var(--danger)">${t_js.load_error}</div>`;
+document.getElementById('search-input').addEventListener('input', async (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  if (!q && !currentCategory) {
+    document.getElementById('search-tab').innerHTML = '';
+    return;
   }
-}
-
-// ── LOAD FAVORITES TAB ──
-async function loadFavoritesTab(meal) {
-  const prodDiv = document.getElementById(`products-${meal}`);
-  prodDiv.innerHTML = `<div class="products-empty">⏳ ${t_js.quick_loading}</div>`;
-  prodDiv.classList.add('show');
-  try {
-    const res = await fetch('/api/favorites');
-    const items = await res.json();
-    if (!items.length) {
-      prodDiv.innerHTML = `<div class="products-empty">${t_js.nothing_favorites}</div>`;
-      return;
-    }
-    prodDiv.innerHTML = items.map(item => renderProductItem(item, meal)).join('');
-  } catch {
-    prodDiv.innerHTML = `<div class="products-empty" style="color:var(--danger)">${t_js.load_error}</div>`;
+  const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+  const foods = await res.json();
+  
+  // НОВОЕ: фильтруем по категории если выбрана
+  let filtered = foods;
+  if (currentCategory) {
+    filtered = foods.filter(f => f.category === currentCategory);
   }
-}
-
-// ── LOAD CUSTOM TAB ──
-async function loadCustomTab(meal) {
-  const prodDiv = document.getElementById(`products-${meal}`);
-  prodDiv.innerHTML = `<div class="products-empty">⏳ ${t_js.quick_loading}</div>`;
-  prodDiv.classList.add('show');
-  try {
-    const res = await fetch('/api/custom-foods');
-    const items = await res.json();
-    if (!items.length) {
-      prodDiv.innerHTML = `<div class="products-empty">${t_js.nothing_custom}</div>`;
-      return;
-    }
-    prodDiv.innerHTML = items.map(item => renderProductItem(item, meal)).join('');
-  } catch {
-    prodDiv.innerHTML = `<div class="products-empty" style="color:var(--danger)">${t_js.load_error}</div>`;
-  }
-}
-
-// ── RENDER PRODUCT ITEM ──
-function renderProductItem(item, meal) {
-  const isDrink = item.category === 'drinks';
-  const unit = isDrink ? 'мл' : 'г';
-  const isFav = favoriteIds.has(item.id);
-  let sourceBadge = '';
-  if (item.source === 'off') sourceBadge = `<span class="product-source-badge badge-off">🌐 OFF</span>`;
-  else if (item.source === 'custom') sourceBadge = `<span class="product-source-badge badge-custom">👤</span>`;
-
-  const idJson = JSON.stringify(item.id);
-  const nameEsc = item.name_ru.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-
-  return `<div class="product-item" onclick="openModal('${meal}',${idJson},'${nameEsc}',${item.calories},${item.protein},${item.fat},${item.carbs},'${unit}',${JSON.stringify(item.source||'local')})">
-    <div style="min-width:0;flex:1">
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="product-name">${item.name_ru}</div>
-        ${sourceBadge}
+  
+  let html = '';
+  for (const f of filtered) {
+    const fav = await isFavorite(f.id);
+    html += `
+      <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
+        <div>
+          <div class="search-result-name">${f.name}</div>
+          <div class="search-result-cal">${f.calories} ккал/100г · Б:${f.protein}г Ж:${f.fat}г У:${f.carbs}г</div>
+        </div>
+        <span class="fav-star ${fav ? 'filled' : ''}" onclick="event.stopPropagation(); toggleFavorite(${f.id})">⭐</span>
       </div>
-      <div class="product-meta">${item.calories} ккал · ${item.protein}г Б · ${item.fat}г Ж · ${item.carbs}г У</div>
-    </div>
-    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav(event,${idJson})" title="Избранное">⭐</button>
-    <div class="product-cal-badge">${item.calories}&nbsp;ккал</div>
-  </div>`;
-}
-
-// ── FETCH PRODUCTS ──
-async function fetchProducts(meal, params) {
-  const div = document.getElementById(`products-${meal}`);
-  div.innerHTML = `<div class="products-empty">⏳ ${t_js.quick_loading}</div>`;
-  div.classList.add('show');
-  try {
-    const p = new URLSearchParams();
-    if (params.q) p.set('q', params.q);
-    else if (params.category) p.set('category', params.category);
-    else p.set('show_all', '1');
-
-    const res = await fetch(`/api/search?${p}`);
-    const items = await res.json();
-
-    if (!items.length) {
-      div.innerHTML = `<div class="products-empty">${t_js.not_found}</div>`;
-      return;
-    }
-    div.innerHTML = items.map(item => renderProductItem(item, meal)).join('');
-  } catch {
-    div.innerHTML = `<div class="products-empty" style="color:var(--danger)">${t_js.load_error}</div>`;
+    `;
   }
+  document.getElementById('search-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Ничего не найдено</div>';
+});
+
+async function loadRecent() {
+  const res = await fetch('/api/recent');
+  const foods = await res.json();
+  
+  let html = '';
+  for (const f of foods) {
+    html += `
+      <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
+        <div>
+          <div class="search-result-name">${f.name}</div>
+          <div class="search-result-cal">${f.calories} ккал/100г</div>
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById('recent-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Нет недавних продуктов</div>';
 }
 
-// ── FAVORITES ──
-async function toggleFav(e, foodId) {
-  e.stopPropagation();
-  const btn = e.currentTarget;
-  if (favoriteIds.has(foodId)) {
-    await fetch(`/api/favorites/${foodId}`, { method: 'DELETE' });
-    favoriteIds.delete(foodId);
-    btn.classList.remove('active');
+async function loadFavorites() {
+  const res = await fetch('/api/favorites');
+  const foods = await res.json();
+  
+  let html = '';
+  for (const f of foods) {
+    html += `
+      <div class="search-result" onclick="openModal(${f.id}, '${f.name.replace(/'/g, "\\'")}', ${f.calories}, ${f.protein}, ${f.fat}, ${f.carbs})">
+        <div>
+          <div class="search-result-name">⭐ ${f.name}</div>
+          <div class="search-result-cal">${f.calories} ккал/100г</div>
+        </div>
+        <span style="cursor: pointer;" onclick="event.stopPropagation(); unfavorite(${f.id})">✕</span>
+      </div>
+    `;
+  }
+  document.getElementById('favorites-tab').innerHTML = html || '<div style="padding: 12px; color: #8aaa9e;">Нет избранных</div>';
+}
+
+async function isFavorite(foodId) {
+  const res = await fetch('/api/favorites');
+  const favs = await res.json();
+  return favs.some(f => f.id === foodId);
+}
+
+async function toggleFavorite(foodId) {
+  const isFav = await isFavorite(foodId);
+  if (isFav) {
+    await fetch('/api/favorites', {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({food_id: foodId})
+    });
   } else {
     await fetch('/api/favorites', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ food_id: foodId })
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({food_id: foodId})
     });
-    favoriteIds.add(foodId);
-    btn.classList.add('active');
+  }
+  // Перезагрузить
+  const input = document.getElementById('search-input');
+  if (input.value) {
+    input.dispatchEvent(new Event('input'));
   }
 }
 
-// ── MODAL ──
-function selectMealType(meal) {
-  document.querySelectorAll('.modal-meal-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelectorAll(`.modal-meal-btn[data-meal="${meal}"]`).forEach(b => b.classList.add('selected'));
-  if (modalData) modalData.meal = meal;
+async function unfavorite(foodId) {
+  await fetch('/api/favorites', {
+    method: 'DELETE',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({food_id: foodId})
+  });
+  loadFavorites();
 }
 
-function openModal(meal, id, name, cal, protein, fat, carbs, unit, source) {
-  source = source || 'local';
-  modalData = { meal, id, name, cal, protein, fat, carbs, unit, source };
-  document.getElementById('modalName').textContent = name;
-  document.getElementById('modalMeta').textContent = `${cal} ${t_js.kcal} · ${protein}${t_js.g} · ${fat}${t_js.g} · ${carbs}${t_js.g} на 100 ${unit}`;
-  document.getElementById('modalUnit').textContent = unit;
-  document.getElementById('modalWeightLabel').textContent = unit === 'мл' ? t_js.volume_label : t_js.weight_label;
-  const defaultVal = unit === 'мл' ? 200 : 100;
-  document.getElementById('modalWeight').value = defaultVal;
-  const quickVals = unit === 'мл' ? [100,150,200,250,330,500] : [50,100,150,200,250];
-  document.getElementById('modalQuickBtns').innerHTML = quickVals.map(v =>
-    `<button class="modal-quick-btn${v === defaultVal ? ' selected' : ''}" onclick="setWeight(${v})">${v}</button>`
-  ).join('');
-  // Set meal type buttons
-  document.querySelectorAll('.modal-meal-btn').forEach(b => {
-    b.classList.toggle('selected', b.dataset.meal === meal);
-  });
-  updatePreview();
-  document.getElementById('addModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('modalWeight').focus(), 150);
+function setDefaultMeal(meal) {
+  defaultMeal = meal;
+  document.getElementById('modal-meal').value = meal;
+  document.getElementById('search-input').focus();
+}
+
+function openModal(id, name, cal, protein, fat, carbs) {
+  if (!isAuth) {
+    alert('Войдите в аккаунт');
+    return;
+  }
+  modalFood = { id, name, cal, protein, fat, carbs };
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-grams').value = '100';
+  document.getElementById('modal-meal').value = defaultMeal;
+  document.getElementById('modal-overlay').classList.add('show');
+  updateModalPreview();
 }
 
 function closeModal() {
-  document.getElementById('addModal').classList.remove('open');
-  document.body.style.overflow = '';
-  modalData = null;
+  document.getElementById('modal-overlay').classList.remove('show');
+  modalFood = null;
 }
 
-function modalBgClick(e) {
-  if (e.target.id === 'addModal') closeModal();
+function updateModalPreview() {
+  if (!modalFood) return;
+  const g = parseFloat(document.getElementById('modal-grams').value) || 100;
+  const r = g / 100;
+  const preview = `🔥 ${Math.round(modalFood.cal*r)} ккал · Б:${(modalFood.protein*r).toFixed(1)}г Ж:${(modalFood.fat*r).toFixed(1)}г У:${(modalFood.carbs*r).toFixed(1)}г`;
+  document.getElementById('modal-preview').textContent = preview;
 }
 
-function setWeight(v) {
-  document.getElementById('modalWeight').value = v;
-  document.querySelectorAll('.modal-quick-btn').forEach(b => {
-    b.classList.toggle('selected', parseInt(b.textContent) === v);
-  });
-  updatePreview();
-}
-
-function updatePreview() {
-  if (!modalData) return;
-  const w = parseFloat(document.getElementById('modalWeight').value) || 0;
-  const r = v => Math.round(v * w / 100);
-  document.getElementById('previewCal').textContent = `${r(modalData.cal)} ${t_js.kcal}`;
-  document.getElementById('previewBJU').textContent = `${r(modalData.protein)}${t_js.g} / ${r(modalData.fat)}${t_js.g} / ${r(modalData.carbs)}${t_js.g}`;
-}
+document.getElementById('modal-grams')?.addEventListener('input', updateModalPreview);
 
 async function confirmAdd() {
-  if (!modalData) return;
-  const w = parseFloat(document.getElementById('modalWeight').value) || 100;
-  const btn = document.getElementById('modalConfirmBtn');
-  btn.textContent = '⏳';
-  btn.disabled = true;
-  try {
-    const payload = { food_id: modalData.id, grams: w, meal_type: modalData.meal };
-    // For OFF and custom products, also pass nutritional data inline
-    if (typeof modalData.id === 'string' && (modalData.id.startsWith('off_') || modalData.id.startsWith('custom_'))) {
-      payload.calories = modalData.cal;
-      payload.protein = modalData.protein;
-      payload.fat = modalData.fat;
-      payload.carbs = modalData.carbs;
-      payload.food_name = modalData.name;
-    }
-    const res = await fetch('/api/add-entry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) { closeModal(); location.reload(); }
-  } finally {
-    btn.textContent = t_js.confirm_add;
-    btn.disabled = false;
-  }
-}
-
-// ── DELETE / CLEAR ──
-async function removeEntry(id) {
-  if (!confirm(t_js.delete_entry_confirm)) return;
-  await fetch(`/api/delete-entry/${id}`, { method: 'DELETE' });
-  location.reload();
-}
-
-async function clearMeal(meal) {
-  const names = { breakfast: t_js.breakfast, lunch: t_js.lunch, dinner: t_js.dinner, snack: t_js.snack };
-  if (!confirm(`${t_js.clear_meal_confirm} "${names[meal] || meal}"?`)) return;
-  await fetch('/api/clear-meal', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ meal_type: meal })
+  if (!modalFood) return;
+  const grams = parseFloat(document.getElementById('modal-grams').value) || 100;
+  const mealType = document.getElementById('modal-meal').value;
+  
+  const res = await fetch('/api/add-entry', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      food_id: modalFood.id,
+      grams: grams,
+      meal_type: mealType
+    })
   });
-  location.reload();
-}
-
-async function clearDay() {
-  if (!confirm(t_js.clear_day_confirm)) return;
-  await fetch('/api/clear-day', { method: 'DELETE' });
-  location.reload();
-}
-
-// ── CREATE CUSTOM FOOD ──
-function openCreateModal(meal) {
-  createMealTarget = meal;
-  document.getElementById('createName').value = '';
-  document.getElementById('createCal').value = '';
-  document.getElementById('createProtein').value = '';
-  document.getElementById('createFat').value = '';
-  document.getElementById('createCarbs').value = '';
-  document.getElementById('createLimitNote').textContent = isPremium ? '' : t_js.custom_limit_msg;
-  document.getElementById('createModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => document.getElementById('createName').focus(), 150);
-}
-
-function closeCreateModal() {
-  document.getElementById('createModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function createModalBgClick(e) {
-  if (e.target.id === 'createModal') closeCreateModal();
-}
-
-async function confirmCreateFood() {
-  const name = document.getElementById('createName').value.trim();
-  if (!name) { document.getElementById('createName').focus(); return; }
-  const btn = document.getElementById('createConfirmBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳';
-  try {
-    const res = await fetch('/api/custom-foods', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        name,
-        calories: parseFloat(document.getElementById('createCal').value) || 0,
-        protein: parseFloat(document.getElementById('createProtein').value) || 0,
-        fat: parseFloat(document.getElementById('createFat').value) || 0,
-        carbs: parseFloat(document.getElementById('createCarbs').value) || 0,
-      })
-    });
-    const data = await res.json();
-    if (data.error === 'limit_reached') {
-      closeCreateModal();
-      showPremiumModal('custom_limit');
-      return;
-    }
-    if (data.success) {
-      closeCreateModal();
-      // Open the created food via custom tab
-      if (createMealTarget) {
-        // switch to custom tab and reload
-        const tabs = document.querySelectorAll(`#meal-${createMealTarget} .search-tab`);
-        tabs.forEach(b => {
-          if (b.textContent.includes('👤')) { switchTab(createMealTarget, 'custom', b); }
-        });
-      }
-    }
-  } finally {
-    btn.disabled = false;
-    btn.textContent = t_js.save_food;
+  const data = await res.json();
+  if (data.success) {
+    closeModal();
+    location.reload();
   }
 }
 
-// ── WATER TRACKER ──
-const waterGoal = {{ current_user.water_goal if current_user.is_authenticated else 8 }};
-let waterCount = 0;
-
-function toggleCup(idx) {
-  if (waterCount === idx + 1) {
-    waterCount = idx;
-  } else {
-    waterCount = idx + 1;
+async function deleteEntry(entryId) {
+  if (!confirm('Удалить этот продукт?')) return;
+  const res = await fetch(`/api/remove-entry/${entryId}`, {method: 'DELETE'});
+  if ((await res.json()).success) {
+    location.reload();
   }
-  renderWater();
-  localStorage.setItem('water_' + getTodayKey(), waterCount);
 }
 
-function renderWater() {
-  for (let i = 0; i < waterGoal; i++) {
-    const cup = document.getElementById('cup-' + i);
-    if (cup) cup.classList.toggle('filled', i < waterCount);
-  }
-  const info = document.getElementById('waterInfo');
-  if (info) info.textContent = waterCount + ' / ' + waterGoal + ' ' + t_js.cups;
-}
-
-function getTodayKey() {
-  const d = new Date();
-  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
-}
-
-(function() {
-  const saved = localStorage.getItem('water_' + getTodayKey());
-  if (saved !== null) { waterCount = parseInt(saved) || 0; renderWater(); }
-})();
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeCreateModal(); closePremiumModal(); } });
-
-// ── PREMIUM MODAL ──
-const _pm = {
-  trial_available: {{ 'true' if not current_user.trial_used and not current_user.is_premium else 'false' }},
-  no_thanks: {{ t.get('pm_no_thanks','Нет, спасибо')|tojson }},
-  try_btn: {{ t.get('pm_try_btn','Попробовать — 11 ₽ / неделя')|tojson }},
-  monthly_note: {{ t.get('pm_monthly_note','или 129 ₽ / месяц')|tojson }},
-  messages: {
-    history:      {{ t.get('pm_history','🔒 Полная история — это Premium')|tojson }},
-    weight_chart: {{ t.get('pm_weight_chart','📈 График динамики веса доступен в Premium')|tojson }},
-    weekly:       {{ t.get('pm_weekly','📅 Месячные сводки — это Premium')|tojson }},
-    custom_limit: {{ t.get('pm_custom_limit','⭐️ Безлимитные свои продукты доступны в Premium')|tojson }},
-    export:       {{ t.get('pm_export','📤 Экспорт данных доступен в Premium')|tojson }},
-    meals:        {{ t.get('pm_meals','🥗 Разбивка по приёмам пищи доступна в Premium')|tojson }},
-    macros:       {{ t.get('pm_macros','💪 Серьёзный инструмент для серьёзного подхода. Premium')|tojson }},
-    data:         {{ t.get('pm_data','🌿 Больше данных — лучше результат. Premium')|tojson }},
-    generic:      {{ t.get('pm_generic','👑 Весь потенциал приложения открыт в Premium')|tojson }},
-  }
-};
-
-function showPremiumModal(key) {
-  const msg = _pm.messages[key] || _pm.messages.generic;
-  document.getElementById('pmMessage').textContent = msg;
-  document.getElementById('pmSubtext').textContent = 'CaloriMint Premium';
-  document.getElementById('pmTryBtn').textContent = _pm.try_btn;
-  document.getElementById('pmTryBtn').href = _pm.trial_available ? '/start-trial' : '/premium';
-  document.getElementById('pmMonthlyNote').textContent = _pm.monthly_note;
-  document.getElementById('pmNoThanks').textContent = _pm.no_thanks;
-  document.getElementById('premiumModal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closePremiumModal() {
-  document.getElementById('premiumModal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-document.getElementById('premiumModal').addEventListener('click', function(e){ if(e.target===this) closePremiumModal(); });
-
+document.getElementById('modal-overlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 </script>
-
-<!-- ═══ PREMIUM MODAL ═══ -->
-<div id="premiumModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:flex-end;justify-content:center;">
-  <div id="premiumModalBox" style="background:white;border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.18);animation:pmSlide .22s ease;position:relative;overflow:hidden;">
-    <div style="width:36px;height:4px;background:#c8eedd;border-radius:4px;margin:0 auto 22px;"></div>
-    <div style="position:absolute;right:-10px;top:-10px;font-size:90px;opacity:.07;pointer-events:none;">🌿</div>
-    <div style="font-size:13px;font-weight:700;color:#6dc49a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Premium</div>
-    <div id="pmMessage" style="font-family:'Playfair Display',serif;font-size:22px;color:#2d4a3e;margin-bottom:8px;line-height:1.3;"></div>
-    <div style="font-size:13px;color:#8aaa9e;margin-bottom:24px;line-height:1.5;" id="pmSubtext"></div>
-    <a id="pmTryBtn" href="/start-trial" style="display:block;width:100%;padding:15px;background:linear-gradient(135deg,#4caf83,#6dc49a);color:white;border-radius:16px;font-size:16px;font-weight:800;text-align:center;text-decoration:none;margin-bottom:10px;box-sizing:border-box;"></a>
-    <div id="pmMonthlyNote" style="text-align:center;font-size:12px;color:#8aaa9e;margin-bottom:16px;"></div>
-    <button onclick="closePremiumModal()" id="pmNoThanks" style="width:100%;padding:13px;border:1.5px solid #c8eedd;border-radius:16px;background:none;font-size:15px;font-weight:700;color:#5a7a6e;cursor:pointer;font-family:'Nunito',sans-serif;"></button>
-  </div>
-</div>
-<style>
-@keyframes pmSlide{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-@media(min-width:520px){ #premiumModal { align-items:center !important } #premiumModalBox { border-radius:24px !important; max-width:420px !important } }
-</style>
-
-<!-- BOTTOM NAV (mobile only) -->
-<nav class="bottom-nav">
-  <a href="/" class="bnav-item active">
-    <span class="bnav-icon">🏠</span>
-    <span class="bnav-label">{{ t.get('today','Сегодня') }}</span>
-  </a>
-  <a href="/history" class="bnav-item ">
-    <span class="bnav-icon">📊</span>
-    <span class="bnav-label">{{ t.get('history','История') }}</span>
-  </a>
-  <a href="/goals" class="bnav-item ">
-    <span class="bnav-icon">🎯</span>
-    <span class="bnav-label">{{ t.get('goals','Цели') }}</span>
-  </a>
-  <a href="/premium" class="bnav-item bnav-premium ">
-    <span class="bnav-icon">⭐</span>
-    <span class="bnav-label">{{ t.get('premium','Premium') }}</span>
-  </a>
-</nav>
-<style>
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
-@media(max-width:860px){.bottom-nav{display:flex;}}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
-.bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
-.bnav-item.bnav-premium{color:#e65c00;}
-.bnav-item.bnav-premium.active{background:rgba(255,107,53,.1);}
-.bnav-icon{font-size:22px;line-height:1;}
-.bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
-</style>
-
 </body>
 </html>
