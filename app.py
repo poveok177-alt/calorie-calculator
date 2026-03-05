@@ -211,7 +211,7 @@ TRANSLATIONS = {
         'foods_that_day': 'Продукты за этот день',
         'history_premium_msg': 'Полная история доступна в Premium',
         'pm_no_thanks': 'Нет, спасибо',
-        'pm_try_btn': 'Попробовать 7 дней бесплатно',
+        'pm_try_btn': 'Попробовать 3 дня бесплатно',
         'pm_monthly_note': 'затем 89 ₽/месяц',
         'pm_history': '🔒 Полная история — это Premium',
         'pm_weight_chart': '📈 График динамики веса доступен в Premium',
@@ -256,7 +256,7 @@ TRANSLATIONS = {
         'premium_feature_ads': 'Без рекламы',
         'premium_active': 'Premium активен',
         'premium_activate_test': 'Активировать Premium (тест)',
-        'premium_try': 'Попробовать 7 дней бесплатно',
+        'premium_try': 'Попробовать 3 дня бесплатно',
         'premium_already_used': 'Пробный период уже использован',
         'supplements': 'Добавки 💊',
         'sports_nutrition': 'Спортпит 💪',
@@ -361,7 +361,7 @@ TRANSLATIONS = {
         'foods_that_day': 'Foods that day',
         'history_premium_msg': 'Full history available in Premium',
         'pm_no_thanks': 'No, thanks',
-        'pm_try_btn': 'Try 7 days free',
+        'pm_try_btn': 'Try 3 days free',
         'pm_monthly_note': 'then 89 ₽/month',
         'pm_history': '🔒 Full history is a Premium feature',
         'pm_weight_chart': '📈 Weight chart is available in Premium',
@@ -406,7 +406,7 @@ TRANSLATIONS = {
         'premium_feature_ads': 'No ads',
         'premium_active': 'Premium active',
         'premium_activate_test': 'Activate Premium (test)',
-        'premium_try': 'Try 7 days free',
+        'premium_try': 'Try 3 days free',
         'premium_already_used': 'Trial already used',
         'supplements': 'Supplements 💊',
         'sports_nutrition': 'Sports nutrition 💪',
@@ -515,7 +515,7 @@ TRANSLATIONS = {
         'foods_that_day': 'Продукти за цей день',
         'history_premium_msg': 'Повна історія доступна в Premium',
         'pm_no_thanks': 'Ні, дякую',
-        'pm_try_btn': 'Спробувати 7 днів безкоштовно',
+        'pm_try_btn': 'Спробувати 3 дні безкоштовно',
         'pm_monthly_note': 'потім 79 ₴/місяць',
         'pm_history': '🔒 Повна історія — це Premium',
         'pm_weight_chart': '📈 Графік ваги доступний у Premium',
@@ -560,7 +560,7 @@ TRANSLATIONS = {
         'premium_feature_ads': 'Без реклами',
         'premium_active': 'Premium активний',
         'premium_activate_test': 'Активувати Premium (тест)',
-        'premium_try': 'Спробувати 7 днів безкоштовно',
+        'premium_try': 'Спробувати 3 дні безкоштовно',
         'premium_already_used': 'Пробний період вже використано',
     },
     'kk': {
@@ -656,7 +656,7 @@ TRANSLATIONS = {
         'foods_that_day': 'Сол күнгі өнімдер',
         'history_premium_msg': 'Толық тарих Premium-да',
         'pm_no_thanks': 'Жоқ, рахмет',
-        'pm_try_btn': '7 күн тегін байқап көру',
+        'pm_try_btn': '3 күн тегін байқап көру',
         'pm_monthly_note': 'содан кейін 799 ₸/ай',
         'pm_history': '🔒 Толық тарих — Premium',
         'pm_weight_chart': '📈 Салмақ графигі Premium-да',
@@ -701,7 +701,7 @@ TRANSLATIONS = {
         'premium_feature_ads': 'Жарнамасыз',
         'premium_active': 'Premium белсенді',
         'premium_activate_test': 'Premium-ды белсендіру (тест)',
-        'premium_try': '7 күн тегін байқап көру',
+        'premium_try': '3 күн тегін байқап көру',
         'premium_already_used': 'Сынақ кезеңі қолданылды',
     }
 }
@@ -904,10 +904,10 @@ def start_trial():
         flash(get_t().get('premium_already_used', 'Пробный период уже использован'))
         return redirect(url_for('premium'))
     current_user.trial_used = True
-    current_user.trial_ends = datetime.utcnow() + timedelta(days=7)
+    current_user.trial_ends = datetime.utcnow() + timedelta(days=3)
     current_user.is_premium = True
     db.session.commit()
-    flash('🎉 Пробный период на 7 дней активирован!')
+    flash('🎉 Пробный период на 3 дня активирован!')
     return redirect(url_for('index'))
 
 @app.route('/history')
@@ -1072,8 +1072,8 @@ def admin_grant_premium():
         user.is_premium = True
         now = datetime.utcnow()
         base = user.premium_ends if user.premium_ends and user.premium_ends > now else now
-        if duration == '7days':
-            user.premium_ends = base + timedelta(days=7)
+        if duration == '3days':
+            user.premium_ends = base + timedelta(days=3)
         elif duration == '3months':
             user.premium_ends = base + timedelta(days=90)
         elif duration == 'forever':
@@ -1576,7 +1576,7 @@ def init_db():
                     {"name_ru":"Куриная грудка","name_en":"Chicken breast","name_uk":"Куряча грудка","name_kk":"Тауық еті","calories":165,"protein":31.0,"fat":3.6,"carbs":0.0,"category":"meat"},
                     {"name_ru":"Говядина","name_en":"Beef","name_uk":"Яловичина","name_kk":"Сиыр еті","calories":187,"protein":18.9,"fat":12.4,"carbs":0.0,"category":"meat"},
                     {"name_ru":"Молоко","name_en":"Milk","name_uk":"Молоко","name_kk":"Сүт","calories":52,"protein":2.8,"fat":2.5,"carbs":4.7,"category":"dairy"},
-                    {"name_ru":"Творог","name_en":"Cottage cheese","name_uk":"Сир","name_kk":"Іркіт","calories":121,"protein":17.0,"fat":5.0,"carbs":3.0,"category":"dairy"},
+                    {"name_ru":"Творог","name_en":"Cottage cheese","name_uk":"Сир","name_kk":"Ірімшік","calories":121,"protein":17.0,"fat":5.0,"carbs":3.0,"category":"dairy"},
                     {"name_ru":"Рис","name_en":"Rice","name_uk":"Рис","name_kk":"Күріш","calories":344,"protein":7.0,"fat":0.6,"carbs":78.9,"category":"grains"},
                     {"name_ru":"Гречка","name_en":"Buckwheat","name_uk":"Гречка","name_kk":"Қарақұмық","calories":308,"protein":12.6,"fat":3.3,"carbs":57.1,"category":"grains"},
                     {"name_ru":"Морковь","name_en":"Carrot","name_uk":"Морква","name_kk":"Сәбіз","calories":41,"protein":0.9,"fat":0.2,"carbs":9.6,"category":"vegetables"},

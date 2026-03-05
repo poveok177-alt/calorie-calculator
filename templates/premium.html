@@ -88,7 +88,7 @@
     color:white; border:none; border-radius:20px;
     font-size:16px; font-weight:800; font-family:'Nunito',sans-serif;
     cursor:pointer; text-align:center; text-decoration:none;
-    transition:all .2s; margin-bottom:10px;
+    transition:all .2s; margin-bottom:10px;min-height:48px;touch-action:manipulation;
   }
   .btn-trial:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(76,175,131,.3); }
 
@@ -98,7 +98,7 @@
     color:white; border:none; border-radius:20px;
     font-size:15px; font-weight:800; font-family:'Nunito',sans-serif;
     cursor:pointer; text-align:center; text-decoration:none;
-    transition:all .2s; margin-bottom:10px;
+    transition:all .2s; margin-bottom:10px;min-height:48px;touch-action:manipulation;
   }
   .btn-pay:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(230,92,0,.25); }
 
@@ -115,7 +115,7 @@
   /* BOTTOM NAV */
   .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:150; background:rgba(255,255,255,.97); backdrop-filter:blur(16px); border-top:1px solid #c8eedd; box-shadow:0 -4px 20px rgba(76,175,131,.1); padding:6px 0 max(6px,env(safe-area-inset-bottom)); }
   @media(max-width:860px) { .bottom-nav { display:flex; } .nav-links { display:none!important; } }
-  .bnav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; color:#8aaa9e; font-weight:700; padding:6px 4px; border-radius:12px; margin:0 3px; transition:all .2s; min-height:50px; justify-content:center; }
+  .bnav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; color:#8aaa9e; font-weight:700; padding:6px 4px; border-radius:12px; margin:0 3px; transition:all .2s; min-height:50px; justify-content:center; touch-action:manipulation; }
   .bnav-item.active { color:#2d8a63; background:rgba(181,234,215,.35); }
   .bnav-item.bnav-premium { color:#e65c00; }
   .bnav-item.bnav-premium.active { background:rgba(255,107,53,.1); }
@@ -126,6 +126,7 @@
     main { padding:16px 12px; }
     .hero { padding:28px 16px 24px; border-radius:20px; }
     .hero-title { font-size:24px; }
+    .btn-trial, .btn-pay { min-height:44px; font-size:15px; }
   }
 </style>
 </head>
@@ -203,7 +204,7 @@
     {% if not current_user.is_premium %}
       {% if trial_available %}
       <a href="/start-trial" class="btn-trial">
-        🎁 {{ t.get('premium_try','Попробовать 7 дней бесплатно') }}
+        🎁 {{ t.get('premium_try','Попробовать 3 дня бесплатно') }}
       </a>
       <div class="note-text">{{ t.get('pm_monthly_note','затем 199 ₽/месяц') }}</div>
       {% else %}
@@ -218,7 +219,7 @@
     <a href="/register" class="btn-trial">
       🚀 {{ t.get('register','Зарегистрироваться') }}
     </a>
-    <div class="note-text">Регистрация бесплатна · 7 дней Premium в подарок</div>
+    <div class="note-text">Регистрация бесплатна · 3 дня Premium в подарок</div>
   {% endif %}
 
 </main>
