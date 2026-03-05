@@ -243,6 +243,10 @@ TRANSLATIONS = {
         'premium_activate_test': 'Активировать Premium (тест)',
         'premium_try': 'Попробовать 7 дней бесплатно',
         'premium_already_used': 'Пробный период уже использован',
+        'supplements': 'Добавки 💊',
+        'sports_nutrition': 'Спортпит 💪',
+        'recent': 'Недавние',
+        'favorites': 'Избранные',
     },
     'en': {
         'app_name': 'CaloriMint',
@@ -376,6 +380,10 @@ TRANSLATIONS = {
         'premium_activate_test': 'Activate Premium (test)',
         'premium_try': 'Try 7 days free',
         'premium_already_used': 'Trial already used',
+        'supplements': 'Supplements 💊',
+        'sports_nutrition': 'Sports nutrition 💪',
+        'recent': 'Recent',
+        'favorites': 'Favorites',
     },
     'uk': {
         'app_name': "КалоріМ'ята",
@@ -436,6 +444,10 @@ TRANSLATIONS = {
         'remove': 'Видалити',
         'kcal': 'ккал',
         'g': 'г',
+        'supplements': 'Добавки 💊',
+        'sports_nutrition': 'Спортхарч 💪',
+        'recent': 'Недавні',
+        'favorites': 'Вибрані',
         'back': 'Назад',
         'products_count': 'продуктів',
         'grams_label': 'Кількість (грамів)',
@@ -569,6 +581,10 @@ TRANSLATIONS = {
         'remove': 'Жою',
         'kcal': 'ккал',
         'g': 'г',
+        'supplements': 'Қоспалар 💊',
+        'sports_nutrition': 'Спорттық тамақтану 💪',
+        'recent': 'Соңғы',
+        'favorites': 'Таңдаулылар',
         'back': 'Артқа',
         'products_count': 'өнім',
         'grams_label': 'Мөлшері (грамм)',
@@ -721,21 +737,21 @@ def index():
     progress_pct = min(100, int(total_cal / daily_goal * 100)) if daily_goal > 0 else 0
 
     remaining = max(0, daily_goal - total_cal)
-    protein_goal = current_user.protein_goal if current_user.is_authenticated else 150
-    fat_goal = current_user.fat_goal if current_user.is_authenticated else 70
-    carbs_goal = current_user.carbs_goal if current_user.is_authenticated else 250
-    water_goal = current_user.water_goal if current_user.is_authenticated else 8
     is_premium = current_user.is_premium if current_user.is_authenticated else False
     progress_percent = min(100, int(total_cal / daily_goal * 100)) if daily_goal > 0 else 0
 
-    # Считаем итоги по приёмам пищи
+    # Группируем записи по приёмам пищи
+    meals = {'breakfast': [], 'lunch': [], 'dinner': [], 'snack': [], 'other': []}
     meal_totals = {'breakfast': 0, 'lunch': 0, 'dinner': 0, 'snack': 0, 'other': 0}
     for e in today_entries:
-        meal = e.meal_type if e.meal_type in meal_totals else 'other'
+        meal = e.meal_type if e.meal_type in meals else 'other'
+        meals[meal].append(e)
         meal_totals[meal] += e.calories
 
     return render_template('index.html', t=t, lang=lang,
                            today_entries=today_entries,
+                           meals=meals,
+                           meal_totals=meal_totals,
                            total_cal=round(total_cal),
                            total_protein=round(total_protein, 1),
                            total_fat=round(total_fat, 1),
@@ -743,13 +759,8 @@ def index():
                            daily_goal=daily_goal,
                            remaining=round(remaining),
                            progress_pct=progress_pct,
-                           protein_goal=protein_goal,
-                           fat_goal=fat_goal,
-                           carbs_goal=carbs_goal,
-                           water_goal=water_goal,
-                           is_premium=is_premium,
                            progress_percent=progress_percent,
-                           meal_totals=meal_totals,
+                           is_premium=is_premium,
                            category_keys=CATEGORY_KEYS,
                            now=datetime.utcnow())
 
@@ -1075,6 +1086,67 @@ def api_search():
         'carbs': f.carbs,
         'category': f.category,
     } for f in foods])
+
+@app.route('/api/recent')
+@login_required
+def api_recent():
+    lang = session.get('language', 'ru')
+    entries = FoodEntry.query.filter_by(user_id=current_user.id)\
+        .order_by(FoodEntry.created_at.desc()).limit(50).all()
+    seen = {}
+    for e in entries:
+        if e.food_id not in seen:
+            food = Food.query.get(e.food_id)
+            if food:
+                seen[e.food_id] = {
+                    'id': food.id,
+                    'name': get_food_name(food, lang),
+                    'calories': food.calories,
+                    'protein': food.protein,
+                    'fat': food.fat,
+                    'carbs': food.carbs,
+                }
+        if len(seen) >= 10:
+            break
+    return jsonify(list(seen.values()))
+
+@app.route('/api/favorites', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def api_favorites():
+    lang = session.get('language', 'ru')
+    key = f'favorites_{current_user.id}'
+    if request.method == 'GET':
+        fav_ids = session.get(key, [])
+        result = []
+        for fid in fav_ids:
+            food = Food.query.get(fid)
+            if food:
+                result.append({
+                    'id': food.id,
+                    'name': get_food_name(food, lang),
+                    'calories': food.calories,
+                    'protein': food.protein,
+                    'fat': food.fat,
+                    'carbs': food.carbs,
+                })
+        return jsonify(result)
+    elif request.method == 'POST':
+        data = request.get_json()
+        fav_ids = session.get(key, [])
+        food_id = data.get('food_id')
+        if food_id not in fav_ids:
+            fav_ids.append(food_id)
+        session[key] = fav_ids
+        session.modified = True
+        return jsonify({'success': True})
+    elif request.method == 'DELETE':
+        data = request.get_json()
+        fav_ids = session.get(key, [])
+        food_id = data.get('food_id')
+        fav_ids = [f for f in fav_ids if f != food_id]
+        session[key] = fav_ids
+        session.modified = True
+        return jsonify({'success': True})
 
 @app.route('/api/add-entry', methods=['POST'])
 @login_required
