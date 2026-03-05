@@ -6,6 +6,7 @@ from datetime import datetime, date
 import json
 import os
 import uuid
+import hashlib
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -239,7 +240,7 @@ translations = {
         'trial_until': 'Пробный период до',
         'trial_success_msg': '🎉 Пробный период активирован! 7 дней Премиума доступны.',
         'food_search_feat': 'Поиск продуктов',
-        'food_search_desc': '100+ продуктов, поиск по категориям',
+        'food_search_desc': '100+ продуктов + 3 млн в Open Food Facts',
         'cal_counter_feat': 'Счётчик калорий',
         'cal_counter_desc': 'Завтрак, обед, ужин, перекус',
         'hist_feat_desc': 'Полная история питания за 30 дней',
@@ -303,6 +304,9 @@ translations = {
         'meal_type_label': 'Приём пищи', 'recent_label': 'Последние добавленные',
         'favorites_label': 'Избранные продукты', 'custom_label': 'Мои продукты',
         'off_source': 'Open Food Facts',
+        'off_searching': '🌐 Ищем в Open Food Facts...',
+        'off_tab': '🌐 Интернет',
+        'off_found': 'найдено в Open Food Facts',
         'cat_fruits': 'Фрукты', 'cat_vegetables': 'Овощи', 'cat_meat': 'Мясо',
         'cat_dairy': 'Молочное', 'cat_grains': 'Злаки', 'cat_nuts': 'Орехи',
         'cat_fish': 'Рыба', 'cat_sweets': 'Сладкое', 'cat_drinks': 'Напитки',
@@ -376,7 +380,7 @@ translations = {
         'trial_until': 'Trial until',
         'trial_success_msg': '🎉 Trial activated! 7 days of Premium are ready.',
         'food_search_feat': 'Food search',
-        'food_search_desc': '100+ foods, search by category',
+        'food_search_desc': '100+ foods + 3M products via Open Food Facts',
         'cal_counter_feat': 'Calorie counter',
         'cal_counter_desc': 'Breakfast, lunch, dinner, snack',
         'hist_feat_desc': 'Full 30-day nutrition history',
@@ -440,6 +444,9 @@ translations = {
         'meal_type_label': 'Meal', 'recent_label': 'Recently added',
         'favorites_label': 'Favorite foods', 'custom_label': 'My foods',
         'off_source': 'Open Food Facts',
+        'off_searching': '🌐 Searching Open Food Facts...',
+        'off_tab': '🌐 Internet',
+        'off_found': 'found in Open Food Facts',
         'cat_fruits': 'Fruits', 'cat_vegetables': 'Vegetables', 'cat_meat': 'Meat',
         'cat_dairy': 'Dairy', 'cat_grains': 'Grains', 'cat_nuts': 'Nuts',
         'cat_fish': 'Fish', 'cat_sweets': 'Sweets', 'cat_drinks': 'Drinks',
@@ -513,7 +520,7 @@ translations = {
         'trial_until': 'Пробний до',
         'trial_success_msg': '🎉 Пробний активовано! 7 днів Преміума доступні.',
         'food_search_feat': 'Пошук продуктів',
-        'food_search_desc': '100+ продуктів, пошук за категоріями',
+        'food_search_desc': '100+ продуктів + 3 млн у Open Food Facts',
         'cal_counter_feat': 'Лічильник калорій',
         'cal_counter_desc': 'Сніданок, обід, вечеря, закуска',
         'hist_feat_desc': 'Повна історія харчування за 30 днів',
@@ -577,6 +584,9 @@ translations = {
         'meal_type_label': 'Прийом їжі', 'recent_label': 'Останні додані',
         'favorites_label': 'Вибрані продукти', 'custom_label': 'Мої продукти',
         'off_source': 'Open Food Facts',
+        'off_searching': '🌐 Шукаємо в Open Food Facts...',
+        'off_tab': '🌐 Інтернет',
+        'off_found': 'знайдено в Open Food Facts',
         'cat_fruits': 'Фрукти', 'cat_vegetables': 'Овочі', 'cat_meat': 'Мʼясо',
         'cat_dairy': 'Молочне', 'cat_grains': 'Злаки', 'cat_nuts': 'Горіхи',
         'cat_fish': 'Риба', 'cat_sweets': 'Солодке', 'cat_drinks': 'Напої',
@@ -650,7 +660,7 @@ translations = {
         'trial_until': 'Сынақ мерзімі дейін',
         'trial_success_msg': '🎉 Сынақ мерзімі белсендірілді! 7 күн Премиум дайын.',
         'food_search_feat': 'Өнімдерді іздеу',
-        'food_search_desc': '100+ өнімдер, санат бойынша іздеу',
+        'food_search_desc': '100+ өнімдер + 3 млн Open Food Facts-та',
         'cal_counter_feat': 'Калория есептегіш',
         'cal_counter_desc': 'Таңғы, түскі, кешкі ас, аралық',
         'hist_feat_desc': '30 күндік толық тамақтану тарихы',
@@ -714,6 +724,9 @@ translations = {
         'meal_type_label': 'Тамақ қабылдау', 'recent_label': 'Соңғы қосылған',
         'favorites_label': 'Таңдаулы өнімдер', 'custom_label': 'Менің өнімдерім',
         'off_source': 'Open Food Facts',
+        'off_searching': '🌐 Open Food Facts іздеуде...',
+        'off_tab': '🌐 Интернет',
+        'off_found': 'Open Food Facts-та табылды',
         'cat_fruits': 'Жемістер', 'cat_vegetables': 'Көкөністер', 'cat_meat': 'Ет',
         'cat_dairy': 'Сүт өнімдері', 'cat_grains': 'Астық', 'cat_nuts': 'Жаңғақтар',
         'cat_fish': 'Балық', 'cat_sweets': 'Тәттілер', 'cat_drinks': 'Сусындар',
@@ -726,11 +739,132 @@ translations = {
 }
 
 
+# ===================== OPEN FOOD FACTS API =====================
+
+# Simple in-memory cache to avoid hammering the API
+_off_cache = {}
+
+def _off_cache_key(query, lang):
+    raw = f"{query.lower().strip()}:{lang}"
+    return hashlib.md5(raw.encode()).hexdigest()
+
+
+def search_openfoodfacts(query, lang='ru', page_size=20):
+    """
+    Search Open Food Facts for products matching the query.
+    Returns a list of dicts compatible with the local food format.
+    Results are cached in memory for the lifetime of the process.
+    """
+    import requests as req
+
+    cache_key = _off_cache_key(query, lang)
+    if cache_key in _off_cache:
+        return _off_cache[cache_key]
+
+    # Map app language to OFF search language hint
+    lang_map = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'kk'}
+    search_lc = lang_map.get(lang, 'en')
+
+    # Field we prefer for display name, in priority order
+    name_fields_by_lang = {
+        'ru': ['product_name_ru', 'product_name_en', 'product_name'],
+        'en': ['product_name_en', 'product_name', 'product_name_ru'],
+        'uk': ['product_name_uk', 'product_name_ru', 'product_name_en', 'product_name'],
+        'kk': ['product_name_kk', 'product_name_ru', 'product_name_en', 'product_name'],
+    }
+    preferred_fields = name_fields_by_lang.get(lang, name_fields_by_lang['en'])
+
+    try:
+        url = 'https://world.openfoodfacts.org/cgi/search.pl'
+        params = {
+            'search_terms': query,
+            'search_simple': 1,
+            'action': 'process',
+            'json': 1,
+            'page_size': page_size,
+            'lc': search_lc,
+            'fields': (
+                'code,product_name,product_name_ru,product_name_en,'
+                'product_name_uk,product_name_kk,'
+                'nutriments,categories_tags,brands,quantity,'
+                'image_front_small_url'
+            )
+        }
+        resp = req.get(url, params=params, timeout=6,
+                       headers={'User-Agent': 'CaloriMint/1.0 (calorietracker; contact@calorimit.app)'})
+        if resp.status_code != 200:
+            return []
+
+        data = resp.json()
+        results = []
+        seen_names = set()
+
+        for p in data.get('products', []):
+            n = p.get('nutriments', {})
+
+            # Calories (prefer kcal, fall back to kJ / 4.184)
+            cal = (n.get('energy-kcal_100g')
+                   or n.get('energy-kcal')
+                   or (n.get('energy_100g', 0) / 4.184 if n.get('energy_100g') else 0))
+            if not cal or cal <= 0:
+                continue
+
+            protein = float(n.get('proteins_100g') or n.get('proteins') or 0)
+            fat     = float(n.get('fat_100g')      or n.get('fat')      or 0)
+            carbs   = float(n.get('carbohydrates_100g') or n.get('carbohydrates') or 0)
+
+            # Pick best available display name
+            display_name = ''
+            for field in preferred_fields:
+                v = p.get(field, '').strip()
+                if v:
+                    display_name = v
+                    break
+            if not display_name:
+                continue
+
+            # Deduplicate by lower-cased display name
+            name_key = display_name.lower()
+            if name_key in seen_names:
+                continue
+            seen_names.add(name_key)
+
+            # Build a stable OFF id using the barcode
+            barcode = str(p.get('code', ''))[:13]
+            off_id = f'off_{barcode}' if barcode else f'off_nob_{len(results)}'
+
+            # Brand / quantity hint shown as subtitle in UI
+            brand = p.get('brands', '').split(',')[0].strip()
+            quantity = p.get('quantity', '').strip()
+            subtitle_parts = [x for x in [brand, quantity] if x]
+            subtitle = ' · '.join(subtitle_parts) if subtitle_parts else ''
+
+            results.append({
+                'id': off_id,
+                'name_ru': display_name,
+                'name_en': p.get('product_name_en') or p.get('product_name') or display_name,
+                'calories': round(float(cal), 1),
+                'protein': round(protein, 1),
+                'fat':     round(fat, 1),
+                'carbs':   round(carbs, 1),
+                'category': 'other',
+                'source': 'off',
+                'subtitle': subtitle,
+                'image': p.get('image_front_small_url', ''),
+            })
+
+        _off_cache[cache_key] = results
+        return results
+
+    except Exception as e:
+        print(f'[OFF] Error: {e}')
+        return []
+
+
 # ===================== ROUTES =====================
 
 @app.before_request
 def before_request():
-    # FIX: safely get lang, avoid session errors on uninitialized requests
     try:
         if current_user.is_authenticated:
             session['lang'] = current_user.language or 'ru'
@@ -739,7 +873,6 @@ def before_request():
     except Exception:
         pass
 
-    # Auto-expire premium if premium_ends has passed
     try:
         if current_user.is_authenticated and current_user.is_premium:
             if current_user.premium_ends and current_user.premium_ends < datetime.utcnow():
@@ -806,77 +939,50 @@ def index():
         streak=streak
     )
 
-# ===================== OPEN FOOD FACTS API =====================
-
-def search_openfoodfacts(query, lang='ru'):
-    import requests as req
-    try:
-        url = 'https://world.openfoodfacts.org/cgi/search.pl'
-        params = {
-            'search_terms': query, 'search_simple': 1, 'action': 'process',
-            'json': 1, 'page_size': 10,
-            'fields': 'product_name,product_name_ru,product_name_en,nutriments,categories_tags'
-        }
-        resp = req.get(url, params=params, timeout=5)
-        if resp.status_code != 200:
-            return []
-        data = resp.json()
-        results = []
-        for p in data.get('products', []):
-            n = p.get('nutriments', {})
-            cal = n.get('energy-kcal_100g') or n.get('energy-kcal') or 0
-            protein = n.get('proteins_100g', 0) or 0
-            fat = n.get('fat_100g', 0) or 0
-            carbs = n.get('carbohydrates_100g', 0) or 0
-            if not cal:
-                continue
-            name_ru = p.get('product_name_ru') or p.get('product_name') or ''
-            name_en = p.get('product_name_en') or p.get('product_name') or name_ru
-            if not name_ru and not name_en:
-                continue
-            display_name = name_ru if name_ru else name_en
-            results.append({
-                'id': f'off_{p.get("code","")[:13]}',
-                'name_ru': display_name, 'name_en': name_en,
-                'calories': round(float(cal), 1), 'protein': round(float(protein), 1),
-                'fat': round(float(fat), 1), 'carbs': round(float(carbs), 1),
-                'category': 'other', 'source': 'off'
-            })
-        return results
-    except Exception as e:
-        print(f'[OFF] Error: {e}')
-        return []
-
 
 @app.route('/api/search', methods=['GET'])
 @login_required
 def search_foods():
-    query = request.args.get('q', '').strip().lower()
+    query    = request.args.get('q', '').strip().lower()
     category = request.args.get('category', '').strip()
     show_all = request.args.get('show_all', '')
-    if not query and not category and not show_all:
+    off_only = request.args.get('off_only', '')      # NEW: dedicated OFF search
+    lang     = current_user.language or 'ru'
+
+    if not query and not category and not show_all and not off_only:
         return jsonify([])
+
+    # ── OFF-ONLY mode (called by front-end tab independently) ──
+    if off_only and query:
+        off_results = search_openfoodfacts(query, lang, page_size=25)
+        return jsonify(off_results[:25])
+
+    # ── LOCAL search first ──
     from food_data import food_data
     results = []
     for idx, food in enumerate(food_data):
         if category and food.get('category') != category:
             continue
         if query:
-            haystack = ' '.join([food.get('name_ru',''), food.get('name_en',''),
-                                  food.get('name_uk',''), food.get('name_kk','')]).lower()
+            haystack = ' '.join([food.get('name_ru', ''), food.get('name_en', ''),
+                                  food.get('name_uk', ''), food.get('name_kk', '')]).lower()
             if query not in haystack:
                 continue
         results.append({
-            'id': idx, 'name_ru': food['name_ru'],
+            'id': idx,
+            'name_ru': food['name_ru'],
             'name_en': food.get('name_en', food['name_ru']),
-            'calories': food['calories'], 'protein': food.get('protein', 0),
-            'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0),
-            'category': food.get('category', 'other'), 'source': 'local'
+            'calories': food['calories'],
+            'protein':  food.get('protein', 0),
+            'fat':      food.get('fat', 0),
+            'carbs':    food.get('carbs', 0),
+            'category': food.get('category', 'other'),
+            'source': 'local'
         })
 
-    if query and len(results) < 5:
-        lang = current_user.language if current_user.is_authenticated else 'ru'
-        off_results = search_openfoodfacts(query, lang)
+    # ── Augment with OFF when query given and local results are sparse ──
+    if query and len(results) < 8:
+        off_results = search_openfoodfacts(query, lang, page_size=15)
         local_names = {r['name_ru'].lower() for r in results}
         for item in off_results:
             if item['name_ru'].lower() not in local_names:
@@ -884,6 +990,18 @@ def search_foods():
                 local_names.add(item['name_ru'].lower())
 
     return jsonify(results[:30])
+
+
+# NEW: dedicated Open Food Facts search endpoint (non-blocking for UI)
+@app.route('/api/search-off', methods=['GET'])
+@login_required
+def search_foods_off():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
+    lang = current_user.language or 'ru'
+    results = search_openfoodfacts(query, lang, page_size=20)
+    return jsonify(results[:20])
 
 
 @app.route('/api/add-entry', methods=['POST'])
@@ -895,17 +1013,20 @@ def add_entry():
     meal_type = data.get('meal_type', 'snack')
 
     if isinstance(food_id, str) and (food_id.startswith('off_') or food_id.startswith('custom_')):
-        cal_per_100 = float(data.get('calories', 0))
+        cal_per_100     = float(data.get('calories', 0))
         protein_per_100 = float(data.get('protein', 0))
-        fat_per_100 = float(data.get('fat', 0))
-        carbs_per_100 = float(data.get('carbs', 0))
+        fat_per_100     = float(data.get('fat', 0))
+        carbs_per_100   = float(data.get('carbs', 0))
         food_name = data.get('food_name', 'Unknown')
         multiplier = grams / 100
         entry = FoodEntry(
             user_id=current_user.id, food_id=0, food_name=food_name,
-            grams=grams, calories=cal_per_100 * multiplier,
-            protein=protein_per_100 * multiplier, fat=fat_per_100 * multiplier,
-            carbs=carbs_per_100 * multiplier, meal_type=meal_type, date=date.today()
+            grams=grams,
+            calories=cal_per_100 * multiplier,
+            protein=protein_per_100 * multiplier,
+            fat=fat_per_100 * multiplier,
+            carbs=carbs_per_100 * multiplier,
+            meal_type=meal_type, date=date.today()
         )
         db.session.add(entry)
         db.session.commit()
@@ -920,7 +1041,8 @@ def add_entry():
     multiplier = grams / 100
     entry = FoodEntry(
         user_id=current_user.id, food_id=food_id, food_name=food['name_ru'],
-        grams=grams, calories=food['calories'] * multiplier,
+        grams=grams,
+        calories=food['calories'] * multiplier,
         protein=food.get('protein', 0) * multiplier,
         fat=food.get('fat', 0) * multiplier,
         carbs=food.get('carbs', 0) * multiplier,
@@ -976,7 +1098,6 @@ def get_recent():
     seen = set()
     results = []
     for entry in entries:
-        # FIX: skip OFF/custom entries (food_id=0) and out-of-range ids
         if entry.food_id == 0 or entry.food_id in seen or entry.food_id >= len(food_data):
             continue
         seen.add(entry.food_id)
@@ -1345,7 +1466,6 @@ def start_trial():
                            trial_success=True, now=datetime.utcnow())
 
 
-# FIX: login now correctly reads 'username' field (matching the fixed login.html form)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -1356,7 +1476,6 @@ def login():
 
         user = User.query.filter_by(username=username).first()
         if not user:
-            # also try by email in case someone typed email
             user = User.query.filter_by(email=username).first()
 
         if user and check_password_hash(user.password_hash, password):
