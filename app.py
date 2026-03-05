@@ -168,6 +168,10 @@ TRANSLATIONS = {
         'have_account': 'Уже есть аккаунт?',
         'did_you_mean': 'Возможно вы имели в виду:',
         'not_found': 'Ничего не найдено',
+        'create_custom_food': '+ Создать свой продукт',
+        'custom_food_name': 'Название продукта',
+        'custom_food_saved': 'Продукт сохранён!',
+        'my_foods': 'Мои продукты',
         'month_history': 'История за месяц',
         'weight_goal': 'Цель по весу',
         'current_weight': 'Текущий вес (кг)',
@@ -314,6 +318,10 @@ TRANSLATIONS = {
         'have_account': 'Already have an account?',
         'did_you_mean': 'Did you mean:',
         'not_found': 'Nothing found',
+        'create_custom_food': '+ Create custom food',
+        'custom_food_name': 'Food name',
+        'custom_food_saved': 'Food saved!',
+        'my_foods': 'My foods',
         'month_history': 'Monthly history',
         'weight_goal': 'Weight goal',
         'current_weight': 'Current weight (kg)',
@@ -323,7 +331,7 @@ TRANSLATIONS = {
         'bju_counter': 'Macros counter',
         'no_ads': 'No ads',
         'premium_desc': 'Unlock all features to reach your goals',
-        'subscribe': 'Subscribe — $2.99/mo',
+        'subscribe': 'Subscribe — 89 ₽/мес',
         'remove': 'Remove',
         'kcal': 'kcal',
         'g': 'g',
@@ -354,7 +362,7 @@ TRANSLATIONS = {
         'history_premium_msg': 'Full history available in Premium',
         'pm_no_thanks': 'No, thanks',
         'pm_try_btn': 'Try 7 days free',
-        'pm_monthly_note': 'then $2.99/month',
+        'pm_monthly_note': 'then 89 ₽/month',
         'pm_history': '🔒 Full history is a Premium feature',
         'pm_weight_chart': '📈 Weight chart is available in Premium',
         'pm_weekly': '📅 Monthly reports are Premium',
@@ -460,6 +468,10 @@ TRANSLATIONS = {
         'have_account': 'Вже є акаунт?',
         'did_you_mean': 'Можливо ви мали на увазі:',
         'not_found': 'Нічого не знайдено',
+        'create_custom_food': '+ Створити свій продукт',
+        'custom_food_name': 'Назва продукту',
+        'custom_food_saved': 'Продукт збережено!',
+        'my_foods': 'Мої продукти',
         'month_history': 'Історія за місяць',
         'weight_goal': 'Ціль за вагою',
         'current_weight': 'Поточна вага (кг)',
@@ -597,6 +609,10 @@ TRANSLATIONS = {
         'have_account': 'Тіркелген бе?',
         'did_you_mean': 'Мүмкін сіз ойлаған:',
         'not_found': 'Ештеңе табылмады',
+        'create_custom_food': '+ Өз өнімді жасау',
+        'custom_food_name': 'Өнім атауы',
+        'custom_food_saved': 'Өнім сақталды!',
+        'my_foods': 'Менің өнімдерім',
         'month_history': 'Ай тарихы',
         'weight_goal': 'Салмақ мақсаты',
         'current_weight': 'Қазіргі салмақ (кг)',
@@ -690,7 +706,7 @@ TRANSLATIONS = {
     }
 }
 
-CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'fish', 'dairy', 'grains', 'nuts', 'eggs', 'legumes', 'fastfood', 'sweets', 'drinks', 'oils', 'sauces', 'sports', 'baby', 'other']
+CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'fish', 'dairy', 'grains', 'nuts', 'eggs', 'legumes', 'fastfood', 'sweets', 'drinks', 'oils', 'sauces', 'sports', 'supplements', 'baby', 'other']
 
 def get_t():
     lang = session.get('language', 'ru')
@@ -1314,7 +1330,7 @@ def api_add_entry():
     entry = FoodEntry(
         user_id=current_user.id,
         food_id=food.id,
-        food_name=get_food_name(food, lang) if not str(food_id).startswith('off_') else name,
+        food_name=name if str(food_id).startswith(('off_', 'custom_')) else get_food_name(food, lang),
         grams=grams,
         calories=round(calories * ratio, 1),
         protein=round(protein * ratio, 1),
