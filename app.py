@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+from collections import OrderedDict
 import json
 import os
 import uuid
@@ -12,7 +13,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ===== YooKassa (без краша сервера если не установлена) =====
 try:
     from yookassa import Configuration, Payment
     Configuration.account_id = os.getenv('YOOKASSA_SHOP_ID')
@@ -51,7 +51,6 @@ class User(UserMixin, db.Model):
     is_superuser = db.Column(db.Boolean, default=False)
     premium_ends = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
     current_weight = db.Column(db.Float, nullable=True)
     goal_weight = db.Column(db.Float, nullable=True)
     height = db.Column(db.Float, nullable=True)
@@ -63,14 +62,11 @@ class User(UserMixin, db.Model):
     age = db.Column(db.Integer, default=25)
     gender = db.Column(db.String(10), default='male')
     activity = db.Column(db.String(20), default='moderate')
-
     trial_used = db.Column(db.Boolean, default=False)
     trial_ends = db.Column(db.DateTime, nullable=True)
     email_reminders = db.Column(db.Boolean, default=True)
     favorites = db.Column(db.Text, default='[]')
-
     entries = db.relationship('FoodEntry', backref='user', lazy=True)
-
 
 class Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -83,7 +79,6 @@ class Food(db.Model):
     fat = db.Column(db.Float, default=0)
     carbs = db.Column(db.Float, default=0)
     category = db.Column(db.String(50), nullable=False)
-
 
 class FoodEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -98,9 +93,7 @@ class FoodEntry(db.Model):
     date = db.Column(db.Date, default=date.today)
     meal_type = db.Column(db.String(20), default='other')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
     food = db.relationship('Food')
-
 
 class CustomFood(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -112,14 +105,12 @@ class CustomFood(db.Model):
     carbs = db.Column(db.Float, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-
 class WeightLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     weight = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, default=date.today, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -128,57 +119,49 @@ def load_user(user_id):
 # ===================== DB INIT =====================
 
 def init_db():
-    """Добавить недостающие колонки в существующую БД (миграция без alembic)."""
     with app.app_context():
         try:
             inspector = db.inspect(db.engine)
             if 'user' not in inspector.get_table_names():
                 return
-
             user_columns = [col['name'] for col in inspector.get_columns('user')]
-
             new_columns = [
-                ('favorites',          "TEXT DEFAULT '[]'"),
-                ('trial_used',         'BOOLEAN DEFAULT FALSE'),
-                ('trial_ends',         'TIMESTAMP'),
-                ('email_reminders',    'BOOLEAN DEFAULT TRUE'),
-                ('is_premium',         'BOOLEAN DEFAULT FALSE'),
-                ('is_superuser',       'BOOLEAN DEFAULT FALSE'),
-                ('premium_ends',       'TIMESTAMP'),
-                ('current_weight',     'FLOAT'),
-                ('goal_weight',        'FLOAT'),
-                ('height',             'FLOAT'),
+                ('favorites', "TEXT DEFAULT '[]'"),
+                ('trial_used', 'BOOLEAN DEFAULT FALSE'),
+                ('trial_ends', 'TIMESTAMP'),
+                ('email_reminders', 'BOOLEAN DEFAULT TRUE'),
+                ('is_premium', 'BOOLEAN DEFAULT FALSE'),
+                ('is_superuser', 'BOOLEAN DEFAULT FALSE'),
+                ('premium_ends', 'TIMESTAMP'),
+                ('current_weight', 'FLOAT'),
+                ('goal_weight', 'FLOAT'),
+                ('height', 'FLOAT'),
                 ('daily_calorie_goal', 'INTEGER DEFAULT 2000'),
-                ('water_goal',         'INTEGER DEFAULT 8'),
-                ('protein_goal',       'INTEGER DEFAULT 150'),
-                ('fat_goal',           'INTEGER DEFAULT 70'),
-                ('carbs_goal',         'INTEGER DEFAULT 250'),
-                ('age',                'INTEGER DEFAULT 25'),
-                ('gender',             "VARCHAR(10) DEFAULT 'male'"),
-                ('activity',           "VARCHAR(20) DEFAULT 'moderate'"),
-                ('language',           "VARCHAR(10) DEFAULT 'ru'"),
+                ('water_goal', 'INTEGER DEFAULT 8'),
+                ('protein_goal', 'INTEGER DEFAULT 150'),
+                ('fat_goal', 'INTEGER DEFAULT 70'),
+                ('carbs_goal', 'INTEGER DEFAULT 250'),
+                ('age', 'INTEGER DEFAULT 25'),
+                ('gender', "VARCHAR(10) DEFAULT 'male'"),
+                ('activity', "VARCHAR(20) DEFAULT 'moderate'"),
+                ('language', "VARCHAR(10) DEFAULT 'ru'"),
             ]
-
             with db.engine.connect() as conn:
                 for col_name, col_def in new_columns:
                     if col_name not in user_columns:
                         try:
-                            conn.execute(db.text(
-                                f'ALTER TABLE "user" ADD COLUMN {col_name} {col_def}'
-                            ))
+                            conn.execute(db.text(f'ALTER TABLE "user" ADD COLUMN {col_name} {col_def}'))
                             conn.commit()
-                            print(f'[init_db] Added column: {col_name}')
                         except Exception as e:
                             conn.rollback()
-                            print(f'[init_db] Skip {col_name}: {e}')
         except Exception as e:
-            print(f'[init_db] Error: {e}')
+            pass
 
-# ===================== OPEN FOOD FACTS (3млн продуктов) =====================
+# ===================== OPEN FOOD FACTS API (3млн продуктов) =====================
 
 _off_cache = {}
 _cache_timestamps = {}
-_cache_ttl = 3600  # 1 час
+_cache_ttl = 3600
 
 def _get_cache_key(query, lang):
     raw = f"{query.lower().strip()}:{lang}"
@@ -190,7 +173,6 @@ def _is_cache_valid(cache_key):
     return (time.time() - _cache_timestamps[cache_key]) < _cache_ttl
 
 def search_openfoodfacts(query, lang='ru', page_size=50):
-    """Поиск в Open Food Facts (3млн+ продуктов)"""
     import requests as req
     
     cache_key = _get_cache_key(query, lang)
@@ -199,7 +181,6 @@ def search_openfoodfacts(query, lang='ru', page_size=50):
 
     lang_map = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'kk'}
     search_lc = lang_map.get(lang, 'en')
-
     name_fields_by_lang = {
         'ru': ['product_name_ru', 'product_name_en', 'product_name'],
         'en': ['product_name_en', 'product_name', 'product_name_ru'],
@@ -217,15 +198,9 @@ def search_openfoodfacts(query, lang='ru', page_size=50):
             'json': 1,
             'page_size': page_size,
             'lc': search_lc,
-            'fields': (
-                'code,product_name,product_name_ru,product_name_en,'
-                'product_name_uk,product_name_kk,'
-                'nutriments,categories_tags,brands,quantity,'
-                'image_front_small_url'
-            )
+            'fields': 'code,product_name,product_name_ru,product_name_en,product_name_uk,product_name_kk,nutriments,categories_tags,brands,quantity,image_front_small_url'
         }
-        resp = req.get(url, params=params, timeout=8,
-                       headers={'User-Agent': 'CaloriMint/2.0'})
+        resp = req.get(url, params=params, timeout=8, headers={'User-Agent': 'CaloriMint/2.0'})
         
         if resp.status_code != 200:
             return []
@@ -236,17 +211,14 @@ def search_openfoodfacts(query, lang='ru', page_size=50):
 
         for p in data.get('products', []):
             n = p.get('nutriments', {})
-
-            cal = (n.get('energy-kcal_100g')
-                   or n.get('energy-kcal')
-                   or (n.get('energy_100g', 0) / 4.184 if n.get('energy_100g') else 0))
+            cal = n.get('energy-kcal_100g') or n.get('energy-kcal') or (n.get('energy_100g', 0) / 4.184 if n.get('energy_100g') else 0)
             
             if not cal or cal <= 0:
                 continue
 
             protein = float(n.get('proteins_100g') or n.get('proteins') or 0)
-            fat     = float(n.get('fat_100g')      or n.get('fat')      or 0)
-            carbs   = float(n.get('carbohydrates_100g') or n.get('carbohydrates') or 0)
+            fat = float(n.get('fat_100g') or n.get('fat') or 0)
+            carbs = float(n.get('carbohydrates_100g') or n.get('carbohydrates') or 0)
 
             display_name = ''
             for field in preferred_fields:
@@ -280,13 +252,9 @@ def search_openfoodfacts(query, lang='ru', page_size=50):
 
         _off_cache[cache_key] = results
         _cache_timestamps[cache_key] = time.time()
-        
         return results
-
     except Exception as e:
-        print(f'[OFF] Error: {e}')
         return []
-
 
 # ===================== ROUTES =====================
 
@@ -297,53 +265,40 @@ def before_request():
             session['lang'] = current_user.language or 'ru'
         elif 'lang' not in session:
             session['lang'] = 'ru'
-    except Exception:
+    except:
         pass
-
     try:
         if current_user.is_authenticated and current_user.is_premium:
             if current_user.premium_ends and current_user.premium_ends < datetime.utcnow():
                 current_user.is_premium = False
                 current_user.premium_ends = None
                 db.session.commit()
-    except Exception:
+    except:
         pass
-
 
 @app.route('/')
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-
     lang = current_user.language or 'ru'
     today = date.today()
     entries = FoodEntry.query.filter_by(user_id=current_user.id, date=today).all()
-
     meals = {
         'breakfast': {'name': 'Завтрак', 'icon': '🌅', 'total': 0, 'entries': []},
-        'lunch':     {'name': 'Обед',     'icon': '☀️',  'total': 0, 'entries': []},
-        'dinner':    {'name': 'Ужин',    'icon': '🌙', 'total': 0, 'entries': []},
-        'snack':     {'name': 'Перекус',     'icon': '🍿', 'total': 0, 'entries': []},
+        'lunch': {'name': 'Обед', 'icon': '☀️', 'total': 0, 'entries': []},
+        'dinner': {'name': 'Ужин', 'icon': '🌙', 'total': 0, 'entries': []},
+        'snack': {'name': 'Перекус', 'icon': '🍿', 'total': 0, 'entries': []},
     }
-
     total_calories = total_protein = total_fat = total_carbs = 0
-
     for entry in entries:
         meal_type = entry.meal_type or 'snack'
         if meal_type in meals:
-            meals[meal_type]['entries'].append({
-                'id': entry.id,
-                'name': entry.food_name,
-                'grams': entry.grams,
-                'calories': entry.calories
-            })
+            meals[meal_type]['entries'].append({'id': entry.id, 'name': entry.food_name, 'grams': entry.grams, 'calories': entry.calories})
             meals[meal_type]['total'] += entry.calories
         total_calories += entry.calories
-        total_protein  += entry.protein
-        total_fat      += entry.fat
-        total_carbs    += entry.carbs
-
-    from datetime import timedelta
+        total_protein += entry.protein
+        total_fat += entry.fat
+        total_carbs += entry.carbs
     streak = 0
     check = today
     while True:
@@ -353,81 +308,46 @@ def index():
             check = check - timedelta(days=1)
         else:
             break
-
-    return render_template('index.html',
-        meals=meals,
-        total_calories=int(total_calories),
-        total_protein=int(total_protein),
-        total_fat=int(total_fat),
-        total_carbs=int(total_carbs),
-        lang=lang,
-        streak=streak
-    )
-
+    return render_template('index.html', meals=meals, total_calories=int(total_calories), total_protein=int(total_protein), total_fat=int(total_fat), total_carbs=int(total_carbs), lang=lang, streak=streak)
 
 @app.route('/api/search', methods=['GET'])
 @login_required
 def search_foods():
-    """ПОИСК С ПРИОРИТЕТОМ НА OPEN FOOD FACTS (3млн продуктов)"""
-    query    = request.args.get('q', '').strip().lower()
+    query = request.args.get('q', '').strip().lower()
     category = request.args.get('category', '').strip()
     show_all = request.args.get('show_all', '')
-    lang     = current_user.language or 'ru'
-
+    lang = current_user.language or 'ru'
     if not query and not category and not show_all:
         return jsonify([])
-
     from food_data import food_data
     results = []
-
-    # ЛОКАЛЬНЫЙ ПОИСК
     if category or show_all:
         for idx, food in enumerate(food_data):
             if category and food.get('category') != category:
                 continue
             if query:
-                haystack = ' '.join([food.get('name_ru', ''), food.get('name_en', ''),
-                                      food.get('name_uk', ''), food.get('name_kk', '')]).lower()
+                haystack = ' '.join([food.get('name_ru', ''), food.get('name_en', ''), food.get('name_uk', ''), food.get('name_kk', '')]).lower()
                 if query not in haystack:
                     continue
-            results.append({
-                'id': idx,
-                'name_ru': food['name_ru'],
-                'name_en': food.get('name_en', food['name_ru']),
-                'calories': food['calories'],
-                'protein':  food.get('protein', 0),
-                'fat':      food.get('fat', 0),
-                'carbs':    food.get('carbs', 0),
-                'category': food.get('category', 'other'),
-                'source': 'local'
-            })
-
-    # OPEN FOOD FACTS (ГЛАВНЫЙ ИСТОЧНИК - 3млн)
+            results.append({'id': idx, 'name_ru': food['name_ru'], 'name_en': food.get('name_en', food['name_ru']), 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0), 'category': food.get('category', 'other'), 'source': 'local'})
     if query:
         off_results = search_openfoodfacts(query, lang, page_size=50)
         local_names = {r['name_ru'].lower() for r in results}
-        
         for item in off_results:
             if item['name_ru'].lower() not in local_names:
                 results.append(item)
                 local_names.add(item['name_ru'].lower())
-    
     elif show_all:
         off_results = search_openfoodfacts('bread milk cheese', lang, page_size=30)
         local_names = {r['name_ru'].lower() for r in results[:100]}
-        
         for item in off_results:
             if item['name_ru'].lower() not in local_names and len(results) < 200:
                 results.append(item)
                 local_names.add(item['name_ru'].lower())
-
     local_items = [r for r in results if r['source'] == 'local']
     off_items = [r for r in results if r['source'] != 'local']
-    
     final_results = local_items + off_items
-    
     return jsonify(final_results[:50])
-
 
 @app.route('/api/search-off', methods=['GET'])
 @login_required
@@ -439,7 +359,6 @@ def search_foods_off():
     results = search_openfoodfacts(query, lang, page_size=50)
     return jsonify(results[:50])
 
-
 @app.route('/api/add-entry', methods=['POST'])
 @login_required
 def add_entry():
@@ -447,47 +366,27 @@ def add_entry():
     food_id = data.get('food_id')
     grams = float(data.get('grams', 100))
     meal_type = data.get('meal_type', 'snack')
-
     if isinstance(food_id, str) and (food_id.startswith('off_') or food_id.startswith('custom_')):
-        cal_per_100     = float(data.get('calories', 0))
+        cal_per_100 = float(data.get('calories', 0))
         protein_per_100 = float(data.get('protein', 0))
-        fat_per_100     = float(data.get('fat', 0))
-        carbs_per_100   = float(data.get('carbs', 0))
+        fat_per_100 = float(data.get('fat', 0))
+        carbs_per_100 = float(data.get('carbs', 0))
         food_name = data.get('food_name', 'Unknown')
         multiplier = grams / 100
-        entry = FoodEntry(
-            user_id=current_user.id, food_id=0, food_name=food_name,
-            grams=grams,
-            calories=cal_per_100 * multiplier,
-            protein=protein_per_100 * multiplier,
-            fat=fat_per_100 * multiplier,
-            carbs=carbs_per_100 * multiplier,
-            meal_type=meal_type, date=date.today()
-        )
+        entry = FoodEntry(user_id=current_user.id, food_id=0, food_name=food_name, grams=grams, calories=cal_per_100 * multiplier, protein=protein_per_100 * multiplier, fat=fat_per_100 * multiplier, carbs=carbs_per_100 * multiplier, meal_type=meal_type, date=date.today())
         db.session.add(entry)
         db.session.commit()
         return jsonify({'success': True})
-
     from food_data import food_data
     food_id = int(food_id)
     if food_id < 0 or food_id >= len(food_data):
         return jsonify({'error': 'Invalid food'}), 400
-
     food = food_data[food_id]
     multiplier = grams / 100
-    entry = FoodEntry(
-        user_id=current_user.id, food_id=food_id, food_name=food['name_ru'],
-        grams=grams,
-        calories=food['calories'] * multiplier,
-        protein=food.get('protein', 0) * multiplier,
-        fat=food.get('fat', 0) * multiplier,
-        carbs=food.get('carbs', 0) * multiplier,
-        meal_type=meal_type, date=date.today()
-    )
+    entry = FoodEntry(user_id=current_user.id, food_id=food_id, food_name=food['name_ru'], grams=grams, calories=food['calories'] * multiplier, protein=food.get('protein', 0) * multiplier, fat=food.get('fat', 0) * multiplier, carbs=food.get('carbs', 0) * multiplier, meal_type=meal_type, date=date.today())
     db.session.add(entry)
     db.session.commit()
     return jsonify({'success': True})
-
 
 @app.route('/api/delete-entry/<int:entry_id>', methods=['DELETE'])
 @login_required
@@ -499,20 +398,16 @@ def delete_entry(entry_id):
     db.session.commit()
     return jsonify({'success': True})
 
-
 @app.route('/api/clear-meal', methods=['POST'])
 @login_required
 def clear_meal():
     data = request.get_json()
     meal_type = data.get('meal_type')
-    entries = FoodEntry.query.filter_by(
-        user_id=current_user.id, meal_type=meal_type, date=date.today()
-    ).all()
+    entries = FoodEntry.query.filter_by(user_id=current_user.id, meal_type=meal_type, date=date.today()).all()
     for entry in entries:
         db.session.delete(entry)
     db.session.commit()
     return jsonify({'success': True})
-
 
 @app.route('/api/clear-day', methods=['DELETE'])
 @login_required
@@ -523,14 +418,11 @@ def clear_day():
     db.session.commit()
     return jsonify({'success': True})
 
-
 @app.route('/api/recent', methods=['GET'])
 @login_required
 def get_recent():
     from food_data import food_data
-    entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(
-        FoodEntry.created_at.desc()
-    ).limit(50).all()
+    entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(FoodEntry.created_at.desc()).limit(50).all()
     seen = set()
     results = []
     for entry in entries:
@@ -538,15 +430,10 @@ def get_recent():
             continue
         seen.add(entry.food_id)
         food = food_data[entry.food_id]
-        results.append({
-            'id': entry.food_id, 'name_ru': food['name_ru'],
-            'calories': food['calories'], 'protein': food.get('protein', 0),
-            'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)
-        })
+        results.append({'id': entry.food_id, 'name_ru': food['name_ru'], 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)})
         if len(results) >= 10:
             break
     return jsonify(results)
-
 
 @app.route('/api/favorites', methods=['GET'])
 @login_required
@@ -557,13 +444,8 @@ def get_favorites():
     for fid in fav_ids:
         if isinstance(fid, int) and 0 <= fid < len(food_data):
             food = food_data[fid]
-            results.append({
-                'id': fid, 'name_ru': food['name_ru'],
-                'calories': food['calories'], 'protein': food.get('protein', 0),
-                'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)
-            })
+            results.append({'id': fid, 'name_ru': food['name_ru'], 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)})
     return jsonify(results)
-
 
 @app.route('/api/favorites', methods=['POST'])
 @login_required
@@ -577,7 +459,6 @@ def add_favorite():
     db.session.commit()
     return jsonify({'success': True})
 
-
 @app.route('/api/favorites/<int:food_id>', methods=['DELETE'])
 @login_required
 def remove_favorite(food_id):
@@ -588,17 +469,11 @@ def remove_favorite(food_id):
     db.session.commit()
     return jsonify({'success': True})
 
-
 @app.route('/api/custom-foods', methods=['GET'])
 @login_required
 def get_custom_foods():
     foods = CustomFood.query.filter_by(user_id=current_user.id).order_by(CustomFood.created_at.desc()).all()
-    return jsonify([{
-        'id': f'custom_{f.id}', 'name_ru': f.name,
-        'calories': f.calories, 'protein': f.protein,
-        'fat': f.fat, 'carbs': f.carbs, 'source': 'custom'
-    } for f in foods])
-
+    return jsonify([{'id': f'custom_{f.id}', 'name_ru': f.name, 'calories': f.calories, 'protein': f.protein, 'fat': f.fat, 'carbs': f.carbs, 'source': 'custom'} for f in foods])
 
 @app.route('/api/custom-foods', methods=['POST'])
 @login_required
@@ -611,17 +486,10 @@ def create_custom_food():
     name = data.get('name', '').strip()
     if not name:
         return jsonify({'error': 'Name required'}), 400
-    f = CustomFood(
-        user_id=current_user.id, name=name,
-        calories=float(data.get('calories', 0)),
-        protein=float(data.get('protein', 0)),
-        fat=float(data.get('fat', 0)),
-        carbs=float(data.get('carbs', 0))
-    )
+    f = CustomFood(user_id=current_user.id, name=name, calories=float(data.get('calories', 0)), protein=float(data.get('protein', 0)), fat=float(data.get('fat', 0)), carbs=float(data.get('carbs', 0)))
     db.session.add(f)
     db.session.commit()
     return jsonify({'success': True, 'id': f'custom_{f.id}'})
-
 
 @app.route('/api/custom-foods/<int:food_id>', methods=['DELETE'])
 @login_required
@@ -633,19 +501,13 @@ def delete_custom_food(food_id):
     db.session.commit()
     return jsonify({'success': True})
 
-
 @app.route('/api/weight-log', methods=['GET'])
 @login_required
 def get_weight_log():
-    from datetime import timedelta
     days = int(request.args.get('days', 30))
     since = date.today() - timedelta(days=days)
-    logs = WeightLog.query.filter(
-        WeightLog.user_id == current_user.id,
-        WeightLog.date >= since
-    ).order_by(WeightLog.date.asc()).all()
+    logs = WeightLog.query.filter(WeightLog.user_id == current_user.id, WeightLog.date >= since).order_by(WeightLog.date.asc()).all()
     return jsonify([{'date': l.date.strftime('%Y-%m-%d'), 'weight': l.weight} for l in logs])
-
 
 @app.route('/api/weight-log', methods=['POST'])
 @login_required
@@ -665,47 +527,33 @@ def add_weight_log():
     db.session.commit()
     return jsonify({'success': True})
 
-
 @app.route('/api/last-weight', methods=['GET'])
 @login_required
 def get_last_weight():
     last = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
-    return jsonify({
-        'weight': last.weight if last else (current_user.current_weight or ''),
-        'date': last.date.strftime('%Y-%m-%d') if last else None
-    })
-
+    return jsonify({'weight': last.weight if last else (current_user.current_weight or ''), 'date': last.date.strftime('%Y-%m-%d') if last else None})
 
 @app.route('/api/history-data', methods=['GET'])
 @login_required
 def history_data():
-    from datetime import timedelta
     days = int(request.args.get('days', 30))
     since = date.today() - timedelta(days=days)
-    entries = FoodEntry.query.filter(
-        FoodEntry.user_id == current_user.id,
-        FoodEntry.date >= since
-    ).all()
+    entries = FoodEntry.query.filter(FoodEntry.user_id == current_user.id, FoodEntry.date >= since).all()
     day_map = {}
     for e in entries:
         ds = e.date.strftime('%Y-%m-%d')
         if ds not in day_map:
             day_map[ds] = {'calories': 0, 'protein': 0, 'fat': 0, 'carbs': 0, 'foods': []}
         day_map[ds]['calories'] += e.calories
-        day_map[ds]['protein']  += e.protein
-        day_map[ds]['fat']      += e.fat
-        day_map[ds]['carbs']    += e.carbs
-        day_map[ds]['foods'].append({
-            'name': e.food_name, 'grams': e.grams,
-            'calories': e.calories, 'meal': e.meal_type
-        })
+        day_map[ds]['protein'] += e.protein
+        day_map[ds]['fat'] += e.fat
+        day_map[ds]['carbs'] += e.carbs
+        day_map[ds]['foods'].append({'name': e.food_name, 'grams': e.grams, 'calories': e.calories, 'meal': e.meal_type})
     return jsonify({'days': day_map, 'goal': current_user.daily_calorie_goal or 2000})
-
 
 @app.route('/api/streak', methods=['GET'])
 @login_required
 def get_streak():
-    from datetime import timedelta
     today = date.today()
     streak = 0
     check = today
@@ -718,91 +566,66 @@ def get_streak():
             break
     return jsonify({'streak': streak})
 
-
 @app.route('/api/weekly-summary', methods=['GET'])
 @login_required
 def weekly_summary():
-    from datetime import timedelta
     today = date.today()
     since = today - timedelta(days=6)
-    entries = FoodEntry.query.filter(
-        FoodEntry.user_id == current_user.id,
-        FoodEntry.date >= since
-    ).all()
+    entries = FoodEntry.query.filter(FoodEntry.user_id == current_user.id, FoodEntry.date >= since).all()
     goal = current_user.daily_calorie_goal or 2000
     day_map = {}
     for e in entries:
         ds = e.date.strftime('%Y-%m-%d')
         if ds not in day_map:
             day_map[ds] = {'cal': 0, 'protein': 0, 'fat': 0, 'carbs': 0}
-        day_map[ds]['cal']     += e.calories
+        day_map[ds]['cal'] += e.calories
         day_map[ds]['protein'] += e.protein
-        day_map[ds]['fat']     += e.fat
-        day_map[ds]['carbs']   += e.carbs
-    days_logged  = len(day_map)
+        day_map[ds]['fat'] += e.fat
+        day_map[ds]['carbs'] += e.carbs
+    days_logged = len(day_map)
     days_on_goal = sum(1 for d in day_map.values() if d['cal'] <= goal)
-    avg_cal      = round(sum(d['cal']     for d in day_map.values()) / max(days_logged, 1))
-    return jsonify({
-        'days_logged': days_logged, 'days_on_goal': days_on_goal,
-        'avg_cal': avg_cal, 'goal': goal
-    })
-
+    avg_cal = round(sum(d['cal'] for d in day_map.values()) / max(days_logged, 1))
+    return jsonify({'days_logged': days_logged, 'days_on_goal': days_on_goal, 'avg_cal': avg_cal, 'goal': goal})
 
 @app.route('/history')
 @login_required
 def history():
-    from datetime import timedelta
-    from collections import OrderedDict
     lang = current_user.language or 'ru'
     is_premium = current_user.is_premium
-
     if is_premium:
         entries = FoodEntry.query.filter_by(user_id=current_user.id).order_by(FoodEntry.date.desc()).all()
     else:
         since = date.today() - timedelta(days=6)
-        entries = FoodEntry.query.filter(
-            FoodEntry.user_id == current_user.id,
-            FoodEntry.date >= since
-        ).order_by(FoodEntry.date.desc()).all()
-
+        entries = FoodEntry.query.filter(FoodEntry.user_id == current_user.id, FoodEntry.date >= since).order_by(FoodEntry.date.desc()).all()
     days = OrderedDict()
     for e in entries:
         ds = e.date.strftime('%d.%m.%Y')
         if ds not in days:
             days[ds] = {'entries': [], 'total_cal': 0}
-        days[ds]['entries'].append({
-            'food_name': e.food_name, 'grams': e.grams, 'calories': e.calories,
-            'meal_type': e.meal_type or 'other'
-        })
+        days[ds]['entries'].append({'food_name': e.food_name, 'grams': e.grams, 'calories': e.calories, 'meal_type': e.meal_type or 'other'})
         days[ds]['total_cal'] += e.calories
-
-    return render_template('history.html', days=days, lang=lang, is_premium=is_premium,
-                           goal=current_user.daily_calorie_goal or 2000)
-
+    return render_template('history.html', days=days, lang=lang, is_premium=is_premium, goal=current_user.daily_calorie_goal or 2000)
 
 @app.route('/goals', methods=['GET', 'POST'])
 @login_required
 def goals():
     lang = current_user.language or 'ru'
-
     if request.method == 'POST':
         current_user.daily_calorie_goal = int(request.form.get('daily_calorie_goal', 2000))
-        current_user.protein_goal       = int(request.form.get('protein_goal', 150))
-        current_user.fat_goal           = int(request.form.get('fat_goal', 70))
-        current_user.carbs_goal         = int(request.form.get('carbs_goal', 250))
-        current_user.age                = int(request.form.get('age', 25))
-        current_user.gender             = request.form.get('gender', 'male')
-        current_user.activity           = request.form.get('activity', 'moderate')
-        current_user.height             = float(request.form.get('height', 170))
-        current_user.current_weight     = float(request.form.get('current_weight', 70))
-        current_user.goal_weight        = float(request.form.get('goal_weight', 70))
-        current_user.water_goal         = int(request.form.get('water_goal', 8))
+        current_user.protein_goal = int(request.form.get('protein_goal', 150))
+        current_user.fat_goal = int(request.form.get('fat_goal', 70))
+        current_user.carbs_goal = int(request.form.get('carbs_goal', 250))
+        current_user.age = int(request.form.get('age', 25))
+        current_user.gender = request.form.get('gender', 'male')
+        current_user.activity = request.form.get('activity', 'moderate')
+        current_user.height = float(request.form.get('height', 170))
+        current_user.current_weight = float(request.form.get('current_weight', 70))
+        current_user.goal_weight = float(request.form.get('goal_weight', 70))
+        current_user.water_goal = int(request.form.get('water_goal', 8))
         db.session.commit()
         flash('Goals updated!', 'success')
         return redirect(url_for('goals'))
-
     return render_template('goals.html', user=current_user, lang=lang)
-
 
 @app.route('/categories')
 @login_required
@@ -814,26 +637,17 @@ def categories():
         cat = food.get('category', 'other')
         if cat not in cats:
             cats[cat] = []
-        cats[cat].append({
-            'id': idx, 'name': food['name_ru'], 'calories': food['calories'],
-            'protein': food.get('protein', 0), 'fat': food.get('fat', 0),
-            'carbs': food.get('carbs', 0)
-        })
-    
+        cats[cat].append({'id': idx, 'name': food['name_ru'], 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0)})
     cat_labels = {
         'fruits': '🍎 Фрукты', 'vegetables': '🥦 Овощи', 'meat': '🥩 Мясо',
         'dairy': '🥛 Молочное', 'grains': '🌾 Злаки', 'nuts': '🌰 Орехи',
         'fish': '🐟 Рыба', 'sweets': '🍫 Сладкое', 'drinks': '🥤 Напитки',
         'supplements': '💊 Витамины', 'sports_nutrition': '💪 Спортпит'
     }
-    
     category_keys = [k for k in cat_labels if k in cats]
     current_cat = request.args.get('cat', category_keys[0] if category_keys else 'fruits')
     foods = sorted(cats.get(current_cat, []), key=lambda x: x['name'])
-    
-    return render_template('categories.html', categories=cats, category_keys=category_keys,
-        cat_labels=cat_labels, current_cat=current_cat, foods=foods, lang=lang)
-
+    return render_template('categories.html', categories=cats, category_keys=category_keys, cat_labels=cat_labels, current_cat=current_cat, foods=foods, lang=lang)
 
 @app.route('/premium')
 @login_required
@@ -841,14 +655,11 @@ def premium():
     lang = current_user.language or 'ru'
     trial_available = not current_user.trial_used and not current_user.is_premium
     trial_active = bool(current_user.trial_ends and current_user.trial_ends > datetime.utcnow())
-    return render_template('premium.html', lang=lang,
-                           trial_available=trial_available, trial_active=trial_active)
-
+    return render_template('premium.html', lang=lang, trial_available=trial_available, trial_active=trial_active)
 
 @app.route('/start-trial')
 @login_required
 def start_trial():
-    from datetime import timedelta
     if current_user.trial_used or current_user.is_premium:
         return redirect(url_for('premium'))
     current_user.trial_used = True
@@ -858,109 +669,68 @@ def start_trial():
     flash('Trial activated!', 'success')
     return redirect(url_for('index'))
 
-
 @app.route('/buy-premium', methods=['POST'])
 @login_required
 def buy_premium():
-    from datetime import timedelta
-    
     if not Payment:
         return jsonify({'error': 'Payment unavailable'}), 500
-    
     try:
         idempotency_key = str(uuid.uuid4())
-        payment = Payment.create({
-            "amount": {"value": "129.00", "currency": "RUB"},
-            "confirmation": {
-                "type": "redirect",
-                "return_url": request.url_root + "premium-success"
-            },
-            "description": f"Premium subscription for {current_user.username}"
-        }, idempotency_key)
-        
+        payment = Payment.create({"amount": {"value": "129.00", "currency": "RUB"}, "confirmation": {"type": "redirect", "return_url": request.url_root + "premium-success"}, "description": f"Premium subscription for {current_user.username}"}, idempotency_key)
         current_user.is_premium = True
         current_user.premium_ends = datetime.utcnow() + timedelta(days=30)
         db.session.commit()
-        
         return jsonify({'confirmation_url': payment.confirmation.confirmation_url})
     except Exception as e:
-        print(f'[YooKassa] Error: {e}')
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         user = User.query.filter_by(username=username).first()
-        
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
-            next_page = request.args.get('next')
-            if not next_page or url_has_no_scheme(next_page):
-                next_page = url_for('index')
-            return redirect(next_page)
-        
+            return redirect(url_for('index'))
         flash('Invalid credentials', 'error')
-    
     return render_template('login.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
         confirm = request.form.get('confirm_password', '')
-        
         if not username or not email or not password:
             flash('All fields required', 'error')
             return redirect(url_for('register'))
-        
         if password != confirm:
             flash('Passwords do not match', 'error')
             return redirect(url_for('register'))
-        
         if User.query.filter_by(username=username).first():
             flash('Username taken', 'error')
             return redirect(url_for('register'))
-        
         if User.query.filter_by(email=email).first():
             flash('Email taken', 'error')
             return redirect(url_for('register'))
-        
-        user = User(
-            username=username, email=email,
-            password_hash=generate_password_hash(password),
-            language='ru'
-        )
+        user = User(username=username, email=email, password_hash=generate_password_hash(password), language='ru')
         db.session.add(user)
         db.session.commit()
-        
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('login'))
-    
     return render_template('register.html')
-
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-
-def url_has_no_scheme(url):
-    return not url.startswith(('http://', 'https://', '/'))
-
 
 @app.route('/admin')
 @login_required
@@ -969,7 +739,6 @@ def admin():
         return 'Forbidden', 403
     users = User.query.all()
     return render_template('admin.html', users=users)
-
 
 @app.route('/set-language/<lang>')
 def set_language(lang):
@@ -980,21 +749,17 @@ def set_language(lang):
         session['lang'] = lang
     return redirect(request.referrer or url_for('index'))
 
-
 @app.errorhandler(404)
 def not_found(e):
     return 'Not found', 404
-
 
 @app.errorhandler(500)
 def server_error(e):
     return 'Server error', 500
 
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         init_db()
-    
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
