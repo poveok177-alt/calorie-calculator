@@ -254,7 +254,7 @@ TRANSLATIONS = {
         'premium_activate_test': 'Активировать Premium (тест)',
         'premium_try': 'Попробовать 7 дней бесплатно',
         'premium_already_used': 'Пробный период уже использован',
-        'supplements': 'Витамины и добавки 💊',
+        'supplements': 'Добавки 💊',
         'sports_nutrition': 'Спортпит 💪',
         'recent': 'Недавние',
         'favorites': 'Избранные',
@@ -323,7 +323,7 @@ TRANSLATIONS = {
         'bju_counter': 'Macros counter',
         'no_ads': 'No ads',
         'premium_desc': 'Unlock all features to reach your goals',
-        'subscribe': 'Subscribe — 89 ₽/mo',
+        'subscribe': 'Subscribe — $2.99/mo',
         'remove': 'Remove',
         'kcal': 'kcal',
         'g': 'g',
@@ -400,7 +400,7 @@ TRANSLATIONS = {
         'premium_activate_test': 'Activate Premium (test)',
         'premium_try': 'Try 7 days free',
         'premium_already_used': 'Trial already used',
-        'supplements': 'Vitamins & Supplements 💊',
+        'supplements': 'Supplements 💊',
         'sports_nutrition': 'Sports nutrition 💪',
         'recent': 'Recent',
         'favorites': 'Favorites',
@@ -473,7 +473,8 @@ TRANSLATIONS = {
         'remove': 'Видалити',
         'kcal': 'ккал',
         'g': 'г',
-        'supplements': 'Вітаміни та добавки 💊',
+        'supplements': 'Добавки 💊',
+        'sports_nutrition': 'Спортхарч 💪',
         'recent': 'Недавні',
         'favorites': 'Вибрані',
         'back': 'Назад',
@@ -689,7 +690,7 @@ TRANSLATIONS = {
     }
 }
 
-CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'fish', 'dairy', 'grains', 'nuts', 'eggs', 'legumes', 'fastfood', 'sweets', 'drinks', 'oils', 'sauces', 'sports', 'supplements', 'baby', 'other']
+CATEGORY_KEYS = ['fruits', 'vegetables', 'meat', 'fish', 'dairy', 'grains', 'nuts', 'eggs', 'legumes', 'fastfood', 'sweets', 'drinks', 'oils', 'sauces', 'sports', 'baby', 'other']
 
 def get_t():
     lang = session.get('language', 'ru')
@@ -1083,6 +1084,45 @@ def admin_revoke_premium():
 
 # ===================== API =====================
 
+
+@app.route('/api/custom-foods', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def api_custom_foods():
+    if request.method == 'GET':
+        foods = CustomFood.query.filter_by(user_id=current_user.id).order_by(CustomFood.created_at.desc()).all()
+        return jsonify([{
+            'id': f'custom_{f.id}', 'name': f.name, 'calories': f.calories,
+            'protein': f.protein, 'fat': f.fat, 'carbs': f.carbs,
+            'category': f.category, 'is_custom': True
+        } for f in foods])
+    elif request.method == 'POST':
+        data = request.get_json()
+        name = (data.get('name') or '').strip()
+        if not name:
+            return jsonify({'error': 'Название обязательно'}), 400
+        try:
+            cf = CustomFood(
+                user_id=current_user.id, name=name,
+                calories=float(data.get('calories', 0)),
+                protein=float(data.get('protein', 0)),
+                fat=float(data.get('fat', 0)),
+                carbs=float(data.get('carbs', 0)),
+                category=data.get('category', 'other')
+            )
+            db.session.add(cf)
+            db.session.commit()
+            return jsonify({'success': True, 'id': f'custom_{cf.id}', 'name': cf.name})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+    elif request.method == 'DELETE':
+        data = request.get_json()
+        raw_id = str(data.get('id', '')).replace('custom_', '')
+        cf = CustomFood.query.filter_by(id=int(raw_id), user_id=current_user.id).first()
+        if cf:
+            db.session.delete(cf)
+            db.session.commit()
+        return jsonify({'success': True})
+
 @app.route('/api/search')
 def api_search():
     lang = session.get('language', 'ru')
@@ -1152,24 +1192,6 @@ def api_search():
                 if len(result) >= limit: break
         except Exception as e:
             app.logger.warning(f'OpenFoodFacts search error: {e}')
-
-    # Добавляем кастомные продукты пользователя в результаты поиска
-    if current_user.is_authenticated:
-        custom_q = CustomFood.query.filter_by(user_id=current_user.id)
-        if q:
-            custom_q = custom_q.filter(CustomFood.name.ilike(f'%{q}%'))
-        custom_foods = custom_q.limit(10).all()
-        for cf in custom_foods:
-            result.insert(0, {
-                'id': f'custom_{cf.id}',
-                'name': f'⭐ {cf.name}',
-                'calories': round(cf.calories, 1),
-                'protein': round(cf.protein, 1),
-                'fat': round(cf.fat, 1),
-                'carbs': round(cf.carbs, 1),
-                'category': cf.category,
-                'is_custom': True,
-            })
 
     return jsonify(result[:limit])
 
@@ -1243,29 +1265,22 @@ def api_add_entry():
     grams = float(data.get('grams', 100))
     ratio = grams / 100
 
-    # Кастомный продукт пользователя (id начинается с 'custom_')
+    # Кастомный продукт пользователя
     if str(food_id).startswith('custom_'):
-        raw_id = str(food_id).replace('custom_', '')
-        cf = CustomFood.query.filter_by(id=int(raw_id), user_id=current_user.id).first()
+        raw_id = int(str(food_id).replace('custom_', ''))
+        cf = CustomFood.query.filter_by(id=raw_id, user_id=current_user.id).first()
         if not cf:
             return jsonify({'error': 'Custom food not found'}), 404
-        # Сохраняем как Food чтобы можно было ссылаться в FoodEntry
-        existing = Food.query.filter_by(name_ru=cf.name, category=cf.category).first()
+        existing = Food.query.filter_by(name_ru=cf.name).first()
         if existing:
             food = existing
         else:
-            food = Food(
-                name_ru=cf.name, name_en=cf.name, name_uk=cf.name, name_kk=cf.name,
-                calories=cf.calories, protein=cf.protein, fat=cf.fat, carbs=cf.carbs,
-                category=cf.category
-            )
+            food = Food(name_ru=cf.name, name_en=cf.name, name_uk=cf.name, name_kk=cf.name,
+                        calories=cf.calories, protein=cf.protein, fat=cf.fat, carbs=cf.carbs,
+                        category=cf.category)
             db.session.add(food)
             db.session.flush()
-        calories = cf.calories
-        protein  = cf.protein
-        fat      = cf.fat
-        carbs    = cf.carbs
-        name     = cf.name
+        calories, protein, fat, carbs, name = cf.calories, cf.protein, cf.fat, cf.carbs, cf.name
 
     # Продукт из Open Food Facts (id начинается с 'off_')
     elif str(food_id).startswith('off_'):
@@ -1299,7 +1314,7 @@ def api_add_entry():
     entry = FoodEntry(
         user_id=current_user.id,
         food_id=food.id,
-        food_name=name if str(food_id).startswith(('off_', 'custom_')) else get_food_name(food, lang),
+        food_name=get_food_name(food, lang) if not str(food_id).startswith('off_') else name,
         grams=grams,
         calories=round(calories * ratio, 1),
         protein=round(protein * ratio, 1),
@@ -1378,55 +1393,6 @@ def api_weight_log():
 def api_last_weight():
     log = WeightLog.query.filter_by(user_id=current_user.id).order_by(WeightLog.date.desc()).first()
     return jsonify({'weight': log.weight if log else None})
-
-@app.route('/api/custom-foods', methods=['GET', 'POST', 'DELETE'])
-@login_required
-def api_custom_foods():
-    lang = session.get('language', 'ru')
-    if request.method == 'GET':
-        foods = CustomFood.query.filter_by(user_id=current_user.id).order_by(CustomFood.created_at.desc()).all()
-        return jsonify([{
-            'id': f'custom_{f.id}',
-            'name': f.name,
-            'calories': f.calories,
-            'protein': f.protein,
-            'fat': f.fat,
-            'carbs': f.carbs,
-            'category': f.category,
-            'is_custom': True
-        } for f in foods])
-    elif request.method == 'POST':
-        data = request.get_json()
-        name = (data.get('name') or '').strip()
-        if not name:
-            return jsonify({'error': 'Название обязательно'}), 400
-        try:
-            calories = float(data.get('calories', 0))
-            protein = float(data.get('protein', 0))
-            fat = float(data.get('fat', 0))
-            carbs = float(data.get('carbs', 0))
-        except (ValueError, TypeError):
-            return jsonify({'error': 'Неверные данные'}), 400
-        cf = CustomFood(
-            user_id=current_user.id,
-            name=name,
-            calories=calories,
-            protein=protein,
-            fat=fat,
-            carbs=carbs,
-            category=data.get('category', 'other')
-        )
-        db.session.add(cf)
-        db.session.commit()
-        return jsonify({'success': True, 'id': f'custom_{cf.id}', 'name': cf.name})
-    elif request.method == 'DELETE':
-        data = request.get_json()
-        raw_id = str(data.get('id', '')).replace('custom_', '')
-        cf = CustomFood.query.filter_by(id=int(raw_id), user_id=current_user.id).first()
-        if cf:
-            db.session.delete(cf)
-            db.session.commit()
-        return jsonify({'success': True})
 
 @app.route('/api/weekly-summary')
 @login_required
