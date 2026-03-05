@@ -9,6 +9,7 @@ import os
 import uuid
 import hashlib
 import time
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -275,8 +276,6 @@ def _is_cache_valid(cache_key):
     return (time.time() - _cache_timestamps[cache_key]) < _cache_ttl
 
 def search_openfoodfacts(query, lang='ru', page_size=50):
-    import requests as req
-    
     cache_key = _get_cache_key(query, lang)
     if cache_key in _off_cache and _is_cache_valid(cache_key):
         return _off_cache[cache_key]
@@ -302,7 +301,7 @@ def search_openfoodfacts(query, lang='ru', page_size=50):
             'lc': search_lc,
             'fields': 'code,product_name,product_name_ru,product_name_en,product_name_uk,product_name_kk,nutriments,categories_tags,brands,quantity,image_front_small_url'
         }
-        resp = req.get(url, params=params, timeout=8, headers={'User-Agent': 'CaloriMint/2.0'})
+        resp = requests.get(url, params=params, timeout=8, headers={'User-Agent': 'CaloriMint/2.0'})
         
         if resp.status_code != 200:
             return []
@@ -356,6 +355,7 @@ def search_openfoodfacts(query, lang='ru', page_size=50):
         _cache_timestamps[cache_key] = time.time()
         return results
     except Exception as e:
+        print(f"❌ Open Food Facts API error: {e}")
         return []
 
 # ===================== ROUTES =====================
@@ -420,71 +420,94 @@ def search_foods():
     query = request.args.get('q', '').strip().lower()
     category = request.args.get('category', '').strip()
     show_all = request.args.get('show_all', '')
-    lang = current_user.language or 'ru'
+    
     if not query and not category and not show_all:
         return jsonify([])
-    from food_data import food_data
-    results = []
     
-    # Категории для поиска в Open Food Facts
-    category_keywords = {
-        'fruits': 'fruits',
-        'vegetables': 'vegetables',
-        'meat': 'meat poultry',
-        'dairy': 'dairy milk cheese yogurt',
-        'grains': 'cereals bread pasta rice',
-        'nuts': 'nuts seeds',
-        'fish': 'fish seafood',
-        'sweets': 'sweets chocolate candy',
-        'drinks': 'beverages juice water',
-        'supplements': 'vitamins minerals',
-        'sports_nutrition': 'protein sports nutrition',
-    }
+    import sqlite3
     
-    if category or show_all:
-        for idx, food in enumerate(food_data):
-            if category and food.get('category') != category:
-                continue
-            if query:
-                haystack = ' '.join([food.get('name_ru', ''), food.get('name_en', ''), food.get('name_uk', ''), food.get('name_kk', '')]).lower()
-                if query not in haystack:
+    try:
+        # 🎯 SQLITE ПОИСК - 3+ МИЛЛИОНА ПРОДУКТОВ!
+        conn = sqlite3.connect('products.db')
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        
+        results = []
+        
+        if query:
+            # Полнотекстовый поиск по 3млн продуктов
+            c.execute('''
+                SELECT id, name_ru, name_en, calories, protein, fat, carbs, category
+                FROM products
+                WHERE name_ru LIKE ? OR name_en LIKE ?
+                LIMIT 100
+            ''', (f'%{query}%', f'%{query}%'))
+        
+        elif category:
+            # Поиск по категории
+            c.execute('''
+                SELECT id, name_ru, name_en, calories, protein, fat, carbs, category
+                FROM products
+                WHERE category = ?
+                ORDER BY RANDOM()
+                LIMIT 100
+            ''', (category,))
+        
+        elif show_all:
+            # Случайные продукты
+            c.execute('''
+                SELECT id, name_ru, name_en, calories, protein, fat, carbs, category
+                FROM products
+                ORDER BY RANDOM()
+                LIMIT 50
+            ''')
+        
+        for row in c.fetchall():
+            results.append({
+                'id': f'db_{row[0]}',
+                'name_ru': row[1],
+                'name_en': row[2],
+                'calories': float(row[3]),
+                'protein': float(row[4]),
+                'fat': float(row[5]),
+                'carbs': float(row[6]),
+                'category': row[7],
+                'source': 'sqlite'
+            })
+        
+        conn.close()
+        return jsonify(results)
+    
+    except Exception as e:
+        print(f"⚠️ SQLite error: {e}")
+        # FALLBACK: если БД не создана, используем локальные продукты
+        try:
+            from food_data import food_data
+            results = []
+            
+            for idx, food in enumerate(food_data):
+                if category and food.get('category') != category:
                     continue
-            results.append({'id': idx, 'name_ru': food['name_ru'], 'name_en': food.get('name_en', food['name_ru']), 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0), 'category': food.get('category', 'other'), 'source': 'local'})
-    
-    if query:
-        # Поиск в Open Food Facts по запросу
-        off_results = search_openfoodfacts(query, lang, page_size=50)
-        local_names = {r['name_ru'].lower() for r in results}
-        for item in off_results:
-            if item['name_ru'].lower() not in local_names:
-                results.append(item)
-                local_names.add(item['name_ru'].lower())
-    elif category and not show_all:
-        # Поиск в Open Food Facts по категории
-        keyword = category_keywords.get(category, category)
-        off_results = search_openfoodfacts(keyword, lang, page_size=80)
-        local_names = {r['name_ru'].lower() for r in results}
-        for item in off_results:
-            if item['name_ru'].lower() not in local_names and len(results) < 200:
-                results.append(item)
-                local_names.add(item['name_ru'].lower())
-    elif show_all:
-        # Загрузить разные категории из Open Food Facts
-        keywords = ['bread', 'milk', 'cheese', 'meat', 'vegetables', 'fruits', 'fish']
-        local_names = {r['name_ru'].lower() for r in results[:100]}
-        for kw in keywords:
-            off_results = search_openfoodfacts(kw, lang, page_size=30)
-            for item in off_results:
-                if item['name_ru'].lower() not in local_names and len(results) < 250:
-                    results.append(item)
-                    local_names.add(item['name_ru'].lower())
-            if len(results) >= 250:
-                break
-    
-    local_items = [r for r in results if r['source'] == 'local']
-    off_items = [r for r in results if r['source'] != 'local']
-    final_results = local_items + off_items
-    return jsonify(final_results[:100])
+                if query:
+                    haystack = ' '.join([food.get('name_ru', ''), food.get('name_en', '')]).lower()
+                    if query not in haystack:
+                        continue
+                
+                results.append({
+                    'id': idx,
+                    'name_ru': food['name_ru'],
+                    'name_en': food.get('name_en', food['name_ru']),
+                    'calories': food['calories'],
+                    'protein': food.get('protein', 0),
+                    'fat': food.get('fat', 0),
+                    'carbs': food.get('carbs', 0),
+                    'category': food.get('category', 'other'),
+                    'source': 'local'
+                })
+            
+            return jsonify(results[:100])
+        except:
+            return jsonify([])
 
 @app.route('/api/search-off', methods=['GET'])
 @login_required
