@@ -263,7 +263,7 @@ def get_lang():
 
 _off_cache = {}
 _cache_timestamps = {}
-_cache_ttl = 3600
+_cache_ttl = 7200  # 2 часа кеша
 
 def _get_cache_key(query, lang):
     raw = f"{query.lower().strip()}:{lang}"
@@ -425,6 +425,22 @@ def search_foods():
         return jsonify([])
     from food_data import food_data
     results = []
+    
+    # Категории для поиска в Open Food Facts
+    category_keywords = {
+        'fruits': 'fruits',
+        'vegetables': 'vegetables',
+        'meat': 'meat poultry',
+        'dairy': 'dairy milk cheese yogurt',
+        'grains': 'cereals bread pasta rice',
+        'nuts': 'nuts seeds',
+        'fish': 'fish seafood',
+        'sweets': 'sweets chocolate candy',
+        'drinks': 'beverages juice water',
+        'supplements': 'vitamins minerals',
+        'sports_nutrition': 'protein sports nutrition',
+    }
+    
     if category or show_all:
         for idx, food in enumerate(food_data):
             if category and food.get('category') != category:
@@ -434,24 +450,41 @@ def search_foods():
                 if query not in haystack:
                     continue
             results.append({'id': idx, 'name_ru': food['name_ru'], 'name_en': food.get('name_en', food['name_ru']), 'calories': food['calories'], 'protein': food.get('protein', 0), 'fat': food.get('fat', 0), 'carbs': food.get('carbs', 0), 'category': food.get('category', 'other'), 'source': 'local'})
+    
     if query:
+        # Поиск в Open Food Facts по запросу
         off_results = search_openfoodfacts(query, lang, page_size=50)
         local_names = {r['name_ru'].lower() for r in results}
         for item in off_results:
             if item['name_ru'].lower() not in local_names:
                 results.append(item)
                 local_names.add(item['name_ru'].lower())
-    elif show_all:
-        off_results = search_openfoodfacts('bread milk cheese', lang, page_size=30)
-        local_names = {r['name_ru'].lower() for r in results[:100]}
+    elif category and not show_all:
+        # Поиск в Open Food Facts по категории
+        keyword = category_keywords.get(category, category)
+        off_results = search_openfoodfacts(keyword, lang, page_size=80)
+        local_names = {r['name_ru'].lower() for r in results}
         for item in off_results:
             if item['name_ru'].lower() not in local_names and len(results) < 200:
                 results.append(item)
                 local_names.add(item['name_ru'].lower())
+    elif show_all:
+        # Загрузить разные категории из Open Food Facts
+        keywords = ['bread', 'milk', 'cheese', 'meat', 'vegetables', 'fruits', 'fish']
+        local_names = {r['name_ru'].lower() for r in results[:100]}
+        for kw in keywords:
+            off_results = search_openfoodfacts(kw, lang, page_size=30)
+            for item in off_results:
+                if item['name_ru'].lower() not in local_names and len(results) < 250:
+                    results.append(item)
+                    local_names.add(item['name_ru'].lower())
+            if len(results) >= 250:
+                break
+    
     local_items = [r for r in results if r['source'] == 'local']
     off_items = [r for r in results if r['source'] != 'local']
     final_results = local_items + off_items
-    return jsonify(final_results[:50])
+    return jsonify(final_results[:100])
 
 @app.route('/api/search-off', methods=['GET'])
 @login_required
