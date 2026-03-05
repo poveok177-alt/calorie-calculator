@@ -2,266 +2,353 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>{{ t.app_name }} — {{ t.categories }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root { --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83; --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9; --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e; --border:#c8eedd; --shadow:rgba(76,175,131,.12); }
+  :root {
+    --mint:#b5ead7; --mint-light:#e8f8f2; --green:#4caf83;
+    --green-dark:#2d8a63; --green-soft:#6dc49a; --cream:#f9fdf9;
+    --text:#2d4a3e; --text-soft:#5a7a6e; --text-light:#8aaa9e;
+    --border:#c8eedd; --shadow:rgba(76,175,131,.12);
+  }
   *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
   html { -webkit-text-size-adjust:100%; overflow-x:hidden; }
   body {
     font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text);
     min-height:100vh; overflow-x:hidden;
     background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
-    /* Отступ под bottom nav */
     padding-bottom: max(80px, calc(72px + env(safe-area-inset-bottom)));
   }
   button, a { touch-action:manipulation; }
 
   /* ── NAV ── */
-  nav {
-    background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--border); padding:0 20px;
-    position:sticky; top:0; z-index:100; box-shadow:0 2px 20px var(--shadow);
+  nav.top-nav {
+    background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border); padding:0 16px;
+    position:sticky; top:0; z-index:100; box-shadow:0 2px 16px var(--shadow);
   }
   .nav-inner {
     max-width:1100px; margin:0 auto;
-    display:flex; align-items:center; justify-content:space-between; height:60px;
+    display:flex; align-items:center; justify-content:space-between; height:56px;
   }
-  .logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--green-dark); text-decoration:none; white-space:nowrap; }
+  .logo {
+    font-family:'Playfair Display',serif; font-size:20px; font-weight:600;
+    color:var(--green-dark); text-decoration:none; white-space:nowrap;
+  }
   .nav-link {
-    padding:8px 14px; border-radius:20px; text-decoration:none;
+    padding:8px 12px; border-radius:20px; text-decoration:none;
     font-size:14px; font-weight:600; color:var(--text-soft); transition:all .2s;
     min-height:44px; display:inline-flex; align-items:center;
   }
   .nav-link:hover { background:var(--mint-light); color:var(--green-dark); }
 
-  /* ── LAYOUT ── */
-  main {
-    max-width:1100px; margin:0 auto; padding:28px 20px;
-    display:grid; grid-template-columns:220px 1fr; gap:24px;
+  /* ══════════════════════════════
+     КАТЕГОРИИ — горизонтальный скролл
+     Sticky под топ-навом. Всегда видим.
+  ══════════════════════════════ */
+  .cat-bar {
+    position:sticky;
+    top:56px;
+    z-index:90;
+    background:white;
+    border-bottom:2px solid var(--border);
+    box-shadow:0 2px 8px var(--shadow);
+    /* fade-подсказка справа */
+    -webkit-mask-image:linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+    mask-image:linear-gradient(to right, black calc(100% - 40px), transparent 100%);
   }
+  .cat-bar-inner {
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    gap:6px;
+    padding:10px 14px;
+    padding-right:50px; /* под fade */
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .cat-bar-inner::-webkit-scrollbar { display:none; }
 
-  /* ── SIDEBAR ── */
-  .cat-sidebar {
-    background:white; border-radius:20px; padding:18px;
-    border:1.5px solid var(--border); height:fit-content;
-    box-shadow:0 4px 20px var(--shadow); position:sticky; top:76px;
-  }
-  .cat-title { font-weight:800; font-size:13px; color:var(--text); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
   .cat-btn {
-    display:block; width:100%; text-align:left;
-    padding:10px 14px; border-radius:14px;
-    text-decoration:none; font-size:14px; font-weight:600;
-    color:var(--text-soft); transition:all .2s; margin-bottom:3px;
-    border:none; background:none; cursor:pointer; font-family:'Nunito',sans-serif;
-    /* Минимум 44px */
-    min-height:44px;
+    display:inline-flex; align-items:center;
+    white-space:nowrap;
+    padding:7px 14px;
+    border-radius:20px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    color:var(--text-soft);
+    font-size:13px; font-weight:700; font-family:'Nunito',sans-serif;
+    cursor:pointer; transition:all .15s;
+    flex-shrink:0;
+    min-height:36px;
+    text-decoration:none;
   }
-  .cat-btn:hover { background:var(--mint-light); color:var(--green-dark); }
-  .cat-btn.active { background:var(--mint); color:var(--green-dark); }
+  .cat-btn:hover { background:var(--mint-light); color:var(--green-dark); border-color:var(--green-soft); }
+  .cat-btn.active { background:var(--green); color:#fff; border-color:var(--green); }
 
-  /* ── FOOD GRID ── */
-  .foods-panel { min-width:0; }
-  .foods-title { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:6px; }
-  .foods-count { font-size:13px; color:var(--text-light); margin-bottom:18px; }
+  /* ── MAIN ── */
+  main {
+    max-width:1100px; margin:0 auto;
+    padding:14px 12px;
+  }
+
+  /* Заголовок секции */
+  .section-head { margin-bottom:14px; }
+  .foods-title { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:2px; }
+  .foods-count { font-size:12px; color:var(--text-light); }
+
+  /* ── FOOD GRID — mobile-first: 1 колонка ── */
   .foods-grid {
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
-    gap:16px;
+    grid-template-columns:1fr;
+    gap:8px;
   }
+
+  /* Карточка: горизонтальный layout на мобиле */
   .food-card {
-    background:white; border-radius:18px; padding:18px;
-    border:1.5px solid var(--border); box-shadow:0 3px 16px var(--shadow);
-    transition:all .2s; cursor:pointer;
+    background:white; border-radius:14px; padding:12px 14px;
+    border:1.5px solid var(--border); box-shadow:0 2px 8px var(--shadow);
+    display:flex; align-items:center; gap:12px;
+    cursor:pointer; transition:all .12s;
+    min-height:64px;
   }
-  .food-card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(76,175,131,.18); border-color:var(--green); }
-  .food-card:active { transform:scale(0.98); }
-  .food-name { font-weight:700; font-size:14px; color:var(--text); margin-bottom:8px; line-height:1.3; }
-  .food-cal { font-size:22px; font-weight:800; color:var(--green-dark); }
+  .food-card:active { background:var(--mint-light); transform:scale(0.99); }
+
+  .food-info { flex:1; min-width:0; }
+  .food-name {
+    font-weight:700; font-size:14px; color:var(--text);
+    margin-bottom:4px; line-height:1.25;
+    /* Длинные названия — 2 строки max */
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .food-cal-row { display:flex; align-items:baseline; gap:3px; margin-bottom:5px; }
+  .food-cal { font-size:20px; font-weight:800; color:var(--green-dark); line-height:1; }
   .food-cal-label { font-size:11px; color:var(--text-light); }
-  .food-macros { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
-  .macro-chip { background:var(--mint-light); color:var(--green-dark); font-size:11px; font-weight:700; padding:3px 8px; border-radius:10px; }
-  .add-from-cat {
-    display:block; width:100%; margin-top:10px; padding:10px;
+  .food-macros { display:flex; gap:4px; flex-wrap:wrap; }
+  .macro-chip {
+    background:var(--mint-light); color:var(--green-dark);
+    font-size:10px; font-weight:700; padding:2px 6px; border-radius:7px;
+  }
+
+  /* Кнопка + */
+  .add-btn {
+    flex-shrink:0;
+    width:44px; height:44px;
     background:linear-gradient(135deg,var(--green),var(--green-soft));
     color:white; border:none; border-radius:12px;
-    font-size:13px; font-weight:700; font-family:'Nunito',sans-serif;
-    cursor:pointer; transition:all .2s; text-align:center;
-    min-height:44px;
+    font-size:24px; font-weight:300; line-height:1;
+    cursor:pointer; transition:all .12s;
+    display:flex; align-items:center; justify-content:center;
   }
-  .add-from-cat:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(76,175,131,.25); }
-  .add-from-cat:active { transform:scale(0.98); }
+  .add-btn:active { transform:scale(0.88); }
 
   /* ── MODAL ── */
   .modal-overlay {
     display:none; position:fixed; inset:0;
-    background:rgba(0,0,0,.4); z-index:200;
+    background:rgba(0,0,0,.5); z-index:300;
     align-items:flex-end; justify-content:center;
-    padding:0;
-  }
-  @media(min-width:500px){
-    .modal-overlay { align-items:center; padding:16px; }
-    .modal-box { border-radius:24px!important; max-width:400px!important; }
   }
   .modal-box {
-    background:white; border-radius:24px 24px 0 0;
-    padding:28px 24px max(28px,env(safe-area-inset-bottom));
-    width:100%; max-width:100%;
+    background:white;
+    border-radius:24px 24px 0 0;
+    padding:20px 20px max(28px,env(safe-area-inset-bottom));
+    width:100%;
     box-shadow:0 -8px 40px rgba(0,0,0,.2);
+    animation:slideUp .2s ease;
   }
-  .modal-handle { width:36px; height:4px; background:#c8eedd; border-radius:4px; margin:0 auto 20px; }
-  .modal-title { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:18px; }
-  .modal-label { font-size:11px; font-weight:700; color:#5a7a6e; display:block; margin-bottom:6px; text-transform:uppercase; }
+  @keyframes slideUp {
+    from { transform:translateY(50px); opacity:0; }
+    to   { transform:translateY(0);    opacity:1; }
+  }
+  .modal-handle { width:36px; height:4px; background:#c8eedd; border-radius:4px; margin:0 auto 18px; }
+  .modal-name { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:14px; line-height:1.3; }
+  .modal-label { font-size:11px; font-weight:700; color:var(--text-soft); display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
   .modal-input {
-    width:100%; padding:12px 16px; border:2px solid #c8eedd; border-radius:14px;
-    font-size:16px; font-family:'Nunito',sans-serif; outline:none; min-height:48px;
+    width:100%; padding:12px 16px; border:2px solid var(--border);
+    border-radius:14px; font-size:18px; font-family:'Nunito',sans-serif;
+    outline:none; min-height:52px; text-align:center;
+    -webkit-appearance:none;
   }
-  .modal-input:focus { border-color:#4caf83; }
-  .modal-preview { font-size:13px; color:#5a7a6e; margin:12px 0 18px; min-height:20px; }
+  .modal-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(76,175,131,.12); }
+  .modal-preview { font-size:13px; color:var(--text-soft); margin:12px 0 18px; min-height:20px; text-align:center; }
   .modal-btns { display:flex; gap:12px; }
   .modal-ok {
-    flex:1; padding:13px; background:linear-gradient(135deg,#4caf83,#6dc49a);
+    flex:1; padding:14px;
+    background:linear-gradient(135deg,var(--green),var(--green-soft));
     color:white; border:none; border-radius:14px;
-    font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer;
-    min-height:50px;
+    font-size:16px; font-weight:800; font-family:'Nunito',sans-serif;
+    cursor:pointer; min-height:52px;
   }
   .modal-cancel {
-    padding:13px 20px; background:none; border:2px solid #c8eedd;
-    border-radius:14px; font-size:14px; font-weight:700;
-    font-family:'Nunito',sans-serif; cursor:pointer; min-height:50px;
+    padding:14px 18px; background:none; border:2px solid var(--border);
+    border-radius:14px; font-size:15px; font-weight:700;
+    font-family:'Nunito',sans-serif; cursor:pointer; min-height:52px;
   }
 
-  /* ── BOTTOM NAV (mobile) ── */
+  /* ── BOTTOM NAV ── */
   .bottom-nav {
-    display:none; position:fixed; bottom:0; left:0; right:0; z-index:150;
+    position:fixed; bottom:0; left:0; right:0; z-index:150;
     background:rgba(255,255,255,.97); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    border-top:1px solid #c8eedd; box-shadow:0 -4px 20px rgba(76,175,131,.1);
+    border-top:1px solid var(--border); box-shadow:0 -4px 20px var(--shadow);
     padding:6px 0 max(6px,env(safe-area-inset-bottom));
+    display:flex;
   }
   .bnav-item {
     flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
-    text-decoration:none; color:#8aaa9e; font-weight:700; padding:6px 4px;
-    border-radius:12px; margin:0 3px; transition:all .2s;
+    text-decoration:none; color:var(--text-light); font-weight:700;
+    padding:6px 4px; border-radius:12px; margin:0 3px; transition:all .2s;
     min-height:50px; justify-content:center;
   }
-  .bnav-item.active { color:#2d8a63; background:rgba(181,234,215,.35); }
+  .bnav-item.active { color:var(--green-dark); background:rgba(181,234,215,.35); }
   .bnav-icon { font-size:22px; line-height:1; }
   .bnav-label { letter-spacing:.3px; text-transform:uppercase; font-size:9px; }
 
-  /* ── RESPONSIVE ── */
-  @media(max-width:860px){
-    /* Sidebar → горизонтальная прокрутка сверху */
+  /* ══════════════════════════
+     ДЕСКТОП: 2-колоночный layout
+  ══════════════════════════ */
+  @media (min-width:860px) {
+    /* Скрываем горизонтальную полосу категорий */
+    .cat-bar { display:none; }
+
     main {
-      grid-template-columns:1fr;
-      padding:14px 14px;
+      display:grid;
+      grid-template-columns:200px 1fr;
+      gap:24px;
+      padding:28px 20px;
+      align-items:start;
     }
-    .cat-sidebar {
-      position:static;
-      display:flex;
-      flex-wrap:nowrap;
-      overflow-x:auto;
-      gap:6px;
-      padding:12px 14px;
-      border-radius:16px;
-      -webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
+
+    /* Показываем sidebar */
+    .sidebar {
+      display:block !important;
+      background:white; border-radius:20px; padding:16px;
+      border:1.5px solid var(--border);
+      box-shadow:0 4px 20px var(--shadow);
+      position:sticky; top:80px;
     }
-    .cat-sidebar::-webkit-scrollbar { display:none; }
-    .cat-title { display:none; }
-    .cat-btn {
-      width:auto!important;
-      padding:7px 14px;
-      font-size:13px;
-      margin-bottom:0;
-      flex-shrink:0;
-      min-height:40px;
-      white-space:nowrap;
+
+    .foods-grid {
+      grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+      gap:14px;
     }
-    .bottom-nav { display:flex; }
-    body { padding-bottom:0; }
+
+    /* Карточка: вертикальный layout на десктопе */
+    .food-card {
+      flex-direction:column;
+      align-items:flex-start;
+      padding:16px;
+      gap:0;
+      min-height:auto;
+    }
+    .food-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(76,175,131,.18); border-color:var(--green); }
+    .food-info { width:100%; margin-bottom:10px; }
+    .food-name { -webkit-line-clamp:unset; overflow:visible; display:block; }
+
+    .add-btn {
+      width:100%; height:40px; border-radius:10px;
+      font-size:14px; font-weight:800;
+    }
+    .add-btn::after { content:' Добавить'; font-size:13px; font-weight:800; margin-left:2px; }
+
+    .bottom-nav { display:none; }
   }
 
-  @media(max-width:600px){
-    /* Карточки: одна колонка на телефонах */
+  /* ── 2 колонки на планшете ── */
+  @media (min-width:500px) and (max-width:859px) {
     .foods-grid { grid-template-columns:1fr 1fr; gap:10px; }
-    .food-card { padding:14px; }
-    .food-cal { font-size:20px; }
+  }
+
+  /* ── Маленькие экраны ── */
+  @media (max-width:360px) {
+    .cat-btn { font-size:11px; padding:6px 10px; min-height:34px; }
     .food-name { font-size:13px; }
-    .foods-title { font-size:22px; }
-  }
-
-  @media(max-width:400px){
-    /* Самые маленькие — одна колонка */
-    .foods-grid { grid-template-columns:1fr; }
-    main { padding:10px 10px; }
-    .cat-btn { font-size:12px; padding:6px 11px; min-height:38px; }
-    .food-cal { font-size:18px; }
-    .add-from-cat { font-size:12px; min-height:44px; }
-  }
-
-  @media(max-width:320px){
-    main { padding:8px 8px; }
-    .foods-grid { gap:8px; }
-    .food-card { padding:12px; }
-    .macro-chip { font-size:10px; padding:2px 6px; }
+    .food-cal { font-size:17px; }
+    .add-btn { width:40px; height:40px; font-size:20px; }
   }
 </style>
 </head>
 <body>
-<nav>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
   <div class="nav-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <a href="/" class="nav-link">← Поиск</a>
+    <a href="/" class="nav-link">← {{ t.get('search','Поиск') }}</a>
   </div>
 </nav>
 
-<main>
-  <!-- SIDEBAR / CATEGORY SCROLL -->
-  <div class="cat-sidebar">
-    <div class="cat-title">{{ t.categories }}</div>
+<!-- КАТЕГОРИИ — ГОРИЗОНТАЛЬНАЯ ПОЛОСА (только мобиль) -->
+<div class="cat-bar">
+  <div class="cat-bar-inner" id="catBar">
     {% for cat in category_keys %}
-    <a href="/categories?cat={{ cat }}" class="cat-btn {% if current_cat == cat %}active{% endif %}">
+    <a href="/categories?cat={{ cat }}"
+       class="cat-btn {% if current_cat == cat %}active{% endif %}">
+      {{ t[cat] }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- SIDEBAR (десктоп, скрыт на мобиле через CSS) -->
+  <div class="sidebar" style="display:none;">
+    <div style="font-weight:800;font-size:12px;color:var(--text);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">{{ t.categories }}</div>
+    {% for cat in category_keys %}
+    <a href="/categories?cat={{ cat }}"
+       class="cat-btn {% if current_cat == cat %}active{% endif %}"
+       style="display:block;width:100%;text-align:left;margin-bottom:3px;border-radius:12px;white-space:normal;border:none;background:none;padding:9px 12px;min-height:40px;font-size:13px;color:var(--text-soft);">
       {{ t[cat] }}
     </a>
     {% endfor %}
   </div>
 
-  <!-- FOODS -->
-  <div class="foods-panel">
-    <div class="foods-title">{{ t[current_cat] }}</div>
-    <div class="foods-count">{{ foods|length }} {{ t.get('products_count','продуктов') }} · А–Я</div>
+  <!-- ПРОДУКТЫ -->
+  <div>
+    <div class="section-head">
+      <div class="foods-title">{{ t[current_cat] }}</div>
+      <div class="foods-count">{{ foods|length }} {{ t.get('products_count','продуктов') }}</div>
+    </div>
+
     <div class="foods-grid">
       {% for food in foods %}
-      <div class="food-card" onclick="quickAdd({{ food.id }}, '{{ food.name|replace("'", "\\'") }}', {{ food.calories }}, {{ food.protein }}, {{ food.fat }}, {{ food.carbs }})">
-        <div class="food-name">{{ food.name }}</div>
-        <div>
-          <span class="food-cal">{{ food.calories }}</span>
-          <span class="food-cal-label"> {{ t.kcal }} / 100{{ t.g }}</span>
+      <div class="food-card"
+           onclick="quickAdd({{ food.id }}, '{{ food.name|replace("'","\\'")|replace('"','\\"') }}', {{ food.calories }}, {{ food.protein }}, {{ food.fat }}, {{ food.carbs }})">
+        <div class="food-info">
+          <div class="food-name">{{ food.name }}</div>
+          <div class="food-cal-row">
+            <span class="food-cal">{{ food.calories }}</span>
+            <span class="food-cal-label">&nbsp;{{ t.kcal }}/100{{ t.g }}</span>
+          </div>
+          <div class="food-macros">
+            <span class="macro-chip">Б&nbsp;{{ food.protein }}г</span>
+            <span class="macro-chip">Ж&nbsp;{{ food.fat }}г</span>
+            <span class="macro-chip">У&nbsp;{{ food.carbs }}г</span>
+          </div>
         </div>
-        <div class="food-macros">
-          <span class="macro-chip">Б {{ food.protein }}г</span>
-          <span class="macro-chip">Ж {{ food.fat }}г</span>
-          <span class="macro-chip">У {{ food.carbs }}г</span>
-        </div>
-        <button class="add-from-cat">{{ t.get('add_from_cat','+ Добавить') }}</button>
+        <button class="add-btn"
+                onclick="event.stopPropagation();quickAdd({{ food.id }},'{{ food.name|replace("'","\\'")|replace('"','\\"') }}',{{ food.calories }},{{ food.protein }},{{ food.fat }},{{ food.carbs }})">+</button>
       </div>
       {% endfor %}
     </div>
   </div>
+
 </main>
 
 <!-- MODAL -->
 <div id="modal-overlay" class="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-name" id="modal-title"></div>
     <label class="modal-label">{{ t.get('grams_label','Количество (граммов)') }}</label>
-    <input type="number" id="modal-grams" class="modal-input" value="100" min="1" max="9999">
+    <input type="number" id="modal-grams" class="modal-input"
+           value="100" min="1" max="9999" inputmode="decimal">
     <div class="modal-preview" id="modal-preview"></div>
     <div class="modal-btns">
       <button class="modal-ok" onclick="confirmAdd()">✓ {{ t.get('confirm_add','Добавить') }}</button>
-      <button class="modal-cancel" onclick="closeModal()">✕</button>
+      <button class="modal-cancel" onclick="closeModal()">Отмена</button>
     </div>
   </div>
 </div>
@@ -278,6 +365,16 @@
 const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
 let modalFood = null;
 
+// Прокрутить активную категорию в центр полосы
+document.addEventListener('DOMContentLoaded', function() {
+  const bar  = document.getElementById('catBar');
+  const active = bar && bar.querySelector('.cat-btn.active');
+  if (active && bar) {
+    const btnCenter = active.offsetLeft + active.offsetWidth / 2;
+    bar.scrollLeft = btnCenter - bar.clientWidth / 2;
+  }
+});
+
 function quickAdd(id, name, cal, protein, fat, carbs) {
   if (!isAuth) {
     alert('{{ t.get("login_required","Войдите, чтобы добавлять продукты") }}');
@@ -285,20 +382,24 @@ function quickAdd(id, name, cal, protein, fat, carbs) {
   }
   modalFood = { id, name, cal, protein, fat, carbs };
   document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-grams').value = '100';
   document.getElementById('modal-overlay').style.display = 'flex';
-  document.getElementById('modal-grams').focus();
-  updateModalPreview();
+  updatePreview();
+  setTimeout(() => {
+    const inp = document.getElementById('modal-grams');
+    inp.focus(); inp.select();
+  }, 200);
 }
 
-function updateModalPreview() {
+function updatePreview() {
   if (!modalFood) return;
   const g = parseFloat(document.getElementById('modal-grams').value) || 100;
   const r = g / 100;
   document.getElementById('modal-preview').textContent =
-    `🔥 ${Math.round(modalFood.cal*r)} {{ t.kcal }} · Б:${(modalFood.protein*r).toFixed(1)}г Ж:${(modalFood.fat*r).toFixed(1)}г У:${(modalFood.carbs*r).toFixed(1)}г`;
+    `🔥 ${Math.round(modalFood.cal*r)} {{ t.kcal }}  ·  Б:${(modalFood.protein*r).toFixed(1)}г  Ж:${(modalFood.fat*r).toFixed(1)}г  У:${(modalFood.carbs*r).toFixed(1)}г`;
 }
 
-document.getElementById('modal-grams').addEventListener('input', updateModalPreview);
+document.getElementById('modal-grams').addEventListener('input', updatePreview);
 document.getElementById('modal-grams').addEventListener('keydown', e => {
   if (e.key === 'Enter') confirmAdd();
 });
@@ -306,15 +407,19 @@ document.getElementById('modal-grams').addEventListener('keydown', e => {
 async function confirmAdd() {
   if (!modalFood) return;
   const grams = parseFloat(document.getElementById('modal-grams').value) || 100;
-  const r = await fetch('/api/add-entry', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({food_id: modalFood.id, grams, meal_type:'other'})
-  });
-  const data = await r.json();
-  if (data.success) {
-    closeModal();
-    // Мягкое уведомление вместо alert
-    showToast(`✓ ${modalFood.name} — {{ t.get('added_to_diary','добавлен в дневник') }}`);
+  try {
+    const res  = await fetch('/api/add-entry', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ food_id: modalFood.id, grams, meal_type:'other' })
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeModal();
+      showToast('✓ ' + modalFood.name);
+    }
+  } catch(e) {
+    alert('Ошибка соединения');
   }
 }
 
@@ -323,23 +428,30 @@ function closeModal() {
   modalFood = null;
 }
 
-// Toast уведомление
 function showToast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2d8a63;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:opacity .3s;white-space:nowrap;max-width:90vw;text-overflow:ellipsis;overflow:hidden;pointer-events:none;';
-    document.body.appendChild(t);
+  let el = document.getElementById('_toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = '_toast';
+    Object.assign(el.style, {
+      position:'fixed', bottom:'90px', left:'50%', transform:'translateX(-50%)',
+      background:'#2d8a63', color:'#fff', padding:'10px 22px',
+      borderRadius:'20px', fontSize:'14px', fontWeight:'700',
+      fontFamily:'Nunito,sans-serif', zIndex:'9999',
+      boxShadow:'0 4px 20px rgba(0,0,0,.2)', transition:'opacity .3s',
+      whiteSpace:'nowrap', maxWidth:'88vw', overflow:'hidden',
+      textOverflow:'ellipsis', pointerEvents:'none'
+    });
+    document.body.appendChild(el);
   }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => {
-    t.style.opacity = '0';
-    setTimeout(() => { if (t.style.opacity === '0') t.style.display = 'none'; }, 350);
+  el.textContent = msg;
+  el.style.opacity = '1';
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.style.opacity = '0';
+    setTimeout(() => { el.style.display = 'none'; }, 350);
   }, 2500);
-  t.style.display = '';
 }
 </script>
 </body>
