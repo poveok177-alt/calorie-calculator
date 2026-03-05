@@ -772,7 +772,7 @@ def history():
         days[ds]['total_carbs'] += e.carbs
     t = TRANSLATIONS.get(lang, TRANSLATIONS['ru'])
     now = datetime.utcnow()
-    return render_template('history.html', days=days, lang=lang, is_premium=is_premium, goal=current_user.daily_calorie_goal or 2000, t=t, current_user=current_user, now=now)
+    return render_template('history.html', days=days, lang=lang, is_premium=is_premium, goal=current_user.daily_calorie_goal or 2000, t=t, current_user=current_user, now=now, streak=0)
 
 @app.route('/goals', methods=['GET', 'POST'])
 @login_required
