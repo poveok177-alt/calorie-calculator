@@ -275,6 +275,42 @@
 @media(max-width:480px){.tab-btn{padding:8px 10px;font-size:12px;gap:4px;}.tab-ico{font-size:13px;}}
 @media(max-width:360px){.tab-btn{padding:7px 8px;font-size:11px;gap:3px;}}
 
+
+/* ── NOTIFY MODAL ── */
+.nmodal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:flex-end;justify-content:center;}
+.nmodal-overlay.show{display:flex;}
+.nmodal-box{
+  background:#fff;border-radius:24px 24px 0 0;
+  padding:28px 24px max(32px,env(safe-area-inset-bottom));
+  width:100%;max-width:420px;
+  box-shadow:0 -8px 40px rgba(0,0,0,.18);
+  animation:nmSlide .22s ease;
+}
+@media(min-width:500px){
+  .nmodal-overlay{align-items:center;padding:20px;}
+  .nmodal-box{border-radius:22px;padding:28px 28px;}
+}
+@keyframes nmSlide{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.nmodal-handle{width:36px;height:4px;background:#c8eedd;border-radius:4px;margin:0 auto 20px;}
+.nmodal-ico{font-size:44px;text-align:center;margin-bottom:12px;}
+.nmodal-title{font-family:'Playfair Display',serif;font-size:20px;color:#2d4a3e;margin-bottom:8px;text-align:center;line-height:1.3;}
+.nmodal-text{font-size:14px;color:#5a7a6e;text-align:center;line-height:1.6;margin-bottom:20px;}
+.nmodal-btns{display:flex;flex-direction:column;gap:10px;}
+.nmodal-btn-primary{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,#4caf83,#6dc49a);
+  color:white;border:none;border-radius:16px;
+  font-size:16px;font-weight:800;font-family:'Nunito',sans-serif;
+  cursor:pointer;text-decoration:none;min-height:52px;
+}
+.nmodal-btn-secondary{
+  width:100%;padding:13px;border:1.5px solid #c8eedd;border-radius:16px;
+  background:none;font-size:14px;font-weight:700;color:#5a7a6e;
+  cursor:pointer;font-family:'Nunito',sans-serif;min-height:48px;
+}
+.nmodal-btn-primary:active,.nmodal-btn-secondary:active{transform:scale(0.98);}
+
 </style>
 </head>
 <body>
@@ -298,10 +334,12 @@
     <a href="/goals" class="tab-btn "><span class="tab-ico">🎯</span>{{ t.goals }}</a>
     <a href="/categories" class="tab-btn active"><span class="tab-ico">🥗</span>{{ t.get('categories','Категории') }}</a>
     <a href="/premium" class="tab-btn "><span class="tab-ico">⭐</span>Premium</a>
+    <a href="/choose-language" class="tab-btn" style="margin-left:auto;" title="Сменить язык"><span class="tab-ico">🌍</span></a>
     {% if current_user.is_authenticated %}
-    <a href="/logout" class="tab-btn" style="margin-left:auto;color:var(--text-light);font-size:12px;padding-left:8px;">{{ t.logout }}</a>
+    <a href="/logout" class="tab-btn" style="color:var(--text-light);font-size:12px;"><span class="tab-ico">🚪</span>{{ t.logout }}</a>
     {% else %}
-    <a href="/login" class="tab-btn" style="margin-left:auto;">{{ t.login }}</a>
+    <a href="/register" class="tab-btn" style="color:var(--green-dark);font-weight:800;"><span class="tab-ico">🚀</span>{{ t.register }}</a>
+    <a href="/login" class="tab-btn"><span class="tab-ico">👤</span>{{ t.login }}</a>
     {% endif %}
   </div>
 </div>
@@ -400,7 +438,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function quickAdd(id, name, cal, protein, fat, carbs) {
   if (!isAuth) {
-    alert('{{ t.get("login_required","Войдите, чтобы добавлять продукты") }}');
+    nmodalShow({
+      ico:'🔒',
+      title:'Нужен аккаунт',
+      text:'Войдите или зарегистрируйтесь, чтобы добавлять продукты в дневник',
+      buttons:[
+        {label:'🚀 Зарегистрироваться', href:'/register', primary:true},
+        {label:'Уже есть аккаунт — войти', href:'/login', primary:false}
+      ]
+    });
     return;
   }
   modalFood = { id, name, cal, protein, fat, carbs };
@@ -442,7 +488,7 @@ async function confirmAdd() {
       showToast('✓ ' + modalFood.name);
     }
   } catch(e) {
-    alert('Ошибка соединения');
+    nmodalShow({ico:'📡',title:'Нет соединения',text:'Проверьте интернет и попробуйте снова.',buttons:[{label:'OK',primary:true}]});
   }
 }
 
@@ -477,5 +523,37 @@ function showToast(msg) {
   }, 2500);
 }
 </script>
+
+<!-- NOTIFY MODAL -->
+<div id="nmodal" class="nmodal-overlay" onclick="if(event.target===this)nmodalClose()">
+  <div class="nmodal-box">
+    <div class="nmodal-handle"></div>
+    <div class="nmodal-ico" id="nmodal-ico"></div>
+    <div class="nmodal-title" id="nmodal-title"></div>
+    <div class="nmodal-text" id="nmodal-text"></div>
+    <div class="nmodal-btns" id="nmodal-btns"></div>
+  </div>
+</div>
+<script>
+function nmodalShow({ico='💬', title='', text='', buttons=[{label:'OK', primary:true}]}){
+  document.getElementById('nmodal-ico').textContent = ico;
+  document.getElementById('nmodal-title').textContent = title;
+  document.getElementById('nmodal-text').innerHTML = text;
+  const btns = document.getElementById('nmodal-btns');
+  btns.innerHTML = buttons.map(b =>
+    b.href
+      ? `<a href="${b.href}" class="${b.primary?'nmodal-btn-primary':'nmodal-btn-secondary'}">${b.label}</a>`
+      : `<button onclick="nmodalClose();${b.action||''}" class="${b.primary?'nmodal-btn-primary':'nmodal-btn-secondary'}">${b.label}</button>`
+  ).join('');
+  document.getElementById('nmodal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function nmodalClose(){
+  document.getElementById('nmodal').classList.remove('show');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')nmodalClose();});
+</script>
+
 </body>
 </html>
