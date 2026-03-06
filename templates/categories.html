@@ -465,18 +465,6 @@ function pickMeal(btn) {
 }
 
 function quickAdd(id, name, cal, protein, fat, carbs) {
-  if (!isAuth) {
-    nmodalShow({
-      ico:'🔒',
-      title:'Нужен аккаунт',
-      text:'Войдите или зарегистрируйтесь, чтобы добавлять продукты в дневник',
-      buttons:[
-        {label:'🚀 Зарегистрироваться', href:'/register', primary:true},
-        {label:'Уже есть аккаунт — войти', href:'/login', primary:false}
-      ]
-    });
-    return;
-  }
   modalFood = { id, name, cal, protein, fat, carbs };
   document.getElementById('modal-title').textContent = name;
   document.getElementById('modal-grams').value = '100';
@@ -514,29 +502,33 @@ async function confirmAdd() {
       body: JSON.stringify({ food_id: modalFood.id, grams, meal_type: selectedMeal })
     });
 
-    if (res.status === 401) {
+    // Если Flask-Login сделал редирект на /login
+    if (res.redirected || res.url.includes('/login') || res.status === 401 || res.status === 302) {
       closeModal();
       nmodalShow({
         ico:'🔒', title:'Нужна авторизация',
-        text:'Сессия истекла — войдите снова',
-        buttons:[{label:'👤 Войти', href:'/login', primary:true}]
+        text:'Войдите в аккаунт, чтобы добавлять продукты в дневник питания',
+        buttons:[
+          {label:'🚀 Зарегистрироваться', href:'/register', primary:true},
+          {label:'👤 Уже есть аккаунт', href:'/login', primary:false}
+        ]
       });
       return;
     }
 
-    // Читаем как текст сначала — чтобы не падать если не JSON
     const text = await res.text();
     let data;
     try {
       data = JSON.parse(text);
-    } catch(parseErr) {
-      // Сервер вернул не JSON (HTML ошибки, редирект и т.д.)
+    } catch(e) {
+      // Сервер вернул HTML — скорее всего редирект на логин
+      closeModal();
       nmodalShow({
-        ico:'⚠️', title:'Ошибка сервера',
-        text:`Статус: ${res.status}. Попробуйте обновить страницу или войдите снова.`,
+        ico:'🔒', title:'Нужна авторизация',
+        text:'Войдите в аккаунт, чтобы добавлять продукты в дневник питания',
         buttons:[
-          {label:'🔄 Обновить', action:'location.reload();', primary:true},
-          {label:'👤 Войти', href:'/login', primary:false}
+          {label:'🚀 Зарегистрироваться', href:'/register', primary:true},
+          {label:'👤 Уже есть аккаунт', href:'/login', primary:false}
         ]
       });
       return;
@@ -557,11 +549,13 @@ async function confirmAdd() {
       });
     }
   } catch(e) {
-    // Реальная ошибка сети (офлайн)
     nmodalShow({
-      ico:'📡', title:'Нет соединения',
-      text:'Приложение не может подключиться к серверу. Проверьте, запущен ли Flask-сервер (`python app.py`).',
-      buttons:[{label:'OK', primary:true}]
+      ico:'🔒', title:'Нужна авторизация',
+      text:'Войдите в аккаунт, чтобы добавлять продукты в дневник питания',
+      buttons:[
+        {label:'🚀 Зарегистрироваться', href:'/register', primary:true},
+        {label:'👤 Уже есть аккаунт', href:'/login', primary:false}
+      ]
     });
   } finally {
     btn.textContent = '✓ {{ t.get("confirm_add","Добавить") }}';

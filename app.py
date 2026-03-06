@@ -24,8 +24,9 @@ app = Flask(__name__)
 def health():
     return "OK", 200
 
-app.config['SECRET_KEY'] = 'mojasupertajnayastrokakotoruyaniktonevzlomaet123'
-app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'mojasupertajnayastrokakotoruyaniktonevzlomaet123')
+# НЕ используем filesystem сессии — на Railway диск эфемерный
+# app.config['SESSION_TYPE'] = 'filesystem'
 
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///calories.db')
 if database_url.startswith('postgres://'):
@@ -1040,7 +1041,8 @@ def categories():
     return render_template('categories.html', t=t, lang=lang,
                            foods=foods_data, current_cat=cat,
                            category_keys=CATEGORY_KEYS,
-                           cat_labels=cat_labels)
+                           cat_labels=cat_labels,
+                           current_user=current_user)
 
 # ===================== ADMIN =====================
 
