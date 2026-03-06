@@ -1605,6 +1605,453 @@ try:
     init_db()
 except Exception as e:
     print(f"init_db error: {e}", flush=True)
+"""
+API эндпоинты для импорта продуктов через HTTP
+Добавить в app.py или импортировать как blueprintнь
 
+Использование:
+    POST /api/import/start - начать импорт
+    GET  /api/import/status - статус импорта
+    POST /api/import/cancel - отменить импорт
+"""
+
+from flask import request, jsonify, session
+from flask_login import login_required, current_user
+import csv
+import os
+import threading
+from datetime import datetime
+from pathlib import Path
+
+# ===================== ИМПОРТ ПРОДУКТОВ ЧЕРЕЗ API =====================
+
+# Глобальное состояние импорта
+IMPORT_STATE = {
+    'status': 'idle',  # idle, uploading, importing, completed, error
+    'total_lines': 0,
+    'processed': 0,
+    'added': 0,
+    'skipped': 0,
+    'errors': 0,
+    'current_file': '',
+    'progress_percent': 0,
+    'message': '',
+    'error_message': '',
+    'start_time': None,
+    'eta_seconds': None,
+}
+
+CATEGORY_MAP = {
+    'fruits-vegetables': 'vegetables',
+    'fruit': 'fruits',
+    'vegetables': 'vegetables',
+    'meat': 'meat',
+    'fish': 'fish',
+    'seafood': 'fish',
+    'poultry': 'meat',
+    'dairy': 'dairy',
+    'milk': 'dairy',
+    'cheese': 'dairy',
+    'yogurt': 'dairy',
+    'cereals': 'grains',
+    'grains': 'grains',
+    'bread': 'grains',
+    'pasta': 'grains',
+    'rice': 'grains',
+    'nuts': 'nuts',
+    'seeds': 'nuts',
+    'eggs': 'eggs',
+    'legumes': 'legumes',
+    'beans': 'legumes',
+    'lentils': 'legumes',
+    'snacks': 'sweets',
+    'confectionery': 'sweets',
+    'desserts': 'sweets',
+    'chocolate': 'sweets',
+    'candy': 'sweets',
+    'sweetened-beverages': 'drinks',
+    'beverages': 'drinks',
+    'soft-drinks': 'drinks',
+    'juices': 'drinks',
+    'coffee': 'drinks',
+    'tea': 'drinks',
+    'water': 'drinks',
+    'oils': 'oils',
+    'spreads': 'oils',
+    'butter': 'oils',
+    'sauces': 'sauces',
+    'condiments': 'sauces',
+    'prepared-meals': 'fastfood',
+    'fast-food': 'fastfood',
+    'soups': 'fastfood',
+}
+
+def get_category(off_categories):
+    """Определить категорию"""
+    if not off_categories:
+        return 'other'
+    
+    tags = str(off_categories).lower().split(',')
+    for tag in tags:
+        tag = tag.strip()
+        if tag in CATEGORY_MAP:
+            return CATEGORY_MAP[tag]
+    
+    return 'other'
+
+def parse_nutrition(row):
+    """Парсить макронутриенты"""
+    try:
+        energy = float(row.get('energy-kcal_100g', 0) or 0)
+    except (ValueError, TypeError):
+        energy = 0
+    
+    try:
+        protein = float(row.get('proteins_100g', 0) or 0)
+    except (ValueError, TypeError):
+        protein = 0
+    
+    try:
+        fat = float(row.get('fat_100g', 0) or 0)
+    except (ValueError, TypeError):
+        fat = 0
+    
+    try:
+        carbs = float(row.get('carbohydrates_100g', 0) or 0)
+    except (ValueError, TypeError):
+        carbs = 0
+    
+    # Конвертируем джоули в ккал
+    if energy > 500:
+        energy = energy / 4.184
+    
+    return round(energy, 1), round(protein, 1), round(fat, 1), round(carbs, 1)
+
+def import_worker(filepath, batch_size=10000, limit=None):
+    """Рабочая функция импорта в отдельном потоке"""
+    try:
+        IMPORT_STATE['status'] = 'importing'
+        IMPORT_STATE['current_file'] = Path(filepath).name
+        IMPORT_STATE['start_time'] = datetime.utcnow()
+        
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            reader = csv.DictReader(f, delimiter='\t')
+            lines = sum(1 for _ in open(filepath, encoding='utf-8', errors='ignore'))
+            IMPORT_STATE['total_lines'] = lines
+            
+            batch = []
+            
+            for row_num, row in enumerate(reader, 1):
+                # Лимит
+                if limit and IMPORT_STATE['added'] >= limit:
+                    break
+                
+                # Имя
+                name = row.get('product_name', '').strip()
+                if not name or len(name) < 2:
+                    IMPORT_STATE['skipped'] += 1
+                    continue
+                
+                # Проверка дубликата
+                existing = Food.query.filter_by(name_ru=name).first()
+                if existing:
+                    IMPORT_STATE['skipped'] += 1
+                    continue
+                
+                # Питание
+                calories, protein, fat, carbs = parse_nutrition(row)
+                if calories <= 0:
+                    IMPORT_STATE['skipped'] += 1
+                    continue
+                
+                # Категория
+                category = get_category(row.get('categories', ''))
+                
+                # Создать продукт
+                food = Food(
+                    name_ru=name[:200],
+                    name_en=name[:200],
+                    name_uk=name[:200],
+                    name_kk=name[:200],
+                    calories=calories,
+                    protein=protein,
+                    fat=fat,
+                    carbs=carbs,
+                    category=category
+                )
+                
+                batch.append(food)
+                IMPORT_STATE['added'] += 1
+                
+                # Batch insert
+                if len(batch) >= batch_size:
+                    db.session.add_all(batch)
+                    db.session.commit()
+                    batch = []
+                
+                # Прогресс
+                IMPORT_STATE['processed'] = row_num
+                IMPORT_STATE['progress_percent'] = int((row_num / lines) * 100)
+                
+                # ETA
+                elapsed = (datetime.utcnow() - IMPORT_STATE['start_time']).total_seconds()
+                if elapsed > 0 and row_num > 0:
+                    rate = row_num / elapsed
+                    remaining = lines - row_num
+                    IMPORT_STATE['eta_seconds'] = int(remaining / rate) if rate > 0 else 0
+        
+        # Вставить оставшиеся
+        if batch:
+            db.session.add_all(batch)
+            db.session.commit()
+        
+        IMPORT_STATE['status'] = 'completed'
+        IMPORT_STATE['message'] = f'✅ Импортировано {IMPORT_STATE["added"]} продуктов'
+        
+    except Exception as e:
+        IMPORT_STATE['status'] = 'error'
+        IMPORT_STATE['error_message'] = str(e)
+
+@app.route('/api/import/upload', methods=['POST'])
+@login_required
+def api_import_upload():
+    """Загрузить CSV файл для импорта"""
+    
+    # Только админ
+    if not current_user.is_superuser:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    # Проверить файл
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    if not file.filename.endswith('.csv'):
+        return jsonify({'error': 'Only CSV files allowed'}), 400
+    
+    try:
+        # Сохранить временный файл
+        temp_dir = Path('/tmp/calori_import')
+        temp_dir.mkdir(exist_ok=True)
+        
+        filepath = temp_dir / file.filename
+        file.save(str(filepath))
+        
+        # Проверить размер
+        size_mb = filepath.stat().st_size / 1e6
+        if size_mb > 2000:  # 2GB макс
+            filepath.unlink()
+            return jsonify({'error': f'File too large: {size_mb:.1f}MB (max 2000MB)'}), 413
+        
+        # Начать импорт в отдельном потоке
+        batch_size = request.json.get('batch_size', 10000) if request.is_json else 10000
+        limit = request.json.get('limit', None) if request.is_json else None
+        
+        thread = threading.Thread(
+            target=import_worker,
+            args=(str(filepath), batch_size, limit),
+            daemon=True
+        )
+        thread.start()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Import started',
+            'file': file.filename,
+            'size_mb': size_mb
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/import/start', methods=['POST'])
+@login_required
+def api_import_start():
+    """Запустить импорт из URL"""
+    
+    if not current_user.is_superuser:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    data = request.get_json()
+    url = data.get('url', '')
+    
+    if not url or not url.startswith('http'):
+        return jsonify({'error': 'Invalid URL'}), 400
+    
+    try:
+        # Скачать файл
+        import urllib.request
+        temp_dir = Path('/tmp/calori_import')
+        temp_dir.mkdir(exist_ok=True)
+        
+        filename = url.split('/')[-1]
+        filepath = temp_dir / filename
+        
+        IMPORT_STATE['status'] = 'uploading'
+        IMPORT_STATE['message'] = f'⬇️ Скачивание {filename}...'
+        
+        # Простой способ скачивания (без проверки размера во время)
+        urllib.request.urlretrieve(url, str(filepath))
+        
+        # Начать импорт
+        batch_size = data.get('batch_size', 10000)
+        limit = data.get('limit', None)
+        
+        thread = threading.Thread(
+            target=import_worker,
+            args=(str(filepath), batch_size, limit),
+            daemon=True
+        )
+        thread.start()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Import started',
+            'file': filename
+        })
+    
+    except Exception as e:
+        IMPORT_STATE['status'] = 'error'
+        IMPORT_STATE['error_message'] = str(e)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/import/status', methods=['GET'])
+@login_required
+def api_import_status():
+    """Получить статус импорта"""
+    
+    if not current_user.is_superuser:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    return jsonify({
+        'status': IMPORT_STATE['status'],
+        'progress_percent': IMPORT_STATE['progress_percent'],
+        'processed': IMPORT_STATE['processed'],
+        'added': IMPORT_STATE['added'],
+        'skipped': IMPORT_STATE['skipped'],
+        'total_lines': IMPORT_STATE['total_lines'],
+        'current_file': IMPORT_STATE['current_file'],
+        'message': IMPORT_STATE['message'],
+        'error': IMPORT_STATE['error_message'],
+        'eta_seconds': IMPORT_STATE['eta_seconds'],
+        'start_time': IMPORT_STATE['start_time'].isoformat() if IMPORT_STATE['start_time'] else None,
+    })
+
+@app.route('/api/import/cancel', methods=['POST'])
+@login_required
+def api_import_cancel():
+    """Отменить импорт"""
+    
+    if not current_user.is_superuser:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    IMPORT_STATE['status'] = 'cancelled'
+    IMPORT_STATE['message'] = 'Import cancelled by user'
+    
+    return jsonify({'success': True, 'message': 'Import cancelled'})
+
+@app.route('/api/import/reset', methods=['POST'])
+@login_required
+def api_import_reset():
+    """Сбросить состояние"""
+    
+    if not current_user.is_superuser:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    IMPORT_STATE.update({
+        'status': 'idle',
+        'total_lines': 0,
+        'processed': 0,
+        'added': 0,
+        'skipped': 0,
+        'errors': 0,
+        'current_file': '',
+        'progress_percent': 0,
+        'message': '',
+        'error_message': '',
+        'start_time': None,
+        'eta_seconds': None,
+    })
+    
+    return jsonify({'success': True})
+
+@app.route('/api/import/quick-sample', methods=['POST'])
+@login_required
+def api_import_quick_sample():
+    """Быстрая загрузка 27 популярных продуктов"""
+    
+    if not current_user.is_superuser:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sample_products = [
+            ('Яблоко', 'Apple', 52, 0.3, 0.2, 14, 'fruits'),
+            ('Банан', 'Banana', 89, 1.1, 0.3, 23, 'fruits'),
+            ('Апельсин', 'Orange', 43, 0.9, 0.2, 8.1, 'fruits'),
+            ('Морковь', 'Carrot', 41, 0.9, 0.2, 10, 'vegetables'),
+            ('Помидор', 'Tomato', 18, 0.9, 0.2, 3.9, 'vegetables'),
+            ('Огурец', 'Cucumber', 15, 0.7, 0.1, 2.8, 'vegetables'),
+            ('Брокколи', 'Broccoli', 34, 2.8, 0.4, 7, 'vegetables'),
+            ('Куриное филе', 'Chicken breast', 165, 31, 3.6, 0, 'meat'),
+            ('Говядина', 'Beef', 250, 26, 17, 0, 'meat'),
+            ('Лосось', 'Salmon', 208, 20, 13, 0, 'fish'),
+            ('Молоко 3.2%', 'Milk 3.2%', 61, 3.2, 3.3, 4.8, 'dairy'),
+            ('Йогурт', 'Yogurt', 59, 3.5, 0.4, 4.7, 'dairy'),
+            ('Сыр', 'Cheese', 356, 25, 27.4, 2.2, 'dairy'),
+            ('Гречка', 'Buckwheat', 335, 13, 3.4, 72, 'grains'),
+            ('Рис белый', 'White rice', 130, 2.7, 0.3, 28, 'grains'),
+            ('Хлеб пшеничный', 'Wheat bread', 265, 7.5, 3.2, 49, 'grains'),
+            ('Яйцо куриное', 'Chicken egg', 155, 13, 11, 0.7, 'eggs'),
+            ('Чечевица', 'Lentils', 225, 25, 0.4, 40, 'legumes'),
+            ('Нут', 'Chickpeas', 364, 19, 6, 61, 'legumes'),
+            ('Миндаль', 'Almonds', 579, 21, 50, 22, 'nuts'),
+            ('Грецкие орехи', 'Walnuts', 654, 15, 65, 14, 'nuts'),
+            ('Оливковое масло', 'Olive oil', 884, 0, 100, 0, 'oils'),
+            ('Помидорный соус', 'Tomato sauce', 18, 0.9, 0.2, 3.5, 'sauces'),
+            ('Кока-кола', 'Coca-cola', 42, 0, 0, 11, 'drinks'),
+            ('Кофе', 'Coffee', 2, 0.1, 0, 0, 'drinks'),
+            ('Конфеты', 'Candies', 387, 0, 5, 96, 'sweets'),
+            ('Шоколад чёрный', 'Dark chocolate', 546, 5.3, 31, 61, 'sweets'),
+            ('Пицца', 'Pizza', 290, 12, 9, 38, 'fastfood'),
+        ]
+        
+        added = 0
+        for name_ru, name_en, cal, prot, fat, carbs, cat in sample_products:
+            if not Food.query.filter_by(name_ru=name_ru).first():
+                f = Food(
+                    name_ru=name_ru,
+                    name_en=name_en,
+                    name_uk=name_ru,
+                    name_kk=name_ru,
+                    calories=cal,
+                    protein=prot,
+                    fat=fat,
+                    carbs=carbs,
+                    category=cat
+                )
+                db.session.add(f)
+                added += 1
+        
+        db.session.commit()
+        total = Food.query.count()
+        
+        return jsonify({
+            'success': True,
+            'added': added,
+            'total_in_db': total,
+            'message': f'✅ Добавлено {added} продуктов, всего в БД: {total}'
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+@app.route('/admin/import')
+@login_required
+def admin_import():
+    if not current_user.is_superuser:
+        return redirect(url_for('index'))
+    return render_template('import_admin.html')
 if __name__ == '__main__':
     app.run(debug=True)
