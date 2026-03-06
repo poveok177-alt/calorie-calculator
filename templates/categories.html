@@ -513,7 +513,7 @@ async function confirmAdd() {
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ food_id: modalFood.id, grams, meal_type: selectedMeal })
     });
-    // Сначала проверяем статус
+
     if (res.status === 401) {
       closeModal();
       nmodalShow({
@@ -523,22 +523,46 @@ async function confirmAdd() {
       });
       return;
     }
-    const data = await res.json();
+
+    // Читаем как текст сначала — чтобы не падать если не JSON
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(parseErr) {
+      // Сервер вернул не JSON (HTML ошибки, редирект и т.д.)
+      nmodalShow({
+        ico:'⚠️', title:'Ошибка сервера',
+        text:`Статус: ${res.status}. Попробуйте обновить страницу или войдите снова.`,
+        buttons:[
+          {label:'🔄 Обновить', action:'location.reload();', primary:true},
+          {label:'👤 Войти', href:'/login', primary:false}
+        ]
+      });
+      return;
+    }
+
     if (data.success) {
       closeModal();
-      // Показываем приём пищи в тосте
       const mealNames = {
         breakfast:'{{ t.breakfast }}', lunch:'{{ t.lunch }}',
         dinner:'{{ t.dinner }}', snack:'{{ t.snack }}'
       };
       showToast('✓ ' + modalFood.name + ' → ' + (mealNames[selectedMeal] || selectedMeal));
     } else {
-      nmodalShow({ico:'❌', title:'Ошибка', text: data.error || 'Не удалось добавить продукт',
-        buttons:[{label:'OK', primary:true}]});
+      nmodalShow({
+        ico:'❌', title:'Ошибка',
+        text: data.error || 'Не удалось добавить продукт',
+        buttons:[{label:'OK', primary:true}]
+      });
     }
   } catch(e) {
-    nmodalShow({ico:'📡', title:'Нет соединения', text:'Проверьте интернет и попробуйте снова.',
-      buttons:[{label:'OK', primary:true}]});
+    // Реальная ошибка сети (офлайн)
+    nmodalShow({
+      ico:'📡', title:'Нет соединения',
+      text:'Приложение не может подключиться к серверу. Проверьте, запущен ли Flask-сервер (`python app.py`).',
+      buttons:[{label:'OK', primary:true}]
+    });
   } finally {
     btn.textContent = '✓ {{ t.get("confirm_add","Добавить") }}';
     btn.disabled = false;
