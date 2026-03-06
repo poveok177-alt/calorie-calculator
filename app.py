@@ -34,9 +34,9 @@ if database_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_pre_ping': True,        # проверять коннект перед запросом
-    'pool_recycle': 280,          # пересоздавать соединения каждые 280 сек
-    'connect_args': {'connect_timeout': 10}
+    'pool_pre_ping': True,
+    'pool_recycle': 280,
+    'connect_args': {'connect_timeout': 10, 'sslmode': 'require'}
 }
 
 db = SQLAlchemy(app)
@@ -1599,7 +1599,10 @@ def init_db():
                 db.session.commit()
                 print(f"✅ Добавлено {len(fallback)} базовых продуктов")
 
-init_db()
+try:
+    init_db()
+except Exception as e:
+    print(f"init_db error: {e}", flush=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
