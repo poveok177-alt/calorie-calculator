@@ -695,3 +695,4 @@ supplements = [
 for n_ru,n_en,n_uk,n_kk,cal,prot,fat,carb in supplements:
     FOODS.append({"name_ru":n_ru,"name_en":n_en,"name_uk":n_uk,"name_kk":n_kk,
                   "calories":cal,"protein":prot,"fat":fat,"carbs":carb,"category":"supplements"})
+#a
