@@ -159,7 +159,18 @@
   }
   .modal-handle { width:36px; height:4px; background:#c8eedd; border-radius:4px; margin:0 auto 18px; }
   .modal-name { font-family:'Playfair Display',serif; font-size:18px; margin-bottom:14px; line-height:1.3; }
-  .modal-label { font-size:11px; font-weight:700; color:var(--text-soft); display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .modal-label { font-size:11px; font-weight:700; color:var(--text-soft); display:block; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+
+  /* Приём пищи */
+  .meal-picker { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }
+  .meal-pick-btn {
+    padding:10px 8px; border:2px solid var(--border); border-radius:12px;
+    background:#fff; color:var(--text-soft); font-size:13px; font-weight:700;
+    font-family:'Nunito',sans-serif; cursor:pointer; transition:all .15s;
+    min-height:44px; text-align:center;
+  }
+  .meal-pick-btn:hover { border-color:var(--green-soft); color:var(--green-dark); background:var(--mint-light); }
+  .meal-pick-btn.active { border-color:var(--green); background:var(--mint-light); color:var(--green-dark); }
   .modal-input {
     width:100%; padding:12px 16px; border:2px solid var(--border);
     border-radius:14px; font-size:18px; font-family:'Nunito',sans-serif;
@@ -408,7 +419,17 @@
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-name" id="modal-title"></div>
-    <label class="modal-label">{{ t.get('grams_label','Количество (граммов)') }}</label>
+
+    <!-- ВЫБОР ПРИЁМА ПИЩИ -->
+    <label class="modal-label">{{ t.get('meal_type','Приём пищи') }}</label>
+    <div class="meal-picker" id="meal-picker">
+      <button class="meal-pick-btn" data-meal="breakfast" onclick="pickMeal(this)">🌅 {{ t.breakfast }}</button>
+      <button class="meal-pick-btn" data-meal="lunch" onclick="pickMeal(this)">☀️ {{ t.lunch }}</button>
+      <button class="meal-pick-btn" data-meal="dinner" onclick="pickMeal(this)">🌙 {{ t.dinner }}</button>
+      <button class="meal-pick-btn active" data-meal="snack" onclick="pickMeal(this)">🍿 {{ t.snack }}</button>
+    </div>
+
+    <label class="modal-label" style="margin-top:14px;">{{ t.get('grams_label','Количество (граммов)') }}</label>
     <input type="number" id="modal-grams" class="modal-input"
            value="100" min="1" max="9999" inputmode="decimal">
     <div class="modal-preview" id="modal-preview"></div>
@@ -425,6 +446,7 @@
 <script>
 const isAuth = {{ 'true' if current_user.is_authenticated else 'false' }};
 let modalFood = null;
+let selectedMeal = 'snack';
 
 // Прокрутить активную категорию в центр полосы
 document.addEventListener('DOMContentLoaded', function() {
@@ -435,6 +457,12 @@ document.addEventListener('DOMContentLoaded', function() {
     bar.scrollLeft = btnCenter - bar.clientWidth / 2;
   }
 });
+
+function pickMeal(btn) {
+  document.querySelectorAll('.meal-pick-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedMeal = btn.dataset.meal;
+}
 
 function quickAdd(id, name, cal, protein, fat, carbs) {
   if (!isAuth) {
@@ -476,19 +504,44 @@ document.getElementById('modal-grams').addEventListener('keydown', e => {
 async function confirmAdd() {
   if (!modalFood) return;
   const grams = parseFloat(document.getElementById('modal-grams').value) || 100;
+  const btn = document.querySelector('.modal-ok');
+  btn.textContent = '⏳';
+  btn.disabled = true;
   try {
-    const res  = await fetch('/api/add-entry', {
+    const res = await fetch('/api/add-entry', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ food_id: modalFood.id, grams, meal_type:'other' })
+      body: JSON.stringify({ food_id: modalFood.id, grams, meal_type: selectedMeal })
     });
+    // Сначала проверяем статус
+    if (res.status === 401) {
+      closeModal();
+      nmodalShow({
+        ico:'🔒', title:'Нужна авторизация',
+        text:'Сессия истекла — войдите снова',
+        buttons:[{label:'👤 Войти', href:'/login', primary:true}]
+      });
+      return;
+    }
     const data = await res.json();
     if (data.success) {
       closeModal();
-      showToast('✓ ' + modalFood.name);
+      // Показываем приём пищи в тосте
+      const mealNames = {
+        breakfast:'{{ t.breakfast }}', lunch:'{{ t.lunch }}',
+        dinner:'{{ t.dinner }}', snack:'{{ t.snack }}'
+      };
+      showToast('✓ ' + modalFood.name + ' → ' + (mealNames[selectedMeal] || selectedMeal));
+    } else {
+      nmodalShow({ico:'❌', title:'Ошибка', text: data.error || 'Не удалось добавить продукт',
+        buttons:[{label:'OK', primary:true}]});
     }
   } catch(e) {
-    nmodalShow({ico:'📡',title:'Нет соединения',text:'Проверьте интернет и попробуйте снова.',buttons:[{label:'OK',primary:true}]});
+    nmodalShow({ico:'📡', title:'Нет соединения', text:'Проверьте интернет и попробуйте снова.',
+      buttons:[{label:'OK', primary:true}]});
+  } finally {
+    btn.textContent = '✓ {{ t.get("confirm_add","Добавить") }}';
+    btn.disabled = false;
   }
 }
 
