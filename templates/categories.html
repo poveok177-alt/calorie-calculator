@@ -537,10 +537,11 @@ async function confirmAdd() {
     if (data.success) {
       closeModal();
       const mealNames = {
-        breakfast:'{{ t.breakfast }}', lunch:'{{ t.lunch }}',
-        dinner:'{{ t.dinner }}', snack:'{{ t.snack }}'
+        breakfast:'Завтрак', lunch:'Обед',
+        dinner:'Ужин', snack:'Перекус'
       };
-      showToast('✓ ' + modalFood.name + ' → ' + (mealNames[selectedMeal] || selectedMeal));
+      const mealLabel = mealNames[selectedMeal] || selectedMeal;
+      showToast('✓ ' + modalFood.name + ' → ' + mealLabel);
     } else {
       nmodalShow({
         ico:'❌', title:'Ошибка',
@@ -574,7 +575,7 @@ function showToast(msg) {
     el = document.createElement('div');
     el.id = '_toast';
     Object.assign(el.style, {
-      position:'fixed', bottom:'90px', left:'50%', transform:'translateX(-50%)',
+      position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
       background:'#2d8a63', color:'#fff', padding:'10px 22px',
       borderRadius:'20px', fontSize:'14px', fontWeight:'700',
       fontFamily:'Nunito,sans-serif', zIndex:'9999',
