@@ -14,7 +14,7 @@
     font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
     min-height:100vh;overflow-x:hidden;
     background-image:radial-gradient(circle at 20% 20%,rgba(181,234,215,.3) 0%,transparent 50%);
-    padding-bottom: max(88px, calc(80px + env(safe-area-inset-bottom)));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
   }
   button, a{touch-action:manipulation;}
 
@@ -56,16 +56,16 @@
   .trial-note{background:var(--mint-light);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--text-soft);text-align:center;margin-bottom:10px;}
 
   /* BOTTOM NAV */
-  .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #c8eedd;box-shadow:0 -4px 20px rgba(76,175,131,.1);padding:6px 0 max(6px,env(safe-area-inset-bottom));}
-  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#8aaa9e;font-weight:700;padding:6px 4px;border-radius:12px;margin:0 3px;transition:all .2s;min-height:50px;justify-content:center;}
-  .bnav-item.active{color:#2d8a63;background:rgba(181,234,215,.35);}
-  .bnav-item.bnav-premium{color:#e65c00;}
-  .bnav-item.bnav-premium.active{background:rgba(255,107,53,.1);}
-  .bnav-icon{font-size:22px;line-height:1;}
-  .bnav-label{letter-spacing:.3px;text-transform:uppercase;font-size:9px;}
+  
+  
+  
+  
+  
+  
+  
 
   @media(max-width:860px){
-    .bottom-nav{display:flex;}
+    
     .nav-links{display:none!important;}
   }
 
@@ -89,17 +89,59 @@
     .features{padding:14px 12px;}
     .feature-icon{font-size:18px;width:26px;}
   }
+
+/* ── TOP-BAR + TABS ── */
+.top-bar{
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);
+}
+.top-bar-inner{
+  max-width:900px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;height:50px;
+}
+.logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+.top-right{display:flex;gap:4px;align-items:center;}
+.top-right a{padding:6px 12px;border-radius:14px;text-decoration:none;font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;min-height:38px;display:inline-flex;align-items:center;}
+.top-right a:hover{background:var(--mint-light);color:var(--green-dark);}
+.tab-bar{display:flex;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;padding:0 10px;border-top:1px solid var(--mint-light);background:rgba(255,255,255,.96);}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 13px;border:none;background:none;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;color:var(--text-soft);cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .18s;min-height:40px;}
+.tab-btn:hover{color:var(--green-dark);}
+.tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green);}
+.tab-ico{font-size:14px;line-height:1;}
+@media(max-width:480px){.tab-btn{padding:8px 10px;font-size:12px;gap:4px;}.tab-ico{font-size:13px;}}
+@media(max-width:360px){.tab-btn{padding:7px 8px;font-size:11px;gap:3px;}}
+
 </style>
 </head>
 <body>
-<nav>
-  <div class="nav-inner">
+<div class="top-bar">
+  <div class="top-bar-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <div class="nav-links">
-      <a href="/" class="nav-link">← {{ t.get('today','Сегодня') }}</a>
+    <div class="top-right">
+      {% if current_user.is_authenticated %}
+        <a href="/logout">{{ t.logout }}</a>
+      {% else %}
+        <a href="/login">{{ t.login }}</a>
+        <a href="/register">{{ t.register }}</a>
+      {% endif %}
     </div>
   </div>
-</nav>
+  <div class="tab-bar">
+    <a href="/" class="tab-btn "><span class="tab-ico">🏠</span>{{ t.get('today','Сегодня') }}</a>
+    <a href="/history" class="tab-btn "><span class="tab-ico">📊</span>{{ t.get('history','История') }}</a>
+    <a href="/goals" class="tab-btn "><span class="tab-ico">🎯</span>{{ t.goals }}</a>
+    <a href="/categories" class="tab-btn "><span class="tab-ico">🥗</span>{{ t.get('categories','Категории') }}</a>
+    <a href="/premium" class="tab-btn active"><span class="tab-ico">⭐</span>Premium</a>
+    {% if current_user.is_authenticated %}
+    <a href="/logout" class="tab-btn" style="margin-left:auto;color:var(--text-light);font-size:12px;padding-left:8px;">{{ t.logout }}</a>
+    {% else %}
+    <a href="/login" class="tab-btn" style="margin-left:auto;">{{ t.login }}</a>
+    {% endif %}
+  </div>
+</div>
 
 <main>
   {% with messages = get_flashed_messages() %}
@@ -174,11 +216,6 @@ async function buyPremium() {
 }
 </script>
 
-<nav class="bottom-nav">
-  <a href="/" class="bnav-item"><span class="bnav-icon">🏠</span><span class="bnav-label">{{ t.get('today','Сегодня') }}</span></a>
-  <a href="/history" class="bnav-item"><span class="bnav-icon">📊</span><span class="bnav-label">{{ t.get('history','История') }}</span></a>
-  <a href="/goals" class="bnav-item"><span class="bnav-icon">🎯</span><span class="bnav-label">{{ t.goals }}</span></a>
-  <a href="/premium" class="bnav-item bnav-premium active"><span class="bnav-icon">⭐</span><span class="bnav-label">Premium</span></a>
-</nav>
+
 </body>
 </html>

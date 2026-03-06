@@ -17,28 +17,60 @@ html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
 body{
   font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);
   min-height:100vh;overflow-x:hidden;
-  /* Отступ снизу — под bottom nav + safe area */
-  padding-bottom: max(80px, calc(72px + env(safe-area-inset-bottom)));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
   background-image:radial-gradient(circle at 15% 15%,rgba(181,234,215,.25) 0%,transparent 50%);
 }
 /* Все интерактивные — без двойного тапа */
 button,a{touch-action:manipulation;}
 
 /* ── NAV ── */
-nav{
-  background:rgba(255,255,255,.94);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);padding:0 20px;
+.top-bar{
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);
 }
-.nav-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
-.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
-.nav-links a{
-  padding:8px 12px;border-radius:16px;text-decoration:none;
-  font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;
-  min-height:44px;display:inline-flex;align-items:center;
+.top-bar-inner{
+  max-width:860px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;height:52px;
 }
-.nav-links a:hover{background:var(--mint-light);color:var(--green-dark);}
-main{max-width:860px;margin:0 auto;padding:20px 16px;}
+.logo{font-family:'Playfair Display',serif;font-size:19px;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+
+/* Правые кнопки (войти/выйти) — только на десктопе */
+.top-right{display:flex;gap:4px;align-items:center;}
+.top-right a{
+  padding:6px 12px;border-radius:14px;text-decoration:none;
+  font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;
+  min-height:38px;display:inline-flex;align-items:center;
+}
+.top-right a:hover{background:var(--mint-light);color:var(--green-dark);}
+
+/* ── TAB BAR ── */
+.tab-bar{
+  display:flex;align-items:center;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  gap:2px;padding:0 12px 0;
+  border-top:1px solid var(--mint-light);
+  background:rgba(255,255,255,.96);
+}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:10px 14px;
+  border:none;background:none;
+  font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;
+  color:var(--text-soft);cursor:pointer;
+  text-decoration:none;
+  white-space:nowrap;flex-shrink:0;
+  border-bottom:2.5px solid transparent;
+  margin-bottom:-1px;
+  transition:all .18s;min-height:42px;
+}
+.tab-btn:hover{color:var(--green-dark);}
+.tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green);}
+.tab-ico{font-size:15px;line-height:1;}
+
+main{max-width:860px;margin:0 auto;padding:16px 16px;}
 
 /* ── ПРОГРЕСС ── */
 .prog-card{
@@ -176,82 +208,57 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
 .grams-row{
   display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 14px;
   background:var(--mint-light);border-radius:12px;min-height:56px;
+  flex-wrap:wrap;
 }
 .g-selected{
   font-size:13px;font-weight:700;color:var(--text);
-  flex:1 1 auto;
+  flex:1 1 100%;order:-1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  min-width:80px;
+  min-width:0;margin-bottom:4px;
 }
 .g-input{
-  width:80px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;
+  width:86px;padding:8px 10px;border:2px solid var(--border);border-radius:9px;
   font-size:16px;font-family:'Nunito',sans-serif;outline:none;
-  text-align:center;background:#fff;min-height:44px;flex-shrink:0;
+  text-align:center;background:#fff;min-height:48px;flex-shrink:0;
 }
 .g-input:focus{border-color:var(--green);}
 .g-preview{font-size:12px;color:var(--text-soft);flex:1;min-width:60px;}
 .g-ok{
-  padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:9px;
-  font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;
-  min-height:44px;min-width:50px;flex-shrink:0;
+  padding:8px 18px;background:var(--green);color:#fff;border:none;border-radius:9px;
+  font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;
+  min-height:48px;flex-shrink:0;
 }
 .g-ok:hover{background:var(--green-dark);}
+.g-ok:active{transform:scale(0.96);}
 .g-cancel{
-  background:none;border:none;color:var(--text-light);font-size:20px;cursor:pointer;
-  padding:4px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--text-light);font-size:22px;cursor:pointer;
+  padding:4px;min-height:48px;min-width:44px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
 }
 .s-close{
-  background:none;border:none;color:var(--text-light);font-size:13px;
-  cursor:pointer;margin-top:6px;font-family:'Nunito',sans-serif;display:block;
+  background:none;border:none;color:var(--text-soft);font-size:13px;
+  cursor:pointer;margin-top:8px;font-family:'Nunito',sans-serif;display:block;
   min-height:44px;padding:6px 12px;width:100%;text-align:center;
+  font-weight:700;letter-spacing:.2px;
 }
-
-/* ── BOTTOM NAV ── */
-.bnav{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:rgba(255,255,255,.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-top:1px solid var(--border);
-  padding:6px 8px max(6px,env(safe-area-inset-bottom));
-  box-shadow:0 -4px 20px rgba(76,175,131,.1);
-}
-.bn-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
-  text-decoration:none;color:var(--text-light);font-weight:700;
-  padding:4px 2px;border-radius:10px;margin:0 2px;transition:all .18s;
-  min-height:50px;justify-content:center;
-}
-.bn-item.active{color:var(--green-dark);background:rgba(181,234,215,.35);}
-.bn-ico{font-size:21px;line-height:1;}
-.bn-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.3px;}
 
 /* ── RESPONSIVE BREAKPOINTS ── */
 @media(max-width:700px){
-  .bnav{display:flex;}
-  .nav-links{display:none!important;}
-
-  main{
-    padding:14px 12px;
-    /* Отступ снизу под nav на мобиле */
-    padding-bottom:max(90px,calc(88px + env(safe-area-inset-bottom)));
-  }
-  body{padding-bottom:0;}
-
+  .top-right{display:none;}
+  main{padding:12px 12px;}
   .prog-card{padding:18px 16px;border-radius:18px;}
   .prog-eaten{font-size:38px;}
   .prog-rem-num{font-size:20px;}
   .bju-grid{gap:6px;}
   .bju-chip{padding:8px 6px;}
   .bju-val{font-size:15px;}
-
   .meal-card{margin-bottom:10px;border-radius:16px;}
   .meal-hdr{padding:14px 14px 10px;}
   .meal-entries{padding:0 14px;}
   .add-panel{padding:10px 14px 14px;}
   .add-btn{font-size:13px;min-height:48px;}
-
-  /* Граммовка на мобиле — имя на всю строку сверху */
-  .grams-row{gap:6px;flex-wrap:wrap;}
-  .g-selected{flex:1 1 100%;margin-bottom:0;min-width:0;}
+  .s-results{max-height:230px;}
+  .cat-chip{padding:5px 10px;font-size:12px;min-height:34px;}
 }
 
 @media(max-width:480px){
@@ -263,26 +270,20 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
   .bju-chip{padding:7px 5px;}
   .bju-val{font-size:14px;}
   .bju-lbl{font-size:9px;}
-
   .meal-hdr{min-height:52px;padding:12px 14px 10px;gap:7px;}
   .meal-ico{font-size:20px;}
   .meal-nm{font-size:14px;}
   .meal-kcal-badge{font-size:12px;padding:3px 8px;}
-
   .entry-row{gap:6px;padding:9px 0;}
   .e-name{font-size:13px;}
   .e-sub{font-size:10px;}
   .e-cal{font-size:12px;}
-
   .s-item{min-height:50px;padding:10px 12px;}
   .s-name{font-size:13px;}
   .s-meta{font-size:11px;}
-
   .g-input{width:72px;font-size:16px;}
   .g-preview{font-size:11px;}
-
-  .bnav{padding:4px 6px max(4px,env(safe-area-inset-bottom));}
-  .bn-item{min-height:48px;}
+  .tab-btn{padding:9px 11px;font-size:12px;}
 }
 
 @media(max-width:360px){
@@ -295,6 +296,8 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
   .add-panel{padding:8px 12px 12px;}
   .add-btn{padding:10px 12px;font-size:12px;min-height:46px;}
   .cat-chip{padding:5px 9px;font-size:11px;min-height:34px;}
+  .tab-btn{padding:8px 9px;font-size:11px;gap:3px;}
+  .tab-ico{font-size:13px;}
 }
 
 @media(max-width:320px){
@@ -304,17 +307,39 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
   .add-btn{font-size:11px;min-height:44px;}
   .g-input{width:65px;}
 }
+
+/* ── TOP-BAR + TABS ── */
+.top-bar{
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);
+}
+.top-bar-inner{
+  max-width:900px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;height:50px;
+}
+.logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+.top-right{display:flex;gap:4px;align-items:center;}
+.top-right a{padding:6px 12px;border-radius:14px;text-decoration:none;font-size:13px;font-weight:700;color:var(--text-soft);transition:all .2s;min-height:38px;display:inline-flex;align-items:center;}
+.top-right a:hover{background:var(--mint-light);color:var(--green-dark);}
+.tab-bar{display:flex;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0;padding:0 10px;border-top:1px solid var(--mint-light);background:rgba(255,255,255,.96);}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 13px;border:none;background:none;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;color:var(--text-soft);cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .18s;min-height:40px;}
+.tab-btn:hover{color:var(--green-dark);}
+.tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green);}
+.tab-ico{font-size:14px;line-height:1;}
+@media(max-width:480px){.tab-btn{padding:8px 10px;font-size:12px;gap:4px;}.tab-ico{font-size:13px;}}
+@media(max-width:360px){.tab-btn{padding:7px 8px;font-size:11px;gap:3px;}}
+
 </style>
 </head>
 <body>
-<nav>
-  <div class="nav-inner">
+<div class="top-bar">
+  <div class="top-bar-inner">
     <a href="/" class="logo">🌿 {{ t.app_name }}</a>
-    <div class="nav-links">
+    <div class="top-right">
       {% if current_user.is_authenticated %}
-        <a href="/goals">🎯 {{ t.goals }}</a>
-        <a href="/history">📅 {{ t.history }}</a>
-        <a href="/premium">⭐ Premium</a>
         <a href="/logout">{{ t.logout }}</a>
       {% else %}
         <a href="/login">{{ t.login }}</a>
@@ -322,7 +347,19 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
       {% endif %}
     </div>
   </div>
-</nav>
+  <div class="tab-bar">
+    <a href="/" class="tab-btn active"><span class="tab-ico">🏠</span>{{ t.today }}</a>
+    <a href="/history" class="tab-btn"><span class="tab-ico">📊</span>{{ t.history }}</a>
+    <a href="/goals" class="tab-btn"><span class="tab-ico">🎯</span>{{ t.goals }}</a>
+    <a href="/categories" class="tab-btn"><span class="tab-ico">🥗</span>{{ t.categories }}</a>
+    <a href="/premium" class="tab-btn"><span class="tab-ico">⭐</span>Premium</a>
+    {% if current_user.is_authenticated %}
+    <a href="/logout" class="tab-btn" style="margin-left:auto;color:var(--text-light);font-size:12px;">{{ t.logout }}</a>
+    {% else %}
+    <a href="/login" class="tab-btn" style="margin-left:auto;">{{ t.login }}</a>
+    {% endif %}
+  </div>
+</div>
 
 <main>
   <!-- ПРОГРЕСС -->
@@ -440,12 +477,8 @@ main{max-width:860px;margin:0 auto;padding:20px 16px;}
   {% endfor %}
 </main>
 
-<nav class="bnav">
-  <a href="/" class="bn-item active"><span class="bn-ico">🏠</span><span class="bn-lbl">{{ t.today }}</span></a>
-  <a href="/history" class="bn-item"><span class="bn-ico">📊</span><span class="bn-lbl">{{ t.history }}</span></a>
-  <a href="/goals" class="bn-item"><span class="bn-ico">🎯</span><span class="bn-lbl">{{ t.goals }}</span></a>
-  <a href="/premium" class="bn-item"><span class="bn-ico">⭐</span><span class="bn-lbl">Premium</span></a>
-</nav>
+
+
 
 <script>
 const IS_AUTH = {{ 'true' if current_user.is_authenticated else 'false' }};
