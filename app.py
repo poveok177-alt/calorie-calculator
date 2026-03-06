@@ -816,7 +816,9 @@ def index():
                            now=datetime.utcnow())
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    t = get_t()
+    lang = session.get('language', 'ru')
+    return render_template('about.html', t=t, lang=lang)
 
 @app.route('/set-language/<lang>')
 def set_language(lang):
