@@ -33,6 +33,11 @@ if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,        # проверять коннект перед запросом
+    'pool_recycle': 280,          # пересоздавать соединения каждые 280 сек
+    'connect_args': {'connect_timeout': 10}
+}
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
