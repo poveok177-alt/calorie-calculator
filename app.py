@@ -809,6 +809,9 @@ def index():
                            is_premium=is_premium,
                            category_keys=CATEGORY_KEYS,
                            now=datetime.utcnow())
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/set-language/<lang>')
 def set_language(lang):
