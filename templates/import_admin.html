@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Импорт продуктов | CaloriMint Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .message {
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .message.success {
+            display: block;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        .message.info {
+            display: block;
+            background: #dbeafe;
+            color: #0c2340;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+            border: 2px dashed #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .file-input-label:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #667eea44 0%, #764ba244 100%);
+        }
+        
+        .file-input-label.drag-over {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #10b98144 0%, #10b98166 100%);
+        }
+        
+        .file-name {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            color: #666;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+        }
+        
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .info-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 13px;
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+        
+        .eta {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Импорт продуктов</h1>
+        <p class="subtitle">Добавить продукты из Open Food Facts или загрузить CSV</p>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('quick')">⚡ Быстро (27 шт)</button>
+            <button class="tab-btn" onclick="switchTab('file')">📤 Загрузить CSV</button>
+            <button class="tab-btn" onclick="switchTab('url')">🔗 По URL</button>
+        </div>
+        
+        <!-- Быстрый импорт -->
+        <div id="quick" class="tab-content active">
+            <div class="section">
+                <h2>⚡ Быстрая загрузка (27 популярных продуктов)</h2>
+                <p class="subtitle">Идеально для тестирования. Займет &lt;1 секунду</p>
+                
+                <div class="info-box">
+                    ✓ Фрукты, овощи, мясо, молочные, злаки, орехи, яйца и другие
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="quickImport()">Загрузить 27 продуктов</button>
+                </div>
+                
+                <div class="progress-container" id="quick-progress">
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Добавлено</div>
+                            <div class="stat-value" id="quick-added">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Всего в БД</div>
+                            <div class="stat-value" id="quick-total">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Загрузка CSV -->
+        <div id="file" class="tab-content">
+            <div class="section">
+                <h2>📤 Загрузить CSV файл</h2>
+                <p class="subtitle">Макс размер: 2GB</p>
+                
+                <div class="form-group">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="csvFile" accept=".csv" onchange="fileSelected()">
+                        <label for="csvFile" class="file-input-label" id="fileLabel">
+                            <div style="font-size: 32px; margin-bottom: 10px;">📁</div>
+                            <div>Перетащите CSV файл сюда или<br><strong>нажмите для выбора</strong></div>
+                            <div class="file-name" id="fileName"></div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Размер батча</label>
+                    <input type="number" id="batchSize" value="10000" min="1000" step="1000">
+                    <div class="subtitle">Больше = быстрее, но больше памяти</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Макс продуктов (опционально)</label>
+                    <input type="number" id="fileLimit" placeholder="Оставить пустым для всех">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" id="uploadBtn" onclick="uploadFile()" disabled>
+                        Начать импорт
+                    </button>
+                    <button class="btn-secondary" onclick="resetFileForm()">Сбросить</button>
+                </div>
+                
+                <div class="progress-container" id="file-progress">
+                    <div class="progress-text">
+                        Прогресс: <span id="file-percent">0</span>% | Добавлено: <span id="file-added">0</span> | Пропущено: <span id="file-skipped">0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="file-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="file-eta">Расчет...</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-danger btn-small" onclick="cancelImport()">Отменить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Импорт по URL -->
+        <div id="url" class="tab-content">
+            <div class="section">
+                <h2>🔗 Импорт по URL</h2>
+                <p class="subtitle">Прямая загрузка из интернета</p>
+                
+                <div class="info-box">
+                    💾 Скачать CSV: <a href="https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz" target="_blank" style="color: #b45309; text-decoration: underline;">
+                        en.openfoodfacts.org.products.csv.gz (1.2GB)
+                    </a>
+                </div>
+                
+                <div class="form-group">
+                    <label>URL CSV файла</label>
+                    <input type="text" id="csvUrl" 
+                        placeholder="https://example.com/products.csv"
+                        value="https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz">
+                </div>
+                
+                <div class="form-group">
+                    <label>Размер батча</label>
+                    <input type="number" id="urlBatchSize" value="10000" min="1000" step="1000">
+                </div>
+                
+                <div class="form-group">
+                    <label>Макс продуктов (опционально)</label>
+                    <input type="number" id="urlLimit" placeholder="Оставить пустым для всех">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" id="urlBtn" onclick="importFromUrl()">
+                        Начать импорт по URL
+                    </button>
+                    <button class="btn-secondary" onclick="resetUrlForm()">Сбросить</button>
+                </div>
+                
+                <div class="progress-container" id="url-progress">
+                    <div class="progress-text" id="url-message">Подготовка...</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="url-fill"></div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-danger btn-small" onclick="cancelImport()">Отменить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '/api/import';
+        let currentImportType = null;
+        let statusCheckInterval = null;
+        
+        function showMessage(text, type = 'info') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            if (type === 'success') setTimeout(() => msg.className = 'message', 5000);
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+        }
+        
+        // ============ БЫСТРЫЙ ИМПОРТ ============
+        async function quickImport() {
+            const btn = event.target;
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch(`${API_BASE}/quick-sample`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    document.getElementById('quick-added').textContent = data.added;
+                    document.getElementById('quick-total').textContent = data.total_in_db;
+                    document.getElementById('quick-progress').style.display = 'block';
+                    showMessage(`✅ ${data.message}`, 'success');
+                } else {
+                    showMessage(`❌ ${data.error}`, 'error');
+                }
+            } catch (e) {
+                showMessage(`❌ Ошибка: ${e.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+        
+        // ============ ЗАГРУЗКА CSV ============
+        function fileSelected() {
+            const file = document.getElementById('csvFile').files[0];
+            if (file) {
+                const sizeMB = (file.size / 1e6).toFixed(2);
+                document.getElementById('fileName').textContent = `${file.name} (${sizeMB} MB)`;
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+        
+        async function uploadFile() {
+            const file = document.getElementById('csvFile').files[0];
+            if (!file) {
+                showMessage('Выберите файл', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const batchSize = parseInt(document.getElementById('batchSize').value);
+            const limit = parseInt(document.getElementById('fileLimit').value) || null;
+            
+            if (JSON.stringify({batch_size: batchSize, limit})) {
+                formData.append('metadata', JSON.stringify({batch_size: batchSize, limit}));
+            }
+            
+            document.getElementById('file-progress').style.display = 'block';
+            currentImportType = 'file';
+            
+            try {
+                const res = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showMessage(`⬆️ Загрузка: ${data.file}`, 'info');
+                    startStatusCheck();
+                } else {
+                    showMessage(`❌ ${data.error}`, 'error');
+                    document.getElementById('file-progress').style.display = 'none';
+                }
+            } catch (e) {
+                showMessage(`❌ Ошибка: ${e.message}`, 'error');
+                document.getElementById('file-progress').style.display = 'none';
+            }
+        }
+        
+        function resetFileForm() {
+            document.getElementById('csvFile').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('file-progress').style.display = 'none';
+        }
+        
+        // ============ ИМПОРТ ПО URL ============
+        async function importFromUrl() {
+            const url = document.getElementById('csvUrl').value;
+            if (!url) {
+                showMessage('Введите URL', 'error');
+                return;
+            }
+            
+            const batchSize = parseInt(document.getElementById('urlBatchSize').value);
+            const limit = parseInt(document.getElementById('urlLimit').value) || null;
+            
+            document.getElementById('url-progress').style.display = 'block';
+            currentImportType = 'url';
+            
+            try {
+                const res = await fetch(`${API_BASE}/start`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url, batch_size: batchSize, limit})
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showMessage(`⬇️ ${data.message}`, 'info');
+                    startStatusCheck();
+                } else {
+                    showMessage(`❌ ${data.error}`, 'error');
+                    document.getElementById('url-progress').style.display = 'none';
+                }
+            } catch (e) {
+                showMessage(`❌ Ошибка: ${e.message}`, 'error');
+                document.getElementById('url-progress').style.display = 'none';
+            }
+        }
+        
+        function resetUrlForm() {
+            document.getElementById('csvUrl').value = '';
+            document.getElementById('url-progress').style.display = 'none';
+        }
+        
+        // ============ СТАТУС ============
+        async function startStatusCheck() {
+            if (statusCheckInterval) clearInterval(statusCheckInterval);
+            
+            statusCheckInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/status`);
+                    const data = await res.json();
+                    
+                    updateProgress(data);
+                    
+                    if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
+                        clearInterval(statusCheckInterval);
+                        if (data.status === 'completed') {
+                            showMessage(`✅ ${data.message}`, 'success');
+                        } else if (data.status === 'error') {
+                            showMessage(`❌ Ошибка: ${data.error}`, 'error');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Status check error:', e);
+                }
+            }, 1000);
+        }
+        
+        function updateProgress(data) {
+            const type = currentImportType || 'file';
+            const prefix = type === 'url' ? 'url' : type === 'file' ? 'file' : '';
+            
+            if (!prefix) return;
+            
+            // Обновить прогресс бар
+            document.getElementById(`${prefix}-fill`).style.width = `${data.progress_percent}%`;
+            document.getElementById(`${prefix}-percent`).textContent = data.progress_percent;
+            
+            // Обновить статистику
+            document.getElementById(`${prefix}-added`).textContent = data.added;
+            document.getElementById(`${prefix}-skipped`).textContent = data.skipped;
+            
+            // Обновить ETA
+            if (data.eta_seconds) {
+                const eta = formatSeconds(data.eta_seconds);
+                document.getElementById(`${prefix}-eta`).textContent = `⏱️ Осталось: ${eta}`;
+            }
+            
+            // Сообщение
+            if (data.message) {
+                document.getElementById(`${prefix}-message`).textContent = data.message;
+            }
+        }
+        
+        function formatSeconds(seconds) {
+            if (seconds < 60) return `${seconds}c`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}м ${seconds % 60}c`;
+            return `${Math.floor(seconds / 3600)}ч ${Math.floor((seconds % 3600) / 60)}м`;
+        }
+        
+        async function cancelImport() {
+            try {
+                await fetch(`${API_BASE}/cancel`, {method: 'POST'});
+                clearInterval(statusCheckInterval);
+                showMessage('⏹️ Импорт отменён', 'info');
+                
+                const type = currentImportType || 'file';
+                document.getElementById(`${type}-progress`).style.display = 'none';
+            } catch (e) {
+                showMessage(`❌ Ошибка отмены: ${e.message}`, 'error');
+            }
+        }
+        
+        // Drag & drop
+        const fileLabel = document.getElementById('fileLabel');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        fileLabel.addEventListener('dragover', () => fileLabel.classList.add('drag-over'));
+        fileLabel.addEventListener('dragleave', () => fileLabel.classList.remove('drag-over'));
+        fileLabel.addEventListener('drop', (e) => {
+            fileLabel.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                document.getElementById('csvFile').files = files;
+                fileSelected();
+            }
+        });
+    </script>
+</body>
+</html>
