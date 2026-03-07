@@ -1265,7 +1265,7 @@ def api_search():
                 q_search = translated if translated else q_search
 
             off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
-	    print(f'OFF SEARCH: q={q_search} lang={lang}', flush=True)
+            print(f'OFF SEARCH: q={q_search} lang={lang}', flush=True)
             query_enc = urllib.parse.quote(q_search)
             url = (
                 f"https://world.openfoodfacts.org/cgi/search.pl"
