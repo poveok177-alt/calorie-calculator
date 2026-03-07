@@ -1255,9 +1255,14 @@ def api_search():
             }
 
             q_search = q.lower().strip()
-            # Если язык не английский — пробуем перевести
+            # Если язык не английский — пробуем перевести (первое слово или всю фразу)
             if lang in ('ru', 'uk', 'kk'):
-                q_search = RU_TO_EN.get(q_search, q_search)
+                translated = RU_TO_EN.get(q_search)
+                if not translated:
+                    # Пробуем перевести первое слово
+                    first_word = q_search.split()[0]
+                    translated = RU_TO_EN.get(first_word)
+                q_search = translated if translated else q_search
 
             off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
             query_enc = urllib.parse.quote(q_search)
