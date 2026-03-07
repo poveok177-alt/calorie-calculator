@@ -247,6 +247,7 @@
   {% endwith %}
 
   <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <!-- ВЕС И ПАРАМЕТРЫ -->
     <div class="card">
       <div class="card-title">⚖️ {{ t.get('weight_goal','Вес и параметры') }}</div>

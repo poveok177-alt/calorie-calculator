@@ -40,7 +40,7 @@
     {% endwith %}
 
     <form method="POST">
-      {{ csrf_token() }}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="form-group">
         <label>{{ t.email }}</label>
         <input type="email" name="email" required

@@ -37,7 +37,7 @@
     {% endwith %}
 
     <form method="POST">
-      {{ csrf_token() }}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="form-group">
         <label>{{ t.username }}</label>
         <input type="text" name="username" required

@@ -1304,7 +1304,7 @@ def api_custom_foods():
             'category': f.category, 'is_custom': True
         } for f in foods])
     elif request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True)
         name = (data.get('name') or '').strip()
         if not name:
             return jsonify({'error': 'Название обязательно'}), 400
@@ -1323,7 +1323,7 @@ def api_custom_foods():
         except Exception as e:
             return jsonify({'error': str(e)}), 400
     elif request.method == 'DELETE':
-        data = request.get_json()
+        data = request.get_json(silent=True)
         raw_id = str(data.get('id', '')).replace('custom_', '')
         cf = CustomFood.query.filter_by(id=int(raw_id), user_id=current_user.id).first()
         if cf:
@@ -1471,7 +1471,7 @@ def api_favorites():
                 })
         return jsonify(result)
     elif request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True)
         fav_ids = session.get(key, [])
         food_id = data.get('food_id')
         if food_id not in fav_ids:
@@ -1480,7 +1480,7 @@ def api_favorites():
         session.modified = True
         return jsonify({'success': True})
     elif request.method == 'DELETE':
-        data = request.get_json()
+        data = request.get_json(silent=True)
         fav_ids = session.get(key, [])
         food_id = data.get('food_id')
         fav_ids = [f for f in fav_ids if f != food_id]
@@ -1492,7 +1492,7 @@ def api_favorites():
 @limiter.limit('30 per minute')
 @login_required
 def api_add_entry():
-    data = request.get_json()
+    data = request.get_json(silent=True)
     lang = session.get('language', 'ru')
     food_id = data.get('food_id', '')
     grams = float(data.get('grams', 100))
@@ -1580,7 +1580,7 @@ def api_clear_day():
 def api_water():
     key = f'water_{current_user.id}_{date.today()}'
     if request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True)
         session[key] = data.get('glasses', 0)
         session.modified = True
         return jsonify({'success': True, 'glasses': session[key]})
@@ -1601,7 +1601,7 @@ def api_today_summary():
 @login_required
 def api_weight_log():
     if request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True)
         weight = float(data.get('weight', 0))
         if weight > 0:
             existing = WeightLog.query.filter_by(user_id=current_user.id, date=date.today()).first()
@@ -2043,7 +2043,7 @@ def api_import_start():
     if not current_user.is_superuser:
         return jsonify({'error': 'Access denied'}), 403
     
-    data = request.get_json()
+    data = request.get_json(silent=True)
     url = data.get('url', '')
     
     if not url or not url.startswith('http'):

@@ -177,6 +177,7 @@
           <div class="actions-cell">
             {% if not user.is_premium %}
             <form method="POST" action="/admin/grant-premium" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <input type="hidden" name="user_id" value="{{ user.id }}">
               <select name="duration" class="select-dur">
                 <option value="7days">7 дней</option>
@@ -188,10 +189,12 @@
             </form>
             {% else %}
             <form method="POST" action="/admin/revoke-premium">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <input type="hidden" name="user_id" value="{{ user.id }}">
               <button type="submit" class="btn-revoke" onclick="return confirm('Забрать Premium у {{ user.username }}?')">✕ Забрать</button>
             </form>
             <form method="POST" action="/admin/grant-premium" style="display:flex;gap:6px;align-items:center;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <input type="hidden" name="user_id" value="{{ user.id }}">
               <select name="duration" class="select-dur">
                 <option value="7days">+7 дней</option>
