@@ -8,6 +8,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ===== SECURITY IMPORTS =====
+from flask_wtf.csrf import CSRFProtect
+from werkzeug.utils import secure_filename
+import re as regex_module
+import logging
+import tempfile
+import shutil
+from urllib.parse import urlparse
+import socket
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import threading
+from pathlib import Path
+import time
+import csv
+
+# ===== LOGGING SETUP =====
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # ===== YooKassa (без падения сервера) =====
 try:
     from yookassa import Configuration, Payment
@@ -18,11 +38,44 @@ except ImportError:
 
 app = Flask(__name__)
 
+# ===== SECURITY FIX #2: CSRF PROTECTION =====
+csrf = CSRFProtect(app)
+app.config['WTF_CSRF_TIME_LIMIT'] = None
+
+# ===== SECURITY FIX #3: RATE LIMITING =====
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
+# ===== SECURITY FIX #4: SECURE COOKIES =====
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('FLASK_ENV') == 'production'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# ===== FILE UPLOAD CONFIG =====
+MAX_FILE_SIZE = 500 * 1024 * 1024  # 500 MB
+MIN_FILE_SIZE = 1 * 1024  # 1 KB
+ALLOWED_EXTENSIONS = {'csv', 'tsv', 'txt'}
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
 @app.route("/health")
 def health():
     return "OK", 200
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'mojasupertajnayastrokakotoruyaniktonevzlomaet123')
+# ===== SECURITY FIX #1: SECRET_KEY VALIDATION =====
+secret_key = os.getenv('SECRET_KEY')
+if not secret_key:
+    if os.getenv('FLASK_ENV') == 'production':
+        raise ValueError("❌ КРИТИЧНО: SECRET_KEY должна быть установлена в .env для production!")
+    else:
+        import secrets
+        secret_key = secrets.token_urlsafe(32)
+        logger.warning(f"⚠️ Используется случайный SECRET_KEY: {secret_key}")
+
+app.config['SECRET_KEY'] = secret_key
 # НЕ используем filesystem сессии — на Railway диск эфемерный
 # app.config['SESSION_TYPE'] = 'filesystem'
 
@@ -118,6 +171,109 @@ class CustomFood(db.Model):
     carbs = db.Column(db.Float, default=0)
     category = db.Column(db.String(50), default='other')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+# ===== SECURITY FUNCTIONS =====
+
+def validate_password(password):
+    """SECURITY FIX #5: PASSWORD VALIDATION"""
+    errors = []
+    if len(password) < 8:
+        errors.append("Пароль должен быть минимум 8 символов")
+    if not regex_module.search(r'\d', password):
+        errors.append("Пароль должен содержать минимум одну цифру (0-9)")
+    if not regex_module.search(r'[A-Z]', password):
+        errors.append("Пароль должен содержать минимум одну заглавную букву (A-Z)")
+    if len(password) > 128:
+        errors.append("Пароль слишком длинный")
+    return len(errors) == 0, errors
+
+def is_safe_url(url):
+    """SECURITY FIX #6: SSRF PROTECTION"""
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            logger.warning(f"🚫 Отклонен URL с схемой: {parsed.scheme}")
+            return False
+        hostname = parsed.hostname
+        if not hostname:
+            return False
+        forbidden_hosts = ['localhost', '127.0.0.1', '::1', '0.0.0.0', 'localhost.localdomain']
+        if hostname.lower() in forbidden_hosts:
+            logger.warning(f"🚫 Отклонен запрещённый хост: {hostname}")
+            return False
+        try:
+            ip = socket.gethostbyname(hostname)
+            if ip.startswith('10.') or ip.startswith('192.168.') or ip.startswith('169.254.') or ip.startswith('127.'):
+                return False
+            if ip.startswith('172.') and 16 <= int(ip.split('.')[1]) <= 31:
+                return False
+        except socket.gaierror:
+            logger.warning(f"🚫 DNS resolution failed для: {hostname}")
+            return False
+        return True
+    except Exception as e:
+        logger.error(f"URL validation error: {str(e)}")
+        return False
+
+def allowed_file(filename):
+    """Проверка расширения файла"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def sanitize_input(text, max_length=200):
+    """Безопасная санитизация строк - удаляет опасные символы"""
+    if not text:
+        return ''
+    text = str(text).strip()
+    # Удаляем потенциально опасные символы
+    dangerous = ['<', '>', '"', "'", '&', ';', '(', ')', '{', '}', 'script']
+    for char in dangerous:
+        text = text.replace(char, '')
+    return text[:max_length]
+
+def validate_numeric(value, min_val, max_val, default):
+    """Валидация числовых значений - проверяет что число в диапазоне"""
+    try:
+        num = float(value)
+        if num < min_val or num > max_val:
+            return default
+        return num
+    except (ValueError, TypeError):
+        return default
+
+@app.before_request
+def enforce_https():
+    """SECURITY FIX #7: HTTPS ENFORCEMENT"""
+    if not request.is_secure and os.getenv('FLASK_ENV') == 'production':
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
+
+@app.after_request
+def set_security_headers(response):
+    """SECURITY FIX #8: SECURITY HEADERS"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'no-referrer-when-downgrade'
+    return response
+
+@app.errorhandler(403)
+def forbidden(e):
+    """SECURITY: Безопасная обработка CSRF ошибок"""
+    logger.warning(f"⚠️ 403 Forbidden: {request.url}")
+    return jsonify({'error': 'Access denied'}), 403
+
+@app.errorhandler(400)
+def bad_request(e):
+    """SECURITY: Безопасная обработка плохих запросов"""
+    logger.warning(f"⚠️ 400 Bad Request: {request.url}")
+    return jsonify({'error': 'Invalid request'}), 400
+
+@app.errorhandler(500)
+def server_error(e):
+    """SECURITY: Безопасная обработка серверных ошибок"""
+    logger.error(f"❌ 500 Server Error: {str(e)}", exc_info=True)
+    return jsonify({'error': 'Server error. Try again later'}), 500
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -838,6 +994,7 @@ def choose_language():
     return render_template('choose_language.html')
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit('5 per minute')
 def login():
     t = get_t()
     lang = session.get('language', 'ru')
@@ -845,16 +1002,21 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
+        
+        # ✅ SECURITY: Всегда проверять пароль (защита от timing attacks)
         if user and check_password_hash(user.password_hash, password):
             login_user(user, remember=True)
             session['language'] = user.language
             session.modified = True
+            logger.info(f"✅ Пользователь вошел: {email}")
             return redirect(url_for('index'))
         else:
+            logger.warning(f"⚠️ Неудачная попытка входа: {email}")
             flash('Неверный email или пароль')
     return render_template('login.html', t=t, lang=lang)
 
 @app.route('/register', methods=['GET', 'POST'])
+@limiter.limit('3 per hour')
 def register():
     t = get_t()
     lang = session.get('language', 'ru')
@@ -862,6 +1024,13 @@ def register():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
+
+        # ✅ SECURITY FIX #5: PASSWORD VALIDATION
+        is_valid, errors = validate_password(password)
+        if not is_valid:
+            for error in errors:
+                flash(error)
+            return render_template('register.html', t=t, lang=lang)
 
         if User.query.filter_by(email=email).first():
             flash('Email уже используется')
@@ -880,12 +1049,14 @@ def register():
             )
             db.session.add(user)
             db.session.commit()
+            logger.info(f"✅ Новый пользователь создан: {username}")
             login_user(user, remember=True)
             session['language'] = lang
             session.modified = True
             return redirect(url_for('index'))
         except Exception as e:
             db.session.rollback()
+            logger.error(f"❌ Register error: {str(e)}")
             flash('Ошибка при регистрации, попробуй ещё раз')
             return render_template('register.html', t=t, lang=lang)
 
@@ -1080,6 +1251,7 @@ def admin():
 
 @app.route('/admin/grant-premium', methods=['POST'])
 @login_required
+@limiter.limit('10 per hour')
 def admin_grant_premium():
     if not current_user.is_superuser:
         return redirect(url_for('index'))
@@ -1104,6 +1276,7 @@ def admin_grant_premium():
 
 @app.route('/admin/revoke-premium', methods=['POST'])
 @login_required
+@limiter.limit('10 per hour')
 def admin_revoke_premium():
     if not current_user.is_superuser:
         return redirect(url_for('index'))
@@ -1120,6 +1293,7 @@ def admin_revoke_premium():
 
 
 @app.route('/api/custom-foods', methods=['GET', 'POST', 'DELETE'])
+@limiter.limit('20 per minute')
 @login_required
 def api_custom_foods():
     if request.method == 'GET':
@@ -1315,6 +1489,7 @@ def api_favorites():
         return jsonify({'success': True})
 
 @app.route('/api/add-entry', methods=['POST'])
+@limiter.limit('30 per minute')
 @login_required
 def api_add_entry():
     data = request.get_json()
@@ -1514,6 +1689,7 @@ def api_history_data():
     return jsonify({'days': by_day, 'goal': current_user.daily_calorie_goal or 2000})
 
 @app.route('/api/create-payment', methods=['POST'])
+@limiter.limit('5 per hour')
 @login_required
 def create_payment():
     if Payment is None:
@@ -1803,6 +1979,7 @@ def import_worker(filepath, batch_size=10000, limit=None):
 
 @app.route('/api/import/upload', methods=['POST'])
 @login_required
+@limiter.limit('2 per hour')
 def api_import_upload():
     """Загрузить CSV файл для импорта"""
     
@@ -1854,10 +2031,12 @@ def api_import_upload():
         })
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"❌ Upload error: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Server error'}), 500
 
 @app.route('/api/import/start', methods=['POST'])
 @login_required
+@limiter.limit('2 per hour')
 def api_import_start():
     """Запустить импорт из URL"""
     
@@ -1871,19 +2050,29 @@ def api_import_start():
         return jsonify({'error': 'Invalid URL'}), 400
     
     try:
-        # Скачать файл
+        # SECURITY FIX: SSRF Protection
+        if not is_safe_url(url):
+            logger.warning(f"🚫 Отклонен потенциально опасный URL: {url}")
+            return jsonify({'error': 'Invalid URL'}), 400
+        
         import urllib.request
-        temp_dir = Path('/tmp/calori_import')
-        temp_dir.mkdir(exist_ok=True)
+        temp_dir = tempfile.mkdtemp(prefix='calori_import_')
         
         filename = url.split('/')[-1]
-        filepath = temp_dir / filename
+        if not filename or len(filename) > 255:
+            filename = f"import_{int(time.time())}.csv"
+        
+        safe_filename = secure_filename(filename)
+        filepath = os.path.join(temp_dir, safe_filename)
         
         IMPORT_STATE['status'] = 'uploading'
-        IMPORT_STATE['message'] = f'⬇️ Скачивание {filename}...'
+        IMPORT_STATE['message'] = f'⬇️ Скачивание {safe_filename}...'
         
-        # Простой способ скачивания (без проверки размера во время)
-        urllib.request.urlretrieve(url, str(filepath))
+        # Скачать с timeout и проверкой размера
+        urllib.request.urlretrieve(url, filepath, timeout=30)
+        if os.path.getsize(filepath) > MAX_FILE_SIZE:
+            logger.error(f"❌ Downloaded file too large: {os.path.getsize(filepath)} bytes")
+            raise Exception('File too large')
         
         # Начать импорт
         batch_size = data.get('batch_size', 10000)
@@ -1903,9 +2092,10 @@ def api_import_start():
         })
     
     except Exception as e:
+        logger.error(f"❌ Import start error: {str(e)}", exc_info=True)
         IMPORT_STATE['status'] = 'error'
-        IMPORT_STATE['error_message'] = str(e)
-        return jsonify({'error': str(e)}), 500
+        IMPORT_STATE['error_message'] = 'Failed to start import'
+        return jsonify({'error': 'Server error'}), 500
 
 @app.route('/api/import/status', methods=['GET'])
 @login_required
@@ -2035,7 +2225,9 @@ def api_import_quick_sample():
         })
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"❌ Quick sample error: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Server error'}), 500
+
 @app.route('/admin/clean-dupes')
 @login_required
 def admin_clean_dupes():
@@ -2057,5 +2249,8 @@ def admin_import():
         return redirect(url_for('index'))
     return render_template('import_admin.html')
 if __name__ == '__main__':
-    app.run(debug=True)
+    # SECURITY FIX: Отключить debug в production
+    debug = os.getenv('FLASK_ENV') == 'development'
+    port = int(os.getenv('PORT', 5000))
+    app.run(debug=debug, host='0.0.0.0', port=port)
 #

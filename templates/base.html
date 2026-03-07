@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{{ t.app_name }} — {% block title %}{% endblock %}</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -160,5 +161,31 @@
   </div>
 </nav>
 {% block content %}{% endblock %}
+
+<script>
+// ✅ SECURITY: Автоматически добавлять CSRF token в AJAX запросы
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+// Для fetch API
+if (csrfToken) {
+  const originalFetch = window.fetch;
+  window.fetch = function(url, config = {}) {
+    if (config.method && config.method.toUpperCase() !== 'GET') {
+      config.headers = config.headers || {};
+      config.headers['X-CSRFToken'] = csrfToken;
+    }
+    return originalFetch.apply(this, arguments);
+  };
+}
+
+// Для jQuery если используется
+if (typeof jQuery !== 'undefined' && csrfToken) {
+  jQuery(document).ajaxSend(function(event, xhr, settings) {
+    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+      xhr.setRequestHeader("X-CSRFToken", csrfToken);
+    }
+  });
+}
+</script>
 </body>
 </html>
