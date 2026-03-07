@@ -1,12 +1,9 @@
-
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, timedelta
-import json
 import os
-import uuid
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -746,19 +743,19 @@ def calculate_calories(weight, height, age, gender, activity):
 # ===================== STREAK =====================
 
 def calculate_streak(user_id):
-    """Считаем streak — сколько дней подряд есть записи"""
+    """Считаем streak — сколько дней подряд есть записи (один SQL запрос)"""
     today = date.today()
+    since = today - timedelta(days=365)
+    dates_with_entries = set(
+        r[0] for r in db.session.query(FoodEntry.date)
+        .filter(FoodEntry.user_id == user_id, FoodEntry.date >= since)
+        .distinct().all()
+    )
     streak = 0
     check_date = today
-    while True:
-        has_entry = FoodEntry.query.filter_by(
-            user_id=user_id, date=check_date
-        ).first()
-        if has_entry:
-            streak += 1
-            check_date = check_date - timedelta(days=1)
-        else:
-            break
+    while check_date in dates_with_entries:
+        streak += 1
+        check_date = check_date - timedelta(days=1)
     return streak
 
 # ===================== МАРШРУТЫ =====================
@@ -790,7 +787,7 @@ def index():
 
     remaining = max(0, daily_goal - total_cal)
     is_premium = current_user.is_premium if current_user.is_authenticated else False
-    progress_percent = min(100, int(total_cal / daily_goal * 100)) if daily_goal > 0 else 0
+    progress_percent = progress_pct
 
     # Группируем записи по приёмам пищи
     meals = {'breakfast': [], 'lunch': [], 'dinner': [], 'snack': [], 'other': []}
@@ -1222,81 +1219,16 @@ def api_search():
     if len(result) < 3 and not cat:
         try:
             import urllib.request, json as _json, urllib.parse
-
-            # Словарь перевода ru/uk/kk → en для OFF
-            RU_TO_EN = {
-                'гречка': 'buckwheat', 'греча': 'buckwheat',
-                'творог': 'cottage cheese', 'кефир': 'kefir',
-                'ряженка': 'fermented baked milk', 'сметана': 'sour cream',
-                'говядина': 'beef', 'свинина': 'pork', 'баранина': 'lamb',
-                'курица': 'chicken', 'индейка': 'turkey',
-                'семга': 'salmon', 'треска': 'cod', 'минтай': 'pollock',
-                'селедка': 'herring', 'скумбрия': 'mackerel',
-                'капуста': 'cabbage', 'морковь': 'carrot', 'свекла': 'beet',
-                'огурец': 'cucumber', 'помидор': 'tomato', 'картофель': 'potato',
-                'картошка': 'potato', 'лук': 'onion', 'чеснок': 'garlic',
-                'яблоко': 'apple', 'груша': 'pear', 'слива': 'plum',
-                'вишня': 'cherry', 'клубника': 'strawberry', 'банан': 'banana',
-                'апельсин': 'orange', 'мандарин': 'tangerine', 'лимон': 'lemon',
-                'виноград': 'grape', 'арбуз': 'watermelon', 'дыня': 'melon',
-                'рис': 'rice', 'макароны': 'pasta', 'хлеб': 'bread',
-                'овсянка': 'oatmeal', 'овес': 'oats', 'пшено': 'millet',
-                'молоко': 'milk', 'сыр': 'cheese', 'масло': 'butter',
-                'яйцо': 'egg', 'яйца': 'eggs',
-                'сахар': 'sugar', 'соль': 'salt', 'мед': 'honey',
-                'шоколад': 'chocolate', 'печенье': 'cookies', 'торт': 'cake',
-                'кофе': 'coffee', 'чай': 'tea', 'сок': 'juice',
-                'вода': 'water', 'молочко': 'milk',
-                'горох': 'peas', 'фасоль': 'beans', 'чечевица': 'lentils', 'нут': 'chickpeas',
-                'миндаль': 'almonds', 'грецкий орех': 'walnut', 'арахис': 'peanut',
-                'семечки': 'sunflower seeds', 'тыквенные семечки': 'pumpkin seeds',
-                'колбаса': 'sausage', 'сосиски': 'frankfurters', 'ветчина': 'ham',
-                'пицца': 'pizza', 'бургер': 'burger', 'картофель фри': 'french fries',
-            }
-
-            q_search = q.lower().strip()
-            # Если язык не английский — пробуем перевести (первое слово или всю фразу)
-            if lang in ('ru', 'uk', 'kk'):
-                translated = RU_TO_EN.get(q_search)
-                if not translated:
-                    # Пробуем перевести первое слово
-                    first_word = q_search.split()[0]
-                    translated = RU_TO_EN.get(first_word)
-                q_search = translated if translated else q_search
-
             off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
-            print(f'OFF SEARCH: q={q_search} lang={lang}', flush=True)
-            query_enc = urllib.parse.quote(q_search)
+            query_enc = urllib.parse.quote(q)
             url = (
                 f"https://world.openfoodfacts.org/cgi/search.pl"
                 f"?search_terms={query_enc}&search_simple=1&action=process"
-                f"&json=1&page_size=25&fields=id,product_name,product_name_{off_lang},nutriments,categories_tags"
+                f"&json=1&page_size=25&fields=id,product_name,product_name_{off_lang},nutriments"
             )
             req = urllib.request.Request(url, headers={'User-Agent': 'CaloriMint/1.0'})
             with urllib.request.urlopen(req, timeout=4) as r:
                 data = _json.loads(r.read())
-
-            # Маппинг категорий OFF → наши
-            OFF_CAT_MAP = {
-                'en:fruits': 'fruits', 'en:vegetables': 'vegetables',
-                'en:meats': 'meat', 'en:fish': 'fish', 'en:seafood': 'fish',
-                'en:dairies': 'dairy', 'en:cheeses': 'dairy', 'en:milks': 'dairy',
-                'en:cereals': 'grains', 'en:breads': 'grains', 'en:pastas': 'grains',
-                'en:nuts': 'nuts', 'en:eggs': 'eggs', 'en:legumes': 'legumes',
-                'en:sweets': 'sweets', 'en:chocolates': 'sweets', 'en:biscuits': 'sweets',
-                'en:beverages': 'drinks', 'en:juices': 'drinks', 'en:coffees': 'drinks',
-                'en:oils': 'oils', 'en:sauces': 'sauces',
-                'en:fast-foods': 'fastfood', 'en:pizzas': 'fastfood',
-            }
-
-            def get_off_category(tags):
-                if not tags:
-                    return 'other'
-                for tag in tags:
-                    if tag in OFF_CAT_MAP:
-                        return OFF_CAT_MAP[tag]
-                return 'other'
-
             seen_names = {x['name'].lower() for x in result}
             for p in data.get('products', []):
                 name = (p.get(f'product_name_{off_lang}') or p.get('product_name') or '').strip()
@@ -1308,12 +1240,11 @@ def api_search():
                 prot = round(float(nut.get('proteins_100g', 0) or 0), 1)
                 fat  = round(float(nut.get('fat_100g', 0) or 0), 1)
                 carb = round(float(nut.get('carbohydrates_100g', 0) or 0), 1)
-                category = get_off_category(p.get('categories_tags', []))
                 result.append({
                     'id': f'off_{p.get("id","x")}',
                     'name': name,
                     'calories': round(cal, 1), 'protein': prot, 'fat': fat, 'carbs': carb,
-                    'category': category,
+                    'category': 'other',
                 })
                 seen_names.add(name.lower())
                 if len(result) >= limit: break
@@ -1680,24 +1611,6 @@ try:
     init_db()
 except Exception as e:
     print(f"init_db error: {e}", flush=True)
-"""
-API эндпоинты для импорта продуктов через HTTP
-Добавить в app.py или импортировать как blueprintнь
-
-Использование:
-    POST /api/import/start - начать импорт
-    GET  /api/import/status - статус импорта
-    POST /api/import/cancel - отменить импорт
-"""
-
-from flask import request, jsonify, session
-from flask_login import login_required, current_user
-import csv
-import os
-import threading
-from datetime import datetime
-from pathlib import Path
-
 # ===================== ИМПОРТ ПРОДУКТОВ ЧЕРЕЗ API =====================
 
 # Глобальное состояние импорта
@@ -1804,7 +1717,8 @@ def parse_nutrition(row):
 
 def import_worker(filepath, batch_size=10000, limit=None):
     """Рабочая функция импорта в отдельном потоке"""
-    try:
+    with app.app_context():
+      try:
         IMPORT_STATE['status'] = 'importing'
         IMPORT_STATE['current_file'] = Path(filepath).name
         IMPORT_STATE['start_time'] = datetime.utcnow()
@@ -1883,7 +1797,7 @@ def import_worker(filepath, batch_size=10000, limit=None):
         IMPORT_STATE['status'] = 'completed'
         IMPORT_STATE['message'] = f'✅ Импортировано {IMPORT_STATE["added"]} продуктов'
         
-    except Exception as e:
+      except Exception as e:
         IMPORT_STATE['status'] = 'error'
         IMPORT_STATE['error_message'] = str(e)
 
@@ -2122,12 +2036,6 @@ def api_import_quick_sample():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-@app.route('/make-me-super')
-@login_required
-def make_me_super():
-    current_user.is_superuser = True
-    db.session.commit()
-    return 'Готово — ты суперюзер'
 @app.route('/admin/clean-dupes')
 @login_required
 def admin_clean_dupes():
@@ -2142,7 +2050,6 @@ def admin_clean_dupes():
             deleted += 1
     db.session.commit()
     return f'Удалено {deleted} дублей'
-
 @app.route('/admin/import')
 @login_required
 def admin_import():
