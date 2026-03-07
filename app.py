@@ -1,4 +1,4 @@
-from openfoodfacts_search import search_openfoodfacts
+
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
