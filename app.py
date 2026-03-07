@@ -1,3 +1,4 @@
+from openfoodfacts_search import search_openfoodfacts
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -1218,7 +1219,7 @@ def api_search():
             pass
 
     # Если мало — ищем в Open Food Facts
-    if len(result) < 5 and not cat:
+    if len(result) < 3 and not cat:
         try:
             import urllib.request, json as _json, urllib.parse
             off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
@@ -2055,6 +2056,20 @@ def api_import_quick_sample():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@app.route('/admin/clean-dupes')
+@login_required
+def admin_clean_dupes():
+    if not current_user.is_superuser:
+        return 'Access denied', 403
+    import re
+    deleted = 0
+    foods = Food.query.all()
+    for f in foods:
+        if re.search(r' \d+$', f.name_ru):
+            db.session.delete(f)
+            deleted += 1
+    db.session.commit()
+    return f'Удалено {deleted} дублей'
 @app.route('/admin/import')
 @login_required
 def admin_import():
