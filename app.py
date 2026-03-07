@@ -1265,6 +1265,7 @@ def api_search():
                 q_search = translated if translated else q_search
 
             off_lang = {'ru': 'ru', 'en': 'en', 'uk': 'uk', 'kk': 'ru'}.get(lang, 'en')
+	    print(f'OFF SEARCH: q={q_search} lang={lang}', flush=True)
             query_enc = urllib.parse.quote(q_search)
             url = (
                 f"https://world.openfoodfacts.org/cgi/search.pl"
@@ -1317,7 +1318,7 @@ def api_search():
                 seen_names.add(name.lower())
                 if len(result) >= limit: break
         except Exception as e:
-            app.logger.warning(f'OpenFoodFacts search error: {e}')
+            print(f'OFF ERROR: {e}', flush=True)
 
     return jsonify(result[:limit])
 
