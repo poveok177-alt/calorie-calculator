@@ -156,6 +156,7 @@ main{max-width:860px;margin:0 auto;padding:16px 16px;}
     <a href="/goals" class="tab-btn"><span class="tab-ico">🎯</span>{{ t.goals }}</a>
     <a href="/categories" class="tab-btn"><span class="tab-ico">🥗</span>{{ t.categories }}</a>
     <a href="/premium" class="tab-btn"><span class="tab-ico">⭐</span>Premium</a>
+    <a href="/about" class="tab-btn"><span class="tab-ico">📄</span>Оферта</a>
     <a href="/choose-language" class="tab-btn" style="margin-left:auto;"><span class="tab-ico">🌍</span></a>
     {% if current_user.is_authenticated %}
     <a href="/logout" class="tab-btn" style="color:var(--text-light);"><span class="tab-ico">🚪</span>{{ t.logout }}</a>
@@ -332,6 +333,20 @@ function nmodalClose(){document.getElementById('nmodal').classList.remove('show'
 document.addEventListener('keydown',e=>{if(e.key==='Escape')nmodalClose();});
 document.addEventListener('DOMContentLoaded',initWater);
 </script>
+
+<footer style="max-width:900px;margin:32px auto 0;padding:20px 16px 8px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-light);line-height:1.8;">
+  <div style="margin-bottom:6px;">
+    <strong style="color:var(--text-soft);">КалориМинт</strong> · Самозанятый Зюзин Макар Алексеевич · ИНН&nbsp;583521059645
+  </div>
+  <div>
+    <a href="mailto:poveok177@gmail.com" style="color:var(--text-light);text-decoration:none;">poveok177@gmail.com</a>
+    &nbsp;·&nbsp;
+    <a href="/about" style="color:var(--green-dark);font-weight:700;text-decoration:none;">Публичная оферта</a>
+    &nbsp;·&nbsp;
+    <a href="/premium" style="color:var(--green-dark);font-weight:700;text-decoration:none;">Тарифы</a>
+  </div>
+  <div style="margin-top:6px;">Подписка «Премиум» — 89 ₽/месяц · Доступ открывается автоматически после оплаты</div>
+</footer>
 
 <div id="nmodal" class="nmodal-overlay" onclick="if(event.target===this)nmodalClose()">
   <div class="nmodal-box">

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КалориМинт — Контакты и реквизиты</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234caf83' width='100' height='100' rx='22'/><text x='50' y='62' font-size='58' text-anchor='middle' dominant-baseline='middle'>🌿</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--mint:#b5ead7;--mint-light:#e8f8f2;--green:#4caf83;--green-dark:#2d8a63;--green-soft:#6dc49a;--cream:#f9fdf9;--text:#2d4a3e;--text-soft:#5a7a6e;--text-light:#8aaa9e;--border:#c8eedd;--shadow:rgba(76,175,131,.12);}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;overflow-x:hidden;}
+  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:40px;}
+  button,a{touch-action:manipulation;}
+
+  .top-bar{background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px var(--shadow);}
+  .top-bar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:50px;}
+  .logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--green-dark);text-decoration:none;white-space:nowrap;}
+  .tab-bar{display:flex;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 10px;border-top:1px solid var(--mint-light);background:rgba(255,255,255,.96);}
+  .tab-bar::-webkit-scrollbar{display:none;}
+  .tab-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 13px;border:none;background:none;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;color:var(--text-soft);cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .18s;min-height:40px;}
+  .tab-btn:hover{color:var(--green-dark);}
+  .tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green);}
+
+  .wrap{max-width:600px;margin:2rem auto;padding:0 16px;}
+
+  .card{background:white;border-radius:24px;padding:32px 36px;border:1.5px solid var(--border);box-shadow:0 6px 32px var(--shadow);margin-bottom:16px;}
+  h1{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:20px;}
+  h2{font-size:15px;font-weight:800;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+
+  .req-row{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--mint-light);}
+  .req-row:last-child{border-bottom:none;}
+  .req-ico{font-size:22px;width:32px;flex-shrink:0;text-align:center;margin-top:2px;}
+  .req-label{font-size:12px;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+  .req-val{font-size:15px;font-weight:700;color:var(--text);}
+  .req-val a{color:var(--green-dark);text-decoration:none;}
+
+  .service-card{background:linear-gradient(135deg,var(--mint-light),#f0fff8);border-radius:20px;padding:22px;border:1.5px solid var(--border);margin-bottom:16px;}
+  .price-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(181,234,215,.6);}
+  .price-row:last-child{border-bottom:none;}
+  .plan-name{font-size:15px;font-weight:800;}
+  .plan-desc{font-size:13px;color:var(--text-soft);margin-top:3px;}
+  .plan-price{font-size:22px;font-weight:800;color:var(--green-dark);}
+  .plan-per{font-size:11px;color:var(--text-light);}
+
+  .delivery-note{background:#f0fff8;border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.7;color:var(--text-soft);}
+
+  footer{max-width:600px;margin:24px auto 0;padding:0 16px;text-align:center;font-size:12px;color:var(--text-light);line-height:1.9;}
+  footer a{color:var(--green-dark);font-weight:700;text-decoration:none;}
+
+  @media(max-width:540px){
+    .card{padding:20px 18px;border-radius:18px;}
+    h1{font-size:20px;}
+    .wrap{padding:0 12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <a href="/" class="logo">🌿 КалориМинт</a>
+    <div style="display:flex;gap:4px;">
+      <a href="/login" style="padding:6px 12px;border-radius:14px;text-decoration:none;font-size:13px;font-weight:700;color:var(--text-soft);min-height:38px;display:inline-flex;align-items:center;">Войти</a>
+      <a href="/register" style="padding:6px 12px;border-radius:14px;text-decoration:none;font-size:13px;font-weight:700;background:var(--green);color:white;min-height:38px;display:inline-flex;align-items:center;">Регистрация</a>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <a href="/" class="tab-btn"><span>🏠</span>Сегодня</a>
+    <a href="/premium" class="tab-btn"><span>⭐</span>Premium</a>
+    <a href="/contacts" class="tab-btn active"><span>📋</span>Контакты</a>
+    <a href="/oferta" class="tab-btn"><span>📄</span>Оферта</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- О СЕРВИСЕ -->
+  <div class="card">
+    <h1>📋 Контакты и реквизиты</h1>
+    <h2>О сервисе</h2>
+    <p style="font-size:14px;color:var(--text-soft);line-height:1.7;margin-bottom:20px;">
+      КалориМинт — онлайн-сервис для подсчёта калорий и контроля питания. Доступен по адресу
+      <a href="https://calorie-calculator-9ypy.onrender.com" style="color:var(--green-dark);font-weight:700;">calorie-calculator-9ypy.onrender.com</a>.
+    </p>
+
+    <h2>Реквизиты</h2>
+    <div>
+      <div class="req-row">
+        <div class="req-ico">👤</div>
+        <div>
+          <div class="req-label">ФИО</div>
+          <div class="req-val">Зюзин Макар Алексеевич</div>
+        </div>
+      </div>
+      <div class="req-row">
+        <div class="req-ico">📎</div>
+        <div>
+          <div class="req-label">Статус</div>
+          <div class="req-val">Самозанятый</div>
+        </div>
+      </div>
+      <div class="req-row">
+        <div class="req-ico">🔢</div>
+        <div>
+          <div class="req-label">ИНН</div>
+          <div class="req-val">583521059645</div>
+        </div>
+      </div>
+      <div class="req-row">
+        <div class="req-ico">✉️</div>
+        <div>
+          <div class="req-label">Email</div>
+          <div class="req-val"><a href="mailto:poveok177@gmail.com">poveok177@gmail.com</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- УСЛУГИ И ЦЕНЫ -->
+  <div class="card">
+    <h2>Услуги и тарифы</h2>
+    <div class="service-card">
+      <div class="price-row">
+        <div>
+          <div class="plan-name">🌱 Базовый</div>
+          <div class="plan-desc">Подсчёт калорий, дневник питания</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="plan-price">0 ₽</div>
+          <div class="plan-per">бесплатно</div>
+        </div>
+      </div>
+      <div class="price-row">
+        <div>
+          <div class="plan-name">⭐ Премиум</div>
+          <div class="plan-desc">История 30 дней · График веса · Отчёты · Стрик · Без рекламы</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="plan-price">89 ₽</div>
+          <div class="plan-per">/ месяц</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="delivery-note">
+      ✅ <strong>Получение услуги:</strong> после успешной оплаты подписка активируется
+      автоматически и мгновенно — доступ открывается в вашем аккаунте на сайте.
+      Никаких ручных действий не требуется.
+    </div>
+  </div>
+
+  <!-- ССЫЛКИ -->
+  <div class="card" style="padding:20px 28px;">
+    <h2>Документы</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <a href="/oferta" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--mint-light);border-radius:14px;text-decoration:none;color:var(--text);font-weight:700;font-size:14px;">
+        <span style="font-size:20px;">📄</span>
+        <span>Публичная оферта на оказание услуг</span>
+        <span style="margin-left:auto;color:var(--green-dark);">→</span>
+      </a>
+      <a href="/premium" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--mint-light);border-radius:14px;text-decoration:none;color:var(--text);font-weight:700;font-size:14px;">
+        <span style="font-size:20px;">⭐</span>
+        <span>Подписка Premium — 89 ₽/месяц</span>
+        <span style="margin-left:auto;color:var(--green-dark);">→</span>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong style="color:var(--text-soft);">КалориМинт</strong> · Самозанятый Зюзин Макар Алексеевич · ИНН 583521059645<br>
+  <a href="mailto:poveok177@gmail.com">poveok177@gmail.com</a> ·
+  <a href="/oferta">Оферта</a> ·
+  <a href="/contacts">Контакты</a> ·
+  <a href="/premium">Тарифы</a>
+</footer>
+
+</body>
+</html>

@@ -135,6 +135,8 @@
     <a href="/goals" class="tab-btn "><span class="tab-ico">🎯</span>{{ t.goals }}</a>
     <a href="/categories" class="tab-btn "><span class="tab-ico">🥗</span>{{ t.get('categories','Категории') }}</a>
     <a href="/premium" class="tab-btn active"><span class="tab-ico">⭐</span>Premium</a>
+    <a href="/contacts" class="tab-btn"><span class="tab-ico">📋</span>Контакты</a>
+    <a href="/oferta" class="tab-btn"><span class="tab-ico">📄</span>Оферта</a>
     {% if current_user.is_authenticated %}
     <a href="/logout" class="tab-btn" style="margin-left:auto;color:var(--text-light);font-size:12px;padding-left:8px;">{{ t.logout }}</a>
     {% else %}
@@ -198,6 +200,53 @@
     </a>
     <div class="note-text">Регистрация бесплатна · 3 дня Premium в подарок</div>
   {% endif %}
+
+  <!-- ТАРИФЫ — публичный блок, виден всем без логина -->
+  <div style="background:white;border-radius:22px;padding:22px;margin-top:18px;border:1.5px solid var(--border);box-shadow:0 4px 20px var(--shadow);">
+    <div style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:16px;color:var(--text);">💳 Тарифы</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--mint-light);">
+      <div>
+        <div style="font-weight:800;font-size:15px;">🌱 Базовый</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-top:3px;">Подсчёт калорий, дневник питания</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:800;font-size:20px;color:var(--green-dark);">0 ₽</div>
+        <div style="font-size:11px;color:var(--text-light);">бесплатно</div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--mint-light);">
+      <div>
+        <div style="font-weight:800;font-size:15px;">⭐ Премиум</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-top:3px;">История · Графики · Отчёты · Стрик · Без рекламы</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:800;font-size:22px;color:var(--green-dark);">89 ₽</div>
+        <div style="font-size:11px;color:var(--text-light);">/ месяц</div>
+      </div>
+    </div>
+
+    <div style="padding-top:14px;font-size:13px;color:var(--text-soft);line-height:1.7;">
+      ✅ После оплаты доступ активируется <strong>автоматически и мгновенно</strong> в вашем аккаунте.
+      Оплата через ЮKassa. Подписка не продлевается автоматически.
+    </div>
+
+    <div style="margin-top:12px;font-size:12px;color:var(--text-light);text-align:center;">
+      <a href="/oferta" style="color:var(--green-dark);font-weight:700;text-decoration:none;">📄 Публичная оферта</a>
+      &nbsp;·&nbsp;
+      <a href="/contacts" style="color:var(--green-dark);font-weight:700;text-decoration:none;">📋 Реквизиты</a>
+    </div>
+  </div>
+
+  <!-- ФУТЕР -->
+  <footer style="margin-top:28px;padding:18px 0 8px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-light);line-height:1.9;">
+    <strong style="color:var(--text-soft);">КалориМинт</strong> · Самозанятый Зюзин Макар Алексеевич · ИНН&nbsp;583521059645<br>
+    <a href="mailto:poveok177@gmail.com" style="color:var(--text-light);text-decoration:none;">poveok177@gmail.com</a> ·
+    <a href="/oferta" style="color:var(--green-dark);font-weight:700;text-decoration:none;">Оферта</a> ·
+    <a href="/contacts" style="color:var(--green-dark);font-weight:700;text-decoration:none;">Контакты</a>
+  </footer>
+
 </main>
 
 <script>

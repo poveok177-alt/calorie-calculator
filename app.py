@@ -820,6 +820,14 @@ def about():
     lang = session.get('language', 'ru')
     return render_template('about.html', t=t, lang=lang)
 
+@app.route('/oferta')
+def oferta():
+    return render_template('oferta.html')
+
+@app.route('/contacts')
+def contacts():
+    return render_template('contacts.html')
+
 @app.route('/set-language/<lang>')
 def set_language(lang):
     if lang in TRANSLATIONS:
